@@ -78,16 +78,26 @@ Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzer
 \end{split}
 \end{equation*}
 
-\section{Policy Gradient}
+\section{Results}
+We analyze the policy gradient method,
 
 \begin{itemize}
 	\item Initialize $\rvw_r(0) \sim \gN(0, \sigma^2 \rmI)$, $\forall r \in [m]$.
 	\item Update $\rvw_r(t+1) = \rvw_r(t) - \eta \cdot \frac{d\ell}{d \rvw_r(t)}$.
 \end{itemize}
 
-The main result is as follows,
+There are two main assumptions,
+
+\begin{itemize}
+	\item $\left\| \rvs_{i} -  \rvs_{j} \right\|_2 \ge \delta, \ \forall i \not= j$.
+	\item $\left\| \rvs_{i} \right\|_2 = 1, \ \forall i \in [n]$.
+\end{itemize}
+
+The main result is,
 \begin{thm}
 \end{thm}
+
+\subsection{Policy Gradient}
 
 The gradient with respect to $\rvw_r$ is,
 \begin{equation*}
@@ -134,6 +144,8 @@ Since $h_{k^\prime}(\rvw_r(0)) \sim \gN(0, \left\| \rvp_{k^\prime, r} \right\|_2
 \end{equation*}
 where $c > 0$ is a constant. We lower bound $h_{k^\prime}(\rvw_r(0))$ as follows. 
 \fi
+
+\subsection{Gradient Norm Upper Bound}
 
 \begin{lem}
 	Define the pseudo gradient as,
@@ -191,6 +203,8 @@ which means at least $m \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} 
 \end{equation*}
 which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, then $\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}$.
 \end{proof}
+
+\subsection{Gradient Norm Lower Bound}
 
 \begin{lem}
 	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\regret(\rvpi_i(t))\right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \rvr_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $i^*(t)$. If $\rvpi_{i^*(t), k^*(t)}(t) > c > 0$, where $c$ is a constant, then the pseudo gradient norm is lower bounded by the regret,
