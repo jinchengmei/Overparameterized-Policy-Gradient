@@ -82,8 +82,12 @@ Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzer
 
 \begin{itemize}
 	\item Initialize $\rvw_r(0) \sim \gN(0, \sigma^2 \rmI)$, $\forall r \in [m]$.
-	\item Update $\rvw_r(t+1) = \rvw_r(t) - \eta \cdot \frac{d\ell}{d \rvw_r(t)}$
+	\item Update $\rvw_r(t+1) = \rvw_r(t) - \eta \cdot \frac{d\ell}{d \rvw_r(t)}$.
 \end{itemize}
+
+The main result is as follows,
+\begin{thm}
+\end{thm}
 
 The gradient with respect to $\rvw_r$ is,
 \begin{equation*}
@@ -207,12 +211,15 @@ By the randomness of $\rva_{k^\prime,r}$,
 with probability at least $\frac{1}{2} - \frac{1}{\sqrt{2\pi}}$. We can decompose $\rvw_r(0)$ as,
 \begin{equation}
 \label{eq:decompose_w}
-	\rvw_r(0) =  \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvw_r(0) +  \rvs_{i^*}\rvs_{i^*}^\top \rvw_r(0).
+\begin{split}
+	\rvw_r(0) &= \rvw_r^\prime(0) + \rvw_r^{\prime\prime}(0) \\
+	&\triangleq \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvw_r(0) +  \rvs_{i^*}\rvs_{i^*}^\top \rvw_r(0),
+\end{split}
 \end{equation}
-Denote $\rvw_r^\prime(0) \triangleq \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvw_r(0)$ and $\rvw_r^{\prime\prime}(0) \triangleq \rvs_{i^*}\rvs_{i^*}^\top \rvw_r(0)$, then we have $\rvw_r(0) = \rvw_r^\prime(0) + \rvw_r^{\prime\prime}(0)$. Define $h_{k^*,r}$ as follows,
+where $\rvw_r^\prime(0) \perp \rvw_r^{\prime\prime}(0)$. Define $h_{k^*,r}$ as follows,
 \begin{equation*}
 \begin{split}
-	h_{k^*,r} &\triangleq \rvw_r^\top \rvp_{k^*, r} \\
+	h_{k^*,r} &\triangleq \rvw_r(0)^\top \rvp_{k^*, r} \\
 	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \rvtilder_{i,k} \cdot \rvpi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }
 \end{split}
 \end{equation*}
@@ -228,7 +235,7 @@ Consider the following events,
 \begin{equation*}
 \begin{split}
 	\gE_1 &: \left| \rvw_r(0)^\top \rvs_{i^*} \right| \le \tau, \ \text{given } \tau \le \sigma \\
-	\gE_2 &: \left| \rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i \right| > \tau, \ \forall i \not= i^*.
+	\gE_2 &: \left| \rvw_r^\prime(0)^\top \rvs_i \right| > \tau, \ \forall i \not= i^*.
 \end{split}
 \end{equation*}
 For $\gE_1$, note $\rvw_r(0)^\top \rvs_{i^*} \sim \gN(0, \sigma^2)$,
@@ -240,28 +247,28 @@ For $\gE_1$, note $\rvw_r(0)^\top \rvs_{i^*} \sim \gN(0, \sigma^2)$,
 	&\ge \frac{5\sqrt{2}}{6\sqrt{\pi}} \cdot \frac{\tau}{\sigma} \in \Omega\left( \frac{\tau}{\sigma} \right)
 \end{split}
 \end{equation*}
-For $\gE_2$, according to \cref{eq:decompose_w}, $\rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i \sim \gN\left(0, \left(1 - \left(\rvs_{i^*}^\top \rvs_{i} \right)^2 \right)\sigma^2 \right)$, $\forall i \not= i^*$, and $\rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i$ is independent with $\rvw_r(0)^\top \rvs_{i^*} \rvs_{i^*}^\top \rvs_{i}$.
+For $\gE_2$, according to \cref{eq:decompose_w}, $\rvw_r^\prime(0)^\top \rvs_i \sim \gN\left(0, \left(1 - \left(\rvs_{i^*}^\top \rvs_{i} \right)^2 \right)\sigma^2 \right)$, $\forall i \not= i^*$, and $\rvw_r^\prime(0)^\top \rvs_i$ is independent with $\rvw_r^{\prime\prime}(0)^\top \rvs_{i}$.
 \begin{equation*}
 \begin{split}
-	\pr\left(\gE_2\right) &= 1 - \pr\left( \exists i \not= i^*, \ \left| \rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i \right| \le \tau \right) \\
-	&\ge 1 - \sum\limits_{i \not= i^*}{ \pr\left(\left| \rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i \right| \le \tau \right) } \\
+	\pr\left(\gE_2\right) &= 1 - \pr\left( \exists i \not= i^*, \ \left| \rvw_r^\prime(0)^\top \rvs_i \right| \le \tau \right) \\
+	&\ge 1 - \sum\limits_{i \not= i^*}{ \pr\left(\left| \rvw_r^\prime(0)^\top \rvs_i \right| \le \tau \right) } \\
 	&\ge 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi\left( 1 - \left(\rvs_{i^*}^\top \rvs_{i} \right)^2 \right) }\sigma} \\
-	&\ge \frac{2n\tau}{\sqrt{\pi}\delta\sigma} \quad \left( \left\| \rvs_{i} -  \rvs_{j} \right\|_2^2 \ge \delta, \ \forall i \not= j \right)
+	&\ge \frac{2n\tau}{\sqrt{\pi}\delta\sigma} \quad \left( \left\| \rvs_{i} -  \rvs_{j} \right\|_2 \ge \delta, \ \forall i \not= j \right)
 \end{split}
 \end{equation*}
 Let $\tau = \frac{\delta\sigma}{2n}$, then $\pr\left(\gE_2\right) \ge \frac{1}{\sqrt{\pi}}$. Therefore, $\pr\left( \gE_1 \land \gE_2 \right) \in \Omega\left( \frac{\tau}{\sigma} \right)$. Now condition on $\gE_1 \land \gE_2$ happens, we have, $\forall i \not= i^*$,
 \begin{equation*}
 \begin{split}
-	\sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} &= \sI\left\{ \rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i + \rvw_r(0)^\top \rvs_{i^*} \rvs_{i^*}^\top \rvs_{i} > 0 \right\} \\
-	&= \sI\left\{ \rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i > 0 \right\},
+	\sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} &= \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i + \rvw_r^{\prime\prime}(0)^\top \rvs_{i} > 0 \right\} \\
+	&= \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\},
 \end{split}
 \end{equation*}
-since $\left| \rvw_r(0)^\top \rvs_{i^*} \rvs_{i^*}^\top \rvs_{i} \right| \le \left| \rvw_r(0)^\top \rvs_{i^*} \right| \le \tau < \left| \rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i  \right|$. Fix $\beta \triangleq \rvw_r(0)^\top \left( \rmI - \rvs_{i^*}\rvs_{i^*}^\top \right) \rvs_i$, and randomly generate $\alpha \triangleq \rvw_r(0)^\top \rvs_{i^*}$, rewrite \cref{eq:decompose_h},
+since $\left| \rvw_r^{\prime\prime}(0)^\top \rvs_{i} \right| = \left| \rvw_r(0)^\top \rvs_{i^*} \rvs_{i^*}^\top \rvs_{i} \right| \le \left| \rvw_r(0)^\top \rvs_{i^*} \right| \le \tau < \left| \rvw_r^\prime(0)^\top \rvs_i  \right|$. Fix $\rvw_r^\prime(0)^\top \rvs_i$, and randomly generate $\alpha \triangleq \rvw_r(0)^\top \rvs_{i^*}$, rewrite \cref{eq:decompose_h},
 \begin{equation}
 \label{eq:h_alpha}
 \begin{split}
 	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \rvtilder_{i^*,k} \cdot \rvpi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma(\alpha) \right] } \\
-	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \rvtilder_{i,k} \cdot \rvpi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( \alpha \cdot \rvs_{i^*}^\top \rvs_{i} + \beta ) \cdot \sI\left\{ \beta > 0 \right\}  \right] } }
+	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \rvtilder_{i,k} \cdot \rvpi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( \alpha \cdot \rvs_{i^*}^\top \rvs_{i} + \rvw_r^\prime(0)^\top \rvs_i ) \cdot \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\}  \right] } }
 \end{split}
 \end{equation}
 Note the first part of $h_{k^*,r}$ is a convex function of $\alpha$, and the second part is a linear function of $\alpha$. For the first term in \cref{eq:h_alpha}, we have,
