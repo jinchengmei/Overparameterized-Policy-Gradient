@@ -186,7 +186,7 @@ which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, then $\sI\left\{
 	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\regret(\rvpi_i(t))\right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ r_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $i^*(t)$. If $\pi_{i^*(t), k^*(t)}(t) > c > 0$, where $c$ is a constant, then with probability $\Omega\left( \frac{\delta}{n} \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot \regret\left( \rvpi_{i^*(t)}(t) \right) \ge \Omega\left( \frac{\delta}{n^3} \right) \cdot \regret\left( \rvpi(t) \right).
+	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot \regret\left( \rvpi_{i^*(t)}(t) \right) \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot \regret\left( \rvpi(t) \right).
 \end{split}
 \end{equation*}
 \end{lem}
@@ -281,20 +281,20 @@ By assumption, if $\pi_{i^*,k^*}(t) > c > 0$, then ,
 \begin{split}
 	\left| \partial{h_{k^*,r}}_{\max}{(0)} - \partial{h_{k^*,r}}_{\min}{(0)} \right| &= \frac{1}{n} \cdot \left| \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \right| \\
 	&= \frac{1}{n} \cdot \pi_{i^*,k^*}(t) \cdot \regret(\rvpi_{i^*}(t)) \\
-	&\ge \frac{c}{n^2} \cdot \regret(\rvpi(t)).
+	&\ge \frac{c}{n} \cdot \regret(\rvpi(t)).
 \end{split}
 \end{equation*}
 where $\partial{h_{k^*,r}}_{\max}{(0)} = \max\left\{ \partial{h_{k^*,r}}{(0)} \right\}$, $\partial{h_{k^*,r}}_{\min}{(0)} = \min\left\{ \partial{h_{k^*,r}}{(0)} \right\}$ are the maximum and minimum of $\partial{h_{k^*,r}}{(0)}$, i.e., the subdifferential of $h_{k^*,r}$ at $0$. Therefore, by \cref{lem:non_smooth_convex},
 \begin{equation*}
 \begin{split}
-	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ h_{k^*,r} \ge \frac{c\tau}{8n^2} \cdot \regret(\rvpi(t)) \right\} > \frac{1}{8}.
+	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \right\} > \frac{1}{8}.
 \end{split}
 \end{equation*}
 Therefore, we have,
 \begin{equation}
 \label{eq:h_regret_lower_bound}
 \begin{split}
-	\probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n^2} \cdot \regret(\rvpi(t)) \right\} &\ge \probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n^2} \cdot \regret(\rvpi(t)) \middle| \gE_1 \land \gE_2 \right\} \cdot \probability\left\{ \gE_1 \land \gE_2 \right\} \\
+	\probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \right\} &\ge \probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \middle| \gE_1 \land \gE_2 \right\} \cdot \probability\left\{ \gE_1 \land \gE_2 \right\} \\
 	&\ge \frac{1}{8} \cdot \frac{5\sqrt{2}}{6\sqrt{\pi}} \cdot \frac{\tau}{\sigma} \cdot \frac{1}{\sqrt{\pi}} = \frac{5\sqrt{2}}{48\pi} \cdot \frac{\tau}{\sigma}.
 \end{split}
 \end{equation}
@@ -310,7 +310,7 @@ Combining \cref{eq:gradient_p_lowerbound}, \cref{eq:h_regret_lower_bound} and \c
 \begin{split}
 	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 &\ge \left\| \rvp_{k^*, r}\right\|_2 \\
 	&> \frac{1}{ \sqrt{ 2  \log{ \left( \frac{n}{ \delta \sigma} \right) }} } \cdot \frac{h_{k^*,r}}{\sigma} \\
-	&\ge \frac{1}{ \sqrt{ 2  \log{ \left( \frac{n}{ \delta \sigma} \right) }} } \cdot \frac{c\tau}{8\sigma n^2} \cdot \regret(\rvpi(t)),
+	&\ge \frac{1}{ \sqrt{ 2  \log{ \left( \frac{n}{ \delta \sigma} \right) }} } \cdot \frac{c\tau}{8\sigma n} \cdot \regret(\rvpi(t)),
 \end{split}
 \end{equation*}
 with probability at least $\left( \frac{1}{2} - \frac{1}{\sqrt{2\pi}} \right) \cdot \left( 1 - \frac{\delta \sigma}{n} \right) \cdot \frac{5\sqrt{2}}{48\pi} \cdot \frac{\tau}{\sigma}$, where $\tau = \frac{\delta\sigma}{2n}$.
