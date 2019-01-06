@@ -5,18 +5,9 @@
 \usepackage{amsthm}
 \usepackage[utf8]{inputenc} %useful to type directly diacritic characters
 \usepackage[capitalize]{cleveref}
-
-
-\title{Overparameterized Policy Gradient}
-\author{}
-\date{December 2018}
-
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\probability}{Pr}
-
-\begin{document}
-
-\maketitle
+\crefname{prop}{Proposition}{Propositions}
+\crefname{thm}{Theorem}{Theorems}
+\crefname{lem}{Lemma}{Lemmas}
 
 \def\rva{{\mathbf{a}}}
 \def\rvo{{\mathbf{o}}}
@@ -53,6 +44,19 @@
 
 \def\gN{{\mathcal{N}}}
 \def\gE{{\mathcal{E}}}
+\def\gU{{\mathcal{U}}}
+
+
+\title{Overparameterized Policy Gradient}
+\author{}
+\date{December 2018}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\probability}{Pr}
+
+\begin{document}
+
+\maketitle
 
 \section{Notations}
 
@@ -248,15 +252,15 @@ Let $\tau = \frac{\delta\sigma}{2n}$, then $\pr\left(\gE_2\right) \ge \frac{1}{\
 	&= \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\},
 \end{split}
 \end{equation*}
-since $\left| \rvw_r^{\prime\prime}(0)^\top \rvs_{i} \right| = \left| \rvw_r(0)^\top \rvs_{i^*} \rvs_{i^*}^\top \rvs_{i} \right| \le \left| \rvw_r(0)^\top \rvs_{i^*} \right| \le \tau < \left| \rvw_r^\prime(0)^\top \rvs_i  \right|$. Fix $\rvw_r^\prime(0)^\top \rvs_i$, and randomly generate $\alpha \triangleq \rvw_r(0)^\top \rvs_{i^*}$, rewrite \cref{eq:decompose_h},
+since $\left| \rvw_r^{\prime\prime}(0)^\top \rvs_{i} \right| = \left| \rvw_r(0)^\top \rvs_{i^*} \rvs_{i^*}^\top \rvs_{i} \right| \le \left| \rvw_r(0)^\top \rvs_{i^*} \right| \le \tau < \left| \rvw_r^\prime(0)^\top \rvs_i  \right|$. Fix $\rvw_r^\prime(0)^\top \rvs_i$, and randomly generate $x \triangleq \rvw_r(0)^\top \rvs_{i^*}$, rewrite \cref{eq:decompose_h},
 \begin{equation}
 \label{eq:h_alpha}
 \begin{split}
-	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma(\alpha) \right] } \\
-	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( \alpha \cdot \rvs_{i^*}^\top \rvs_{i} + \rvw_r^\prime(0)^\top \rvs_i ) \cdot \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\}  \right] } }
+	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma(x) \right] } \\
+	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( x \cdot \rvs_{i^*}^\top \rvs_{i} + \rvw_r^\prime(0)^\top \rvs_i ) \cdot \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\}  \right] } }
 \end{split}
 \end{equation}
-Note the first part of $h_{k^*,r}$ is a convex function of $\alpha$, and the second part is a linear function of $\alpha$. For the first term in \cref{eq:h_alpha}, we have,
+Note the first part of $h_{k^*,r}$ is a convex function of $x$, and the second part is linear. For the first term in \cref{eq:h_alpha}, we have,
 \begin{equation*}
 \begin{split}
 	\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } &= \underbrace{\tilde{r}_{i^*,k^*} \cdot \pi_{i^*,k^*}(t) \cdot v_{k^*,k^*,i^*}(t)}_{\tilde{r}_{i^*,k^*} = \r_{i^*}^{\max} -  r_{i^*,k^*} = 0} + \sum\limits_{k\not=k^*}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \\
@@ -265,21 +269,61 @@ Note the first part of $h_{k^*,r}$ is a convex function of $\alpha$, and the sec
 	&= - \pi_{i^*,k^*}(t) \cdot \regret(\rvpi_{i^*}(t))
 \end{split}
 \end{equation*}
-By assumption, if $\pi_{i^*,k^*}(t) > c > 0$, then the convex part of $h_{k^*,r}$ will have,
+By assumption, if $\pi_{i^*,k^*}(t) > c > 0$, then ,
 \begin{equation*}
 \begin{split}
-	\left| \partial_{\max}{(0)} - \partial_{\min}{(0)} \right| &= \frac{1}{n} \cdot \left| \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \right| \\
+	\left| \partial{h_{k^*,r}}_{\max}{(0)} - \partial{h_{k^*,r}}_{\min}{(0)} \right| &= \frac{1}{n} \cdot \left| \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \right| \\
 	&= \frac{1}{n} \cdot \pi_{i^*,k^*}(t) \cdot \regret(\rvpi_{i^*}(t)) \\
 	&\ge \frac{c}{n^2} \cdot \regret(\rvpi(t)).
 \end{split}
 \end{equation*}
-By lemma xxx, we have,
+where $\partial{h_{k^*,r}}_{\max}{(0)} = \max\left\{ \partial{h_{k^*,r}}{(0)} \right\}$, $\partial{h_{k^*,r}}_{\min}{(0)} = \min\left\{ \partial{h_{k^*,r}}{(0)} \right\}$ are the maximum and minimum value of $\partial{h_{k^*,r}}{(0)}$, i.e., the subdifferential of $h_{k^*,r}$ at $0$. Therefore, by \cref{lem:non_smooth_convex},
 \begin{equation*}
 \begin{split}
-	\probability\limits_{\alpha \in [-\tau, \tau]}\left\{ h_{k^*,r} \ge \frac{c\tau}{16n^2} \cdot \regret(\rvpi(t)) \right\} > \frac{1}{4}
+	\probability\limits_{\alpha \in [-\tau, \tau]}\left\{ h_{k^*,r} \ge \frac{c\tau}{8n^2} \cdot \regret(\rvpi(t)) \right\} > \frac{1}{8}.
 \end{split}
 \end{equation*}
 
+\end{proof}
+
+\begin{lem}
+\label{lem:non_smooth_convex}
+	Let $\phi(x) : \sR \to \sR$ be a convex function non-smooth at $0$. Define,
+\begin{equation*}
+\begin{split}
+	\partial\phi_{\max}{(0)} = \max\left\{ \partial\phi(0) \right\}, \quad \partial\phi_{\min}{(0)} = \min\left\{ \partial\phi(0) \right\},
+\end{split}
+\end{equation*}	
+where $\partial\phi(0)$ is the subdifferential of $\phi$ at $0$. Then we have,
+\begin{equation*}
+\begin{split}
+	\probability\limits_{x \sim \gU[-\tau, \tau]}\left\{ \left| \phi(x) \ge \frac{ \left( \partial\phi_{\max}{(0)} - \partial\phi_{\min}{(0)} \right) \tau}{8} \right|\right\} \ge \frac{1}{8}.
+\end{split}
+\end{equation*}	
+\end{lem}
+\begin{proof}
+	Denote $\rho = \partial\phi_{\max}{(0)} - \partial\phi_{\min}{(0)}$, we have $\partial\phi_{\max}{(0)} \ge \frac{\rho}{2}$ or $\partial\phi_{\min}{(0)} \le - \frac{\rho}{2}$. If $\partial\phi_{\min}{(0)} \le - \frac{\rho}{2}$, then $-\phi$ will satisfy the first case. So we prove for $\partial\phi_{\max}{(0)} \ge \frac{\rho}{2}$. Denote $\hat{\phi}(x) = \phi(x) - \phi(0)$. $\forall x > 0$,
+\begin{equation*}
+\begin{split}
+	\hat{\phi}(x) \ge \hat{\phi}(0) + \frac{\rho}{2} \cdot \left( x - 0\right) = \frac{\rho x}{2} \ge 0.
+\end{split}
+\end{equation*}
+If $\phi(0) \ge 0$, then $\forall x \in \left[\frac{\tau}{2}, \tau \right]$,
+\begin{equation*}
+\begin{split}
+	\left| \phi(x) \right| = \left| \hat{\phi}(x) + \phi(0) \right| = \hat{\phi}(x) + \phi(0) \ge \frac{\rho x}{2} \ge \frac{\rho \tau}{4}.
+\end{split}
+\end{equation*}
+If $\phi(0) < 0$, then $\phi(x_0) = 0$ for some $x_0 > 0$. If $x_0 < \frac{\tau}{2}$, $\forall x \in \left[x_0 + \frac{\tau}{4}, \tau \right]$,
+\begin{equation*}
+\begin{split}
+	\left| \phi(x) \right| =  \phi(x) \ge \phi(x_0) + \phi^\prime(x_0) \cdot \left( x - x_0 \right) \ge \frac{\rho \tau}{8}.
+\end{split}
+\end{equation*}
+If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - \frac{\rho\tau}{4}$, $\forall x \in \left[0, x_0 - \frac{\tau}{4} \right]$,
+\begin{equation*}
+	\left| \phi(x) \right| \ge \left| \frac{-\phi(0)}{x_0} \left( x - x_0 \right) \right| = \frac{-\phi(0)}{x_0} \left( x_0 - x \right) \ge \frac{\rho\tau}{8}. \qedhere
+\end{equation*}
 \end{proof}
 
 Chernoff bound. Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{  }$
