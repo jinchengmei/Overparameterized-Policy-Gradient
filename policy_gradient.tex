@@ -13,6 +13,7 @@
 \def\rvo{{\mathbf{o}}}
 \def\rvr{{\mathbf{r}}}
 \def\rvs{{\mathbf{s}}}
+\def\rvu{{\mathbf{u}}}
 \def\rvw{{\mathbf{w}}}
 \def\rvx{{\mathbf{x}}}
 \def\rvg{{\mathbf{g}}}
@@ -59,6 +60,8 @@
 \maketitle
 
 \section{Notations}
+
+Bold letters refer to vectors, and non-bold letters refer to scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $n$ is the total number of data points, while $m$ is the total number of nodes in each hidden layer. $h$ is the total number of arms/trajectories of each bandit/starting state.
 
 \begin{itemize}
 	\item $\rvs_i \in \sR^d$, $i \in [n]$ is a state/bandit.
@@ -332,7 +335,7 @@ where $\partial\phi(0)$ is the subdifferential of $\phi$ at $0$. Then we have,
 \end{equation*}	
 \end{lem}
 \begin{proof}
-	Denote $\rho = \partial\phi_{\max}{(0)} - \partial\phi_{\min}{(0)}$, we have $\partial\phi_{\max}{(0)} \ge \frac{\rho}{2}$ or $\partial\phi_{\min}{(0)} \le - \frac{\rho}{2}$. If $\partial\phi_{\min}{(0)} \le - \frac{\rho}{2}$, then $-\phi$ will satisfy the first case. So we prove for $\partial\phi_{\max}{(0)} \ge \frac{\rho}{2}$. Denote $\hat{\phi}(x) = \phi(x) - \phi(0)$. $\forall x > 0$,
+	Denote $\rho = \partial\phi_{\max}{(0)} - \partial\phi_{\min}{(0)}$, we have $\partial\phi_{\max}{(0)} \ge \frac{\rho}{2}$ or $\partial\phi_{\min}{(0)} \le - \frac{\rho}{2}$. If $\partial\phi_{\min}{(0)} \le - \frac{\rho}{2}$, then $-\phi$ will satisfy the first case. So we prove for $\partial\phi_{\max}{(0)} \ge \frac{\rho}{2}$. Define $\hat{\phi}(x) = \phi(x) - \phi(0)$. $\forall x > 0$,
 \begin{equation*}
 \begin{split}
 	\hat{\phi}(x) \ge \hat{\phi}(0) + \frac{\rho}{2} \cdot \left( x - 0\right) = \frac{\rho x}{2} \ge 0.
@@ -356,7 +359,9 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{equation*}
 \end{proof}
 
+\if0
 Chernoff bound. Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{  }$
+\fi
 
 \begin{equation*}
 \begin{split}
