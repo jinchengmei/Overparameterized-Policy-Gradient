@@ -131,7 +131,7 @@ where $v_{k^\prime,k,i}(t)$ is defined as,
 \begin{equation*}
 	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-	For any $\tau > 0$, with probability at lest $1 - \exp\left\{ - C^2/4 \right\} $, for at least $m \cdot \left( 1 - \frac{n\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right)$ parameter $\rvw_r$, the gradient is equal to the pseudo gradient, for every time step $t \in \mathcal{O}\left(\frac{\tau}{\eta}\right)$, i.e.,
+	For any $\tau > 0$, with probability at least $\left( 1 - \frac{2}{e^4} \right) \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$, $\forall t \in \mathcal{O}\left(\frac{\tau}{\eta}\right)$,
 \begin{equation}
 	\frac{d\ell}{d \rvw_r(t)} = \frac{d \tilde{\ell}}{d \rvw_r(t)}.
 \end{equation}
@@ -141,14 +141,14 @@ The policy gradient is,
 \begin{equation*}
 	\frac{d\ell}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-Since $a_{k,r}, a_{k^\prime,r} \sim \gN(0, 1)$, $a_{k,r} - a_{k^\prime,r} \sim \gN(0, 2)$, therefore $\left| a_{k,r} - a_{k^\prime,r} \right| \le C$ with  probability at least $1 - \exp\left\{ - C^2/4 \right\} $. Then we have,
+Since $a_{k,r}, a_{k^\prime,r} \sim \gN(0, 1)$, we have $a_{k,r} - a_{k^\prime,r} \sim \gN(0, 2)$, therefore $\left| a_{k,r} - a_{k^\prime,r} \right| \le 4$ with  probability at least $1 - \frac{2}{e^4} $. Then we have,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left| \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \right| \cdot \left\| \rvs_i \right\|_2 }} \\
-	&\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot C  } \cdot \left\| \rvs_i \right\|_2  }} \\
-	&\le \frac{C}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) }} \\
-	&= \frac{C}{n} \cdot \sum\limits_{i=1}^{n}{ \regret(\rvpi_{i}(t)) } \\
-	&= C \cdot \regret(\rvpi(t)).
+	&\le \frac{4}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t)  } \cdot \left\| \rvs_i \right\|_2  }} \\
+	&\le \frac{4}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) }} \\
+	&= \frac{4}{n} \cdot \sum\limits_{i=1}^{n}{ \regret(\rvpi_{i}(t)) } \\
+	&= 4 \cdot \regret(\rvpi(t)).
 \end{split}
 \end{equation*}
 Suppose any single time regret is smaller than $\text{R}_{\max}$.
@@ -156,31 +156,33 @@ The $\ell_2$ distance between $\rvw_r(t)$ and $\rvw_r(0)$ can be upper bounded b
 \begin{equation*}
 \begin{split}
 	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d\ell}{d \rvw_r(s)} \right\|_2} \\
-	&\le \eta \cdot C \cdot \sum\limits_{s=0}^{t-1}{ \regret(\rvpi(s)) } \\
-	&\le \eta \cdot C \cdot \text{R}_{\max} \cdot t .
+	&\le 4 \eta \cdot \sum\limits_{s=0}^{t-1}{ \regret(\rvpi(s)) } \\
+	&\le 4 \eta \cdot \text{R}_{\max} \cdot t .
 \end{split}
 \end{equation*}
-For any $\tau > 0$, define the following set,
-\begin{equation*}
-	H_\tau = \left\{ r \in [m] \ | \ \forall i \in [n], \left| \rvw_r(0)^\top \rvs_i \right| > \tau \right\}.
-\end{equation*}
-Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) \le \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$. For any fixed $r \in [m]$,
+Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) \le  \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$,
 \begin{equation*}
 \begin{split}
 	\pr\left(\forall i \in [n], \left| \rvw_r(0)^\top \rvs_i \right| > \tau\right) &= 1 - \pr\left(\exists i \in [n], \left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) \\
 	&\ge 1 - \sum\limits_{i=1}^{n}{ \pr\left(\left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) } \\
-	&\ge 1 - \frac{\sqrt{2} n\tau}{\sqrt{\pi}\sigma},
+	&\ge 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma},
 \end{split}
 \end{equation*}
-which means at least $m \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$   of $r \in [m]$ satisfying $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, $\forall i \in [n]$. Let $t < \frac{\tau}{ \eta \cdot C \cdot \text{R}_{\max} }$, by Cauchy-Schwarz, for any $r \in [m]$,
+Let $t \le \frac{\tau}{ 4 \eta \cdot \text{R}_{\max} }$, by Cauchy-Schwarz, $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
 	\left| \left( \rvw_r(t) - \rvw_r(0) \right)^\top \rvs_i \right| &\le \left\| \rvw_r(t) - \rvw_r(0) \right\|_2 \cdot \left\| \rvs_i \right\|_2 \\
-	&\le \eta \cdot C \cdot \text{R}_{\max} \cdot t \\
-	&\le \tau,
+	&\le 4 \eta \cdot \text{R}_{\max} \cdot t \\
+	&\le \tau < \left| \rvw_r(0)^\top \rvs_i \right|.
 \end{split}
 \end{equation*}
-which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, then $\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}$.
+which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, $\forall i \in [n]$, then,
+\begin{equation*}
+\begin{split}
+	\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} &= \sI\left\{ \rvw_r(0)^\top \rvs_i  + \left( \rvw_r(t) - \rvw_r(0) \right)^\top \rvs_i > 0 \right\} \\
+	&= \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}. \qedhere
+\end{split}
+\end{equation*}
 \end{proof}
 
 \subsection{Gradient Norm Lower Bound}
