@@ -71,7 +71,7 @@ Bold letters refer to vectors, and non-bold letters refer to scalars. For exampl
 	\item $o_{i,k} \triangleq \sum\limits_{r=1}^{m}{a_{k,r} \cdot u_{i,r}}$ is the logit of the $k$th arm for state $\rvs_i$.
 	\item $\pi_{i,k} \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}}$ is the  probability for choosing arm $k$ in bandit $i$.
 	\item $\rvr_i \in \sR^h$ is the reward vector for bandit $i$.
-	\item $\r_i^{\max} \triangleq \max\limits_{k}\left\{ r_{i,k} \right\}$ is the maximum reward value of bandit $i$.
+	\item $\r_i^{\max} \triangleq \max\limits_{k}\left\{ r_{i,k} \right\}$ is the maximum reward of bandit $i$.
 	\item The loss function $\ell \triangleq \regret(\rvpi) \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \regret(\rvpi_i) } \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) }$ is the regret. Regret minimization is equivalent with maximizing the reward $\frac{1}{n} \sum\limits_{i=1}^{n}{\rvpi_i^\top \rvr_i}$ from optimization and learning perspectives.
 \end{itemize}
 
@@ -80,7 +80,7 @@ Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzer
 \begin{split}
 	\ell(t) \triangleq \regret(\rvpi(t)) &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_{i}(t)^\top \rvr_i \right) } \\
 	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \left( \r_i^{\max} \cdot \rvone - \rvr_{i} \right) } \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_{i} }
+	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_{i} }.
 \end{split}
 \end{equation*}
 
@@ -88,17 +88,17 @@ Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzer
 
 We analyze the policy gradient method,
 \begin{itemize}
-	\item Initialize $\rvw_r(0) \sim \gN(0, \sigma^2 \rmI)$, $\forall r \in [m]$.
+	\item Initialize $\rvw_r(0) \sim \gN(0, \sigma^2 \cdot \rmI)$, $\forall r \in [m]$.
 	\item Update $\rvw_r(t+1) = \rvw_r(t) - \eta \cdot \frac{d\ell}{d \rvw_r(t)}$.
 \end{itemize}
 
-There are two main data assumptions,
+\noindent There are two data assumptions,
 \begin{itemize}
-	\item $\left\| \rvs_{i} -  \rvs_{j} \right\|_2 \ge \delta, \ \forall i \not= j$.
+	\item $\left\| \rvs_{i} -  \rvs_{j} \right\|_2 \ge \delta > 0 , \ \forall i \not= j$. There is no duplicated data.
 	\item $\left\| \rvs_{i} \right\|_2 = 1, \ \forall i \in [n]$.
 \end{itemize}
 
-The main result is,
+\noindent The main result is,
 \begin{thm}
 \end{thm}
 
@@ -129,7 +129,7 @@ where $v_{k^\prime,k,i}(t)$ is defined as,
 \begin{lem}
 	Define the pseudo gradient as,
 \begin{equation*}
-	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }
+	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
 	For any $\tau > 0$, with probability at lest $1 - \exp\left\{ - C^2/4 \right\} $, for at least $m \cdot \left( 1 - \frac{n\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right)$ parameter $\rvw_r$, the gradient is equal to the pseudo gradient, for every time step $t \in \mathcal{O}\left(\frac{\tau}{\eta}\right)$, i.e.,
 \begin{equation}
@@ -139,7 +139,7 @@ where $v_{k^\prime,k,i}(t)$ is defined as,
 \begin{proof}
 The policy gradient is,
 \begin{equation*}
-	\frac{d\ell}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }
+	\frac{d\ell}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
 Since $a_{k,r}, a_{k^\prime,r} \sim \gN(0, 1)$, $a_{k,r} - a_{k^\prime,r} \sim \gN(0, 2)$, therefore $\left| a_{k,r} - a_{k^\prime,r} \right| \le C$ with  probability at least $1 - \exp\left\{ - C^2/4 \right\} $. Then we have,
 \begin{equation*}
@@ -157,7 +157,7 @@ The $\ell_2$ distance between $\rvw_r(t)$ and $\rvw_r(0)$ can be upper bounded b
 \begin{split}
 	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d\ell}{d \rvw_r(s)} \right\|_2} \\
 	&\le \eta \cdot C \cdot \sum\limits_{s=0}^{t-1}{ \regret(\rvpi(s)) } \\
-	&\le \eta \cdot C \cdot \text{R}_{\max} \cdot t
+	&\le \eta \cdot C \cdot \text{R}_{\max} \cdot t .
 \end{split}
 \end{equation*}
 For any $\tau > 0$, define the following set,
@@ -169,7 +169,7 @@ Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^
 \begin{split}
 	\pr\left(\forall i \in [n], \left| \rvw_r(0)^\top \rvs_i \right| > \tau\right) &= 1 - \pr\left(\exists i \in [n], \left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) \\
 	&\ge 1 - \sum\limits_{i=1}^{n}{ \pr\left(\left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) } \\
-	&\ge 1 - \frac{\sqrt{2} n\tau}{\sqrt{\pi}\sigma}
+	&\ge 1 - \frac{\sqrt{2} n\tau}{\sqrt{\pi}\sigma},
 \end{split}
 \end{equation*}
 which means at least $m \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$   of $r \in [m]$ satisfying $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, $\forall i \in [n]$. Let $t < \frac{\tau}{ \eta \cdot C \cdot \text{R}_{\max} }$, by Cauchy-Schwarz, for any $r \in [m]$,
@@ -189,7 +189,7 @@ which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, then $\sI\left\{
 	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\regret(\rvpi_i(t))\right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ r_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $i^*(t)$. If $\pi_{i^*(t), k^*(t)}(t) > c > 0$, where $c$ is a constant, then with probability $\Omega\left( \frac{\delta}{n} \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot \regret\left( \rvpi_{i^*(t)}(t) \right) \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot \regret\left( \rvpi(t) \right).
+	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \regret\left( \rvpi_{i^*(t)}(t) \right) \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \regret\left( \rvpi(t) \right).
 \end{split}
 \end{equation*}
 \end{lem}
@@ -219,7 +219,7 @@ where $\rvw_r^\prime(0) \perp \rvw_r^{\prime\prime}(0)$. Define $h_{k^*,r}$ as f
 \begin{equation*}
 \begin{split}
 	h_{k^*,r} &\triangleq \rvw_r(0)^\top \rvp_{k^*, r} \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }
+	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }.
 \end{split}
 \end{equation*}
 Now decompose $h_{k^*,r}$ as follows,
@@ -227,7 +227,7 @@ Now decompose $h_{k^*,r}$ as follows,
 \label{eq:decompose_h}
 \begin{split}
 	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i^* ) \right] } \\
-	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }
+	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }.
 \end{split}
 \end{equation}
 Consider the following events,
@@ -243,7 +243,7 @@ For $\gE_1$, note $\rvw_r(0)^\top \rvs_{i^*} \sim \gN(0, \sigma^2)$,
 	\pr\left(\gE_1\right) &= \frac{1}{\sqrt{2\pi}\sigma} \int_{-\tau}^{\tau}{\exp\left\{ - \frac{x^2}{2\sigma^2} \right\} dx} \\
 	&\ge \frac{1}{\sqrt{2\pi}\sigma} \int_{-\tau}^{\tau}{ \left( 1  - \frac{x^2}{2\sigma^2} \right) dx} \\
 	&= \frac{\sqrt{2}}{\sqrt{\pi}\sigma} \cdot \left( \tau - \frac{\tau^3}{6\sigma^2}\right) \\
-	&\ge \frac{5\sqrt{2}}{6\sqrt{\pi}} \cdot \frac{\tau}{\sigma} \in \Omega\left( \frac{\tau}{\sigma} \right)
+	&\ge \frac{5\sqrt{2}}{6\sqrt{\pi}} \cdot \frac{\tau}{\sigma} \in \Omega\left( \frac{\tau}{\sigma} \right).
 \end{split}
 \end{equation*}
 For $\gE_2$, according to \cref{eq:decompose_w}, $\rvw_r^\prime(0)^\top \rvs_i \sim \gN\left(0, \left(1 - \left(\rvs_{i^*}^\top \rvs_{i} \right)^2 \right)\sigma^2 \right)$, $\forall i \not= i^*$, and $\rvw_r^\prime(0)^\top \rvs_i$ is independent with $\rvw_r^{\prime\prime}(0)^\top \rvs_{i}$.
@@ -252,10 +252,10 @@ For $\gE_2$, according to \cref{eq:decompose_w}, $\rvw_r^\prime(0)^\top \rvs_i \
 	\pr\left(\gE_2\right) &= 1 - \pr\left( \exists i \not= i^*, \ \left| \rvw_r^\prime(0)^\top \rvs_i \right| \le \tau \right) \\
 	&\ge 1 - \sum\limits_{i \not= i^*}{ \pr\left(\left| \rvw_r^\prime(0)^\top \rvs_i \right| \le \tau \right) } \\
 	&\ge 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi\left( 1 - \left(\rvs_{i^*}^\top \rvs_{i} \right)^2 \right) }\sigma} \\
-	&\ge \frac{2n\tau}{\sqrt{\pi}\delta\sigma} \quad \left( \left\| \rvs_{i} -  \rvs_{j} \right\|_2 \ge \delta, \ \forall i \not= j \right)
+	&\ge 1 - \frac{2n\tau}{\sqrt{\pi}\delta\sigma} \quad \left( \left\| \rvs_{i} -  \rvs_{j} \right\|_2 \ge \delta, \ \forall i \not= j \right).
 \end{split}
 \end{equation*}
-Let $\tau = \frac{\delta\sigma}{2n}$, then $\pr\left(\gE_2\right) \ge \frac{1}{\sqrt{\pi}}$. Therefore, $\pr\left( \gE_1 \land \gE_2 \right) \in \Omega\left( \frac{\tau}{\sigma} \right)$. Now condition on $\gE_1 \land \gE_2$ happens, we have, $\forall i \not= i^*$,
+Let $\tau = \frac{\delta\sigma}{2n}$, then $\pr\left(\gE_2\right) \ge 1 - \frac{1}{\sqrt{\pi}}$. Therefore, $\pr\left( \gE_1 \land \gE_2 \right) \in \Omega\left( \frac{\tau}{\sigma} \right)$. Now condition on $\gE_1 \land \gE_2$ happens, we have, $\forall i \not= i^*$,
 \begin{equation*}
 \begin{split}
 	\sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} &= \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i + \rvw_r^{\prime\prime}(0)^\top \rvs_{i} > 0 \right\} \\
@@ -267,7 +267,7 @@ since $\left| \rvw_r^{\prime\prime}(0)^\top \rvs_{i} \right| = \left| \rvw_r(0)^
 \label{eq:h_alpha}
 \begin{split}
 	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma(x) \right] } \\
-	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( x \cdot \rvs_{i^*}^\top \rvs_{i} + \rvw_r^\prime(0)^\top \rvs_i ) \cdot \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\}  \right] } }
+	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( x \cdot \rvs_{i^*}^\top \rvs_{i} + \rvw_r^\prime(0)^\top \rvs_i ) \cdot \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\}  \right] } }.
 \end{split}
 \end{equation}
 Note the first part of $h_{k^*,r}$ is a convex function of $x$, and the second part is linear. For the first term in \cref{eq:h_alpha}, we have,
@@ -276,7 +276,7 @@ Note the first part of $h_{k^*,r}$ is a convex function of $x$, and the second p
 	\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } &= \underbrace{\tilde{r}_{i^*,k^*} \cdot \pi_{i^*,k^*}(t) \cdot v_{k^*,k^*,i^*}(t)}_{\tilde{r}_{i^*,k^*} = \r_{i^*}^{\max} -  r_{i^*,k^*} = 0} + \sum\limits_{k\not=k^*}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \\
 	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k\not=k^*}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
 	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
-	&= - \pi_{i^*,k^*}(t) \cdot \regret(\rvpi_{i^*}(t))
+	&= - \pi_{i^*,k^*}(t) \cdot \regret(\rvpi_{i^*}(t)).
 \end{split}
 \end{equation*}
 By assumption, if $\pi_{i^*,k^*}(t) > c > 0$, then ,
@@ -298,25 +298,26 @@ Therefore, we have,
 \label{eq:h_regret_lower_bound}
 \begin{split}
 	\probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \right\} &\ge \probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \middle| \gE_1 \land \gE_2 \right\} \cdot \probability\left\{ \gE_1 \land \gE_2 \right\} \\
-	&\ge \frac{1}{8} \cdot \frac{5\sqrt{2}}{6\sqrt{\pi}} \cdot \frac{\tau}{\sigma} \cdot \frac{1}{\sqrt{\pi}} = \frac{5\sqrt{2}}{48\pi} \cdot \frac{\tau}{\sigma}.
+	&\ge \frac{1}{8} \cdot \frac{5\sqrt{2}}{6\sqrt{\pi}} \cdot \frac{\tau}{\sigma} \cdot \left( 1 - \frac{1}{\sqrt{\pi}} \right) \\
+	&= \frac{5\sqrt{2}}{48\sqrt{\pi}} \cdot \left( 1 - \frac{1}{\sqrt{\pi}} \right) \cdot \frac{\tau}{\sigma}.
 \end{split}
 \end{equation}
-Finally, $h_{k^*,r} \sim \gN\left( 0, \left\| \rvp_{k^*, r} \right\|_2^2 \cdot \sigma^2 \right)$, with probability at least $1 - \frac{\delta \sigma}{n}$,
+Finally, $h_{k^*,r} \sim \gN\left( 0, \left\| \rvp_{k^*, r} \right\|_2^2 \cdot \sigma^2 \right)$, with probability at least $1 - \frac{1}{e^2}$,
 \begin{equation}
 \label{eq:p_h_lower_bound}
 \begin{split}
-	h_{k^*,r} < \sqrt{ 2  \log{ \left( \frac{n}{ \delta \sigma} \right) }} \cdot \left\| \rvp_{k^*, r} \right\|_2 \cdot \sigma
+	h_{k^*,r} < 2 \cdot \left\| \rvp_{k^*, r} \right\|_2 \cdot \sigma.
 \end{split}
 \end{equation}
 Combining \cref{eq:gradient_p_lowerbound}, \cref{eq:h_regret_lower_bound} and \cref{eq:p_h_lower_bound}, we have,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 &\ge \left\| \rvp_{k^*, r}\right\|_2 \\
-	&> \frac{1}{ \sqrt{ 2  \log{ \left( \frac{n}{ \delta \sigma} \right) }} } \cdot \frac{h_{k^*,r}}{\sigma} \\
-	&\ge \frac{1}{ \sqrt{ 2  \log{ \left( \frac{n}{ \delta \sigma} \right) }} } \cdot \frac{c\tau}{8\sigma n} \cdot \regret(\rvpi(t)),
+	&> \frac{h_{k^*,r}}{2\sigma} \\
+	&\ge \frac{c\tau}{16\sigma n} \cdot \regret(\rvpi(t)),
 \end{split}
 \end{equation*}
-with probability at least $\left( \frac{1}{2} - \frac{1}{\sqrt{2\pi}} \right) \cdot \left( 1 - \frac{\delta \sigma}{n} \right) \cdot \frac{5\sqrt{2}}{48\pi} \cdot \frac{\tau}{\sigma}$, where $\tau = \frac{\delta\sigma}{2n}$.
+with probability at least $\left( \frac{1}{2} - \frac{1}{\sqrt{2\pi}} \right) \cdot \left( 1 - \frac{1}{e^2} \right) \cdot \frac{5\sqrt{2}}{48\sqrt{\pi}} \cdot \left( 1 - \frac{1}{\sqrt{\pi}} \right) \cdot \frac{\tau}{\sigma}$. Plugging in $\tau = \frac{\delta\sigma}{2n}$, we obtain the result.
 \end{proof}
 
 \begin{lem}
