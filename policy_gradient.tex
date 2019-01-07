@@ -101,6 +101,8 @@ We analyze the policy gradient method,
 \noindent The main result is,
 \begin{thm}
 \end{thm}
+\begin{proof}
+\end{proof}
 
 \subsection{Policy Gradient}
 
@@ -151,8 +153,7 @@ Since $a_{k,r}, a_{k^\prime,r} \sim \gN(0, 1)$, we have $a_{k,r} - a_{k^\prime,r
 	&= 4 \cdot \regret(\rvpi(t)).
 \end{split}
 \end{equation*}
-Suppose any single time regret is smaller than $\text{R}_{\max}$.
-The $\ell_2$ distance between $\rvw_r(t)$ and $\rvw_r(0)$ can be upper bounded by,
+Denote $\text{R}_{\max} \triangleq \max\limits_{s \ge 0}\left\{\regret\left( \rvpi(s) \right)\right\}$. $\rvw_r(t)$ will be closed to $\rvw_r(0)$,
 \begin{equation*}
 \begin{split}
 	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d\ell}{d \rvw_r(s)} \right\|_2} \\
@@ -235,7 +236,7 @@ Now decompose $h_{k^*,r}$ as follows,
 Consider the following events,
 \begin{equation*}
 \begin{split}
-	\gE_1 &: \left| \rvw_r(0)^\top \rvs_{i^*} \right| \le \tau, \ \text{given } \tau \le \sigma, \\
+	\gE_1 &: \left| \rvw_r(0)^\top \rvs_{i^*} \right| \le \tau, \ \text{given } \tau \in \left( 0, \sigma \right], \\
 	\gE_2 &: \left| \rvw_r^\prime(0)^\top \rvs_i \right| > \tau, \ \forall i \not= i^*.
 \end{split}
 \end{equation*}
