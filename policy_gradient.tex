@@ -100,8 +100,10 @@ We analyze the policy gradient method,
 
 \noindent The main result is,
 \begin{thm}
+	If $m \ge \frac{n^6}{c^4 \delta^4 \varepsilon^4}$, let $\eta = \frac{1}{m}$, after $t = O\left( \frac{n^2}{ c^2\delta^2\varepsilon^2} \right)$ gradient steps, $\regret\left( \rvpi(t)\right) \le \varepsilon n$.
 \end{thm}
 \begin{proof}
+(Sketch) By \cref{lem:gradient_lower_bound}, unless $\regret\left( \rvpi(t)\right) \le \varepsilon n$, there are $\Omega\left( \frac{m\delta}{n} \right)$ of $\rvw_r(t)$ such that $\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta \varepsilon}{n} \right)$. By \cref{lem:gradient_upper_bound}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta \varepsilon}{n} \right)$. For $\eta$ small enough, each gradient descent will decrease $l(\rvw)$ by $\Omega\left( \frac{\eta m c^2\delta^2\varepsilon^2}{n^2} \right)$, which means it converges in $O\left( \frac{n^2}{\eta m c^2\delta^2\varepsilon^2} \right)$ steps. Let $\sigma = \left( \frac{1}{\sqrt{m}} \right)$, and $\frac{n^2}{\eta m c^2\delta^2\varepsilon^2} \le \frac{\tau}{\eta} = \frac{\sigma}{\eta n}$, we have $m \ge \frac{n^6}{c^4 \delta^4 \varepsilon^4}$.
 \end{proof}
 
 \subsection{Policy Gradient}
@@ -129,6 +131,7 @@ where $v_{k^\prime,k,i}(t)$ is defined as,
 \subsection{Gradient Norm Upper Bound}
 
 \begin{lem}
+\label{lem:gradient_upper_bound}
 	Define the pseudo gradient as,
 \begin{equation*}
 	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
@@ -189,6 +192,7 @@ which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, $\forall i \in [
 \subsection{Gradient Norm Lower Bound}
 
 \begin{lem}
+\label{lem:gradient_lower_bound}
 	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\regret(\rvpi_i(t))\right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ r_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $i^*(t)$. If $\pi_{i^*(t), k^*(t)}(t) > c > 0$, where $c$ is a constant, then with probability $\Omega\left( \frac{\delta}{n} \right)$,
 \begin{equation*}
 \begin{split}
