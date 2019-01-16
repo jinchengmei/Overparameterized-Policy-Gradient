@@ -17,6 +17,7 @@
 \def\rvw{{\mathbf{w}}}
 \def\rvx{{\mathbf{x}}}
 \def\rvg{{\mathbf{g}}}
+\def\rvo{{\mathbf{o}}}
 \def\rvone{{\mathbf{1}}}
 \def\rvzero{{\mathbf{0}}}
 \def\rvtilder{{\tilde{\mathbf{r}}}}
@@ -110,8 +111,9 @@ We analyze the policy gradient method,
 
 \subsubsection{One Form}
 
-The gradient with respect to $\rvw_r$ is,
-\begin{equation*}
+The gradient with respect to $\rvw_r(t)$ is,
+\begin{equation}
+\label{eq:gradient_form_one}
 \begin{split}
 	\frac{d\ell}{d \rvw_r(t)} &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}\left[ \tilde{r}_{i,k} \cdot \frac{d \pi_{i,k}(t)}{d \rvw_r(t)} \right] } \\
 	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}\left[ \tilde{r}_{i,k} \cdot \frac{d}{d \rvw_r(t)} \left\{ \frac{\exp\left\{ o_{i,k}(t) \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}}} \right\} \right] } \\
@@ -121,7 +123,7 @@ The gradient with respect to $\rvw_r$ is,
 	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } } \\
 	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } },
 \end{split}
-\end{equation*}
+\end{equation}
 where $v_{k^\prime,k,i}(t)$ is defined as,
 \begin{equation*}
 	v_{k^\prime,k,i}(t) = \begin{cases}
@@ -129,6 +131,49 @@ where $v_{k^\prime,k,i}(t)$ is defined as,
     - \pi_{i,k^\prime}(t), & \text{otherwise}.
   \end{cases}
 \end{equation*}
+
+\subsubsection{Another Form}
+
+First note that, $\forall k \in [h]$,
+\begin{equation*}
+\begin{split}
+    \frac{d \rvpi_i(t)^\top \rvtilder_i}{d o_{i,k}(t)} &= \sum\limits_{k^\prime = 1}^{h}{ \tilde{r}_{i, k^\prime} \cdot \frac{d \pi_{i,k^\prime}(t) }{d o_{i,k}(t)}} \\
+    &= \sum\limits_{k^\prime = 1}^{h}{ \tilde{r}_{i, k^\prime} \cdot \frac{d }{d o_{i,k}(t)}} \left\{ \frac{\exp\left\{ o_{i,k^\prime}(t) \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}}} \right\} \\
+    &= \tilde{r}_{i, k} \cdot \frac{ \exp\left\{ o_{i,k}(t) \right\} \cdot \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right) - \exp\left\{ o_{i,k}(t) \right\} \cdot \exp\left\{ o_{i,k}(t) \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right)^2 } \\
+    &\quad - \sum\limits_{k^\prime \not= k}{ \tilde{r}_{i, k^\prime} \cdot \frac{\exp\left\{ o_{i,k^\prime}(t) \right\} \cdot \exp\left\{ o_{i,k}(t) \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right)^2 }} \\
+    &= \tilde{r}_{i, k} \cdot \left( \pi_{i,k}(t) - \pi_{i,k}(t)^2 \right) - \sum\limits_{k^\prime \not= k}{ \tilde{r}_{i, k^\prime} \cdot \pi_{i,k^\prime}(t) \cdot \pi_{i,k}(t) } \\
+    &= \pi_{i,k}(t) \cdot \left( \tilde{r}_{i, k} - \rvpi_i(t)^\top \rvtilder_i \right).
+\end{split}
+\end{equation*}
+
+\noindent In compact vector form, we have,
+\begin{equation*}
+\begin{split}
+    \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvo_{i}(t)} &= \left( \Delta\left( \rvpi_i(t) \right) - \rvpi_i(t) \rvpi_i(t)^\top \right) \rvtilder_i .
+\end{split}
+\end{equation*}
+
+
+\noindent Also note that, $\forall r \in [m]$, $\forall k \in [h]$,
+\begin{equation*}
+\begin{split}
+    \frac{d o_{i,k}(t)}{d \rvw_r(t)} &= a_{k,r} \cdot \frac{d u_{i,r}(t)}{d \rvw_r(t)} \\
+    &= a_{k,r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i.
+\end{split}
+\end{equation*}
+
+\noindent Then the gradient with respect to $\rvw_r(t)$ is,
+\begin{equation}
+\label{eq:gradient_form_two}
+\begin{split}
+    \frac{d\ell}{d \rvw_r(t)} &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} } \\
+    &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \frac{d \rvpi_i(t)^\top \rvtilder_i}{d o_{i,k}(t)}\cdot \frac{d o_{i,k}(t)}{d \rvw_r(t)} } } \\
+    &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \pi_{i,k}(t) \cdot \left( \tilde{r}_{i, k} - \rvpi_i(t)^\top \rvtilder_i \right) \cdot a_{k,r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i  \right] }  } \\
+    &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left[ \rvtilder_i^\top \left( \Delta\left( \rvpi_i(t) \right) - \rvpi_i(t) \rvpi_i(t)^\top \right) \rva_{\cdot, r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i  \right] }.
+\end{split}
+\end{equation}
+
+\noindent It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
 
 \subsection{Gradient Norm Upper Bound}
 
@@ -369,9 +414,34 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{equation*}
 \end{proof}
 
-\if0
-Chernoff bound. Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{  }$
-\fi
+\subsection{Regret Smoothness}
+
+\begin{lem}
+    The regret is smooth over logits, i.e., $\forall i \in [n]$, given logtis $\rvo_i \in \sR^h$ and $\rvo_i^\prime \in \sR^h$. Denote $\rvpi_i(\rvo_i)$ and $\rvpi_i(\rvo_i^\prime)$ as corresponding softmax policies,
+\begin{equation*}
+\begin{split}
+    \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{  \rvpi_i(\rvo_i + \rvo_i^\prime)^\top \rvtilder_i } &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_i(\rvo_i)^\top \rvtilder_i } + \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime \right\|_2 }.
+\end{split}
+\end{equation*}
+\end{lem}
+\begin{proof}
+\begin{equation*}
+\begin{split}
+    &\left| \rvpi_i(\rvo_i + \rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i - \left( \frac{d \rvpi_i(\rvo_i)^\top \rvtilder_i}{d \rvo_i} \right)^\top \rvo_i^\prime \right| \\
+    &\le \left| \rvpi_i(\rvo_i + \rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i \right| + \left| \left( \frac{d \rvpi_i(\rvo_i)^\top \rvtilder_i}{d \rvo_i} \right)^\top \rvo_i^\prime \right| \\
+    &= \left| \rvpi_i(\rvo_i + \rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i \right| + \left| \rvtilder_i^\top \left( \Delta\left( \rvpi_i(\rvo_i) \right)  - \rvpi_i(\rvo_i) \rvpi_i(\rvo_i)^\top \right) \rvo_i^\prime \right| \\
+    &= \left| \rvtilder_i^\top \left( \Delta\left( \rvpi_i(\bar{\rvo}_i) \right)  - \rvpi_i(\bar{\rvo}_i) \rvpi(\bar{\rvo}_i)^\top \right) \rvo_i^\prime \right| + \left| \rvtilder_i^\top \left( \Delta\left( \rvpi_i(\rvo_i) \right)  - \rvpi_i(\rvo_i) \rvpi_i(\rvo_i)^\top \right) \rvo_i^\prime \right| \\
+    &\le 2 \cdot \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime \right\|_2,
+\end{split}
+\end{equation*}
+where $\bar{\rvo}_i$ is a convex combination of $\rvo_i$ and $\rvo_i + \rvo_i^\prime$. The last inequality is according to Cauchy-Schwarz and the maximum eigenvalue of $\Delta\left( \rvpi \right)  - \rvpi \rvpi^\top$ is smaller than $1$ for any policy $\rvpi$.
+\end{proof}
+
+\subsection{Other}
+
+\begin{lem}[Chernoff]
+    Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{ X_i  }$. Denote $\mu \triangleq \left[ X \right]$. $\forall \alpha \in [0,1]$,
+\end{lem}
 
 \begin{equation*}
 \begin{split}
