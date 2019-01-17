@@ -413,7 +413,7 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{equation*}
 \end{proof}
 
-\subsection{Regret Smoothness}
+\subsection{Smoothness like Property of Regret}
 
 \begin{lem}
     Given logtis $\rvo_i \in \sR^h$ and $\rvo_i^\prime \in \sR^h$, $\forall i \in [n]$. Denote $\rvpi_i(\rvo_i)$ and $\rvpi_i(\rvo_i^\prime)$ as corresponding softmax policies, i.e., $\forall k \in [h]$,
@@ -422,7 +422,7 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
     \pi_{i,k}(\rvo_i) \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} }}, \quad  \pi_{i,k}(\rvo_i^\prime) \triangleq \frac{\exp\left\{ o_{i,k}^\prime \right\}}{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} }},
 \end{split}
 \end{equation*}
-then the policy regret difference is upper bounded by the logit difference, i.e., 
+then the policy regret has property similar to smoothness over logits, i.e., 
 \begin{equation*}
 \begin{split}
     \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{  \rvpi_i( \rvo_i^\prime)^\top \rvtilder_i } &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_i(\rvo_i)^\top \rvtilder_i } \\
