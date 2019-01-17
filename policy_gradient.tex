@@ -39,6 +39,7 @@
 \def\rvpi{{\boldsymbol{\pi}}}
 
 \def\rmI{{\mathbf{I}}}
+\def\rmW{{\mathbf{W}}}
 \def\rmX{{\mathbf{X}}}
 
 \def\sE{{\mathbb{E}}}
@@ -413,43 +414,35 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{equation*}
 \end{proof}
 
-\subsection{Smoothness like Property of Regret}
+\subsection{Regret Smoothness}
 
 \begin{lem}
-    Given logtis $\rvo_i \in \sR^h$ and $\rvo_i^\prime \in \sR^h$, $\forall i \in [n]$. Denote $\rvpi_i(\rvo_i)$ and $\rvpi_i(\rvo_i^\prime)$ as corresponding softmax policies, i.e., $\forall k \in [h]$,
+    Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the corresponding neural network policies.
 \begin{equation*}
 \begin{split}
-    \pi_{i,k}(\rvo_i) \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} }}, \quad  \pi_{i,k}(\rvo_i^\prime) \triangleq \frac{\exp\left\{ o_{i,k}^\prime \right\}}{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} }},
-\end{split}
-\end{equation*}
-then the policy regret has property similar to smoothness over logits, i.e., 
-\begin{equation*}
-\begin{split}
-    \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{  \rvpi_i( \rvo_i^\prime)^\top \rvtilder_i } &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_i(\rvo_i)^\top \rvtilder_i } \\
-    &\quad + \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left\langle \frac{ d \rvpi_i\left( \rvo_i \right)^\top \rvtilder_i }{d\rvo_i} , \rvo_i^\prime - \rvo_i \right\rangle} + \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 }.
+    \rvpi\left( \rmW^\prime \right)^\top \rvtilder_i &\le \rvpi\left( \rmW \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \\
+    &\quad + 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F
 \end{split}
 \end{equation*}
 \end{lem}
 \begin{proof}
-Denote $\bar{\rvo}_i \triangleq \rvo_i +  \xi \cdot\left( \rvo_i^\prime - \rvo_i \right)$, $\forall i \in [n]$, 
+Denote $\bar{\rmW}_\xi \triangleq \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) = \left[ \bar{\rvw}_1, \bar{\rvw}_2, \dots, \bar{\rvw}_m \right]$.
 \begin{equation*}
 \begin{split}
-    \left| \rvpi_i(\rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i \right| &= \left| \int_{0}^{1} { \frac{ d \rvpi_i\left( \rvo_i +  \xi \cdot\left( \rvo_i^\prime - \rvo_i \right) \right)^\top \rvtilder_i }{d\xi} } d\xi \right| \\
-    &\left| \int_{0}^{1}{ \left\langle \frac{d \rvpi_i\left( \rvo_i +  \xi\cdot\left( \rvo_i^\prime - \rvo_i \right) \right)^\top \rvtilder_i }{d\left( \rvo_i +  \xi\cdot\left( \rvo_i^\prime - \rvo_i \right) \right)}, \rvo_i^\prime - \rvo_i \right\rangle d\xi} \right| \\
-    &\le \int_{0}^{1}{ \left| \left\langle \frac{d \rvpi_i\left( \rvo_i +  \xi\cdot\left( \rvo_i^\prime - \rvo_i \right) \right)^\top \rvtilder_i }{d\left( \rvo_i +  \xi\cdot\left( \rvo_i^\prime - \rvo_i \right) \right)}, \rvo_i^\prime - \rvo_i \right\rangle \right| d\xi} \\
-    &\le \int_{0}^{1}{  \left\| \frac{d \rvpi_i\left( \rvo_i +  \xi\cdot\left( \rvo_i^\prime - \rvo_i \right) \right)^\top \rvtilder_i }{d\left( \rvo_i +  \xi\cdot\left( \rvo_i^\prime - \rvo_i \right) \right)} \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 d\xi} \\
-    &= \int_{0}^{1}{ \left\| \left( \Delta\left( \rvpi(\bar{\rvo}_i) \right) - \rvpi(\bar{\rvo}_i) \rvpi(\bar{\rvo}_i)^\top \right) \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 d\xi} \\
-    &\le \int_{0}^{1}{ \lambda_{\max}\left\{ \Delta\left( \rvpi(\bar{\rvo}_i) \right) - \rvpi(\bar{\rvo}_i) \rvpi(\bar{\rvo}_i)  \right\} \cdot \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 d\xi} \\
-    &\le \int_{0}^{1}{ \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 d\xi} \\
-    &= \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2.
+    \left| \rvpi\left( \rmW^\prime \right)^\top \rvtilder_i - \rvpi\left( \rmW \right)^\top \rvtilder_i \right| &= \left| \int_{0}^{1} { \frac{ d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\xi} } d\xi \right| \\
+    &= \left| \int_{0}^{1}{ \left\langle \frac{d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)}, \rmW^\prime - \rmW \right\rangle d\xi} \right| \\
+    &\le \int_{0}^{1}{ \left| \left\langle \frac{d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)}, \rmW^\prime - \rmW \right\rangle \right| d\xi} \\
+    &\le \int_{0}^{1}{  \left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d\left( \bar{\rmW}_\xi \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
+    &= \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d \bar{\rvw}_r}\right\|_2^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
+    &\le \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left( 4 \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \right)^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
+    &= 4 \sqrt{m} \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F
 \end{split}
 \end{equation*}
-Using triangle inequality again,
+
 \begin{equation*}
 \begin{split}
-	&\left| \rvpi_i(\rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i - \left\langle \frac{ d \rvpi_i\left( \rvo_i \right)^\top \rvtilder_i }{d\rvo_i} , \rvo_i^\prime - \rvo_i \right\rangle \right| \\
-	&\le \left| \rvpi_i(\rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i \right| + \left| \left\langle \frac{ d \rvpi_i\left( \rvo_i \right)^\top \rvtilder_i }{d\rvo_i} , \rvo_i^\prime - \rvo_i \right\rangle \right| \\
-	&\le 2 \cdot \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2. \qedhere
+    \left| \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \right| &\le \left\| \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
+    &\le 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F
 \end{split}
 \end{equation*}
 \end{proof}
