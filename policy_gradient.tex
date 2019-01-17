@@ -425,7 +425,8 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 then the policy regret difference is upper bounded by the logit difference, i.e., 
 \begin{equation*}
 \begin{split}
-    \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{  \rvpi_i( \rvo_i^\prime)^\top \rvtilder_i } &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_i(\rvo_i)^\top \rvtilder_i } + \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i - \rvo_i^\prime \right\|_2 }.
+    \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{  \rvpi_i( \rvo_i^\prime)^\top \rvtilder_i } &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_i(\rvo_i)^\top \rvtilder_i } \\
+    &\quad + \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left\langle \frac{ d \rvpi_i\left( \rvo_i \right)^\top \rvtilder_i }{d\rvo_i} , \rvo_i^\prime - \rvo_i \right\rangle} + \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 }.
 \end{split}
 \end{equation*}
 \end{lem}
@@ -441,6 +442,14 @@ Denote $\bar{\rvo}_i \triangleq \rvo_i +  \xi \cdot\left( \rvo_i^\prime - \rvo_i
     &\le \int_{0}^{1}{ \lambda_{\max}\left\{ \Delta\left( \rvpi(\bar{\rvo}_i) \right) - \rvpi(\bar{\rvo}_i) \rvpi(\bar{\rvo}_i)  \right\} \cdot \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 d\xi} \\
     &\le \int_{0}^{1}{ \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2 d\xi} \\
     &= \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2.
+\end{split}
+\end{equation*}
+Using triangle inequality again,
+\begin{equation*}
+\begin{split}
+	&\left| \rvpi_i(\rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i - \left\langle \frac{ d \rvpi_i\left( \rvo_i \right)^\top \rvtilder_i }{d\rvo_i} , \rvo_i^\prime - \rvo_i \right\rangle \right| \\
+	&\le \left| \rvpi_i(\rvo_i^\prime)^\top \rvtilder_i  - \rvpi_i(\rvo_i)^\top \rvtilder_i \right| + \left| \left\langle \frac{ d \rvpi_i\left( \rvo_i \right)^\top \rvtilder_i }{d\rvo_i} , \rvo_i^\prime - \rvo_i \right\rangle \right| \\
+	&\le 2 \cdot \left\| \rvtilder_i \right\|_2 \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
