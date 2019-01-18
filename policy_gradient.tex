@@ -420,7 +420,7 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
     Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the neural network policies parameterized by $\rmW$ and $\rmW^\prime$, respectively. $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
-    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4h \cdot \sqrt{\log{2m}} \cdot m \cdot \left\| \rmW^\prime - \rmW \right\|_F.
+    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h m \sqrt{\log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F.
 \end{split}
 \end{equation*}
 \end{lem}
