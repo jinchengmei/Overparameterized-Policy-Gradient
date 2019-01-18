@@ -455,8 +455,8 @@ Define $k_*^i = \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k
 \begin{equation*}
 \begin{split}
     \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i &\le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \\
-    &\quad + 8 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
-    &+ 8hm \cdot \sqrt{m \log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
+    &\quad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
+    &+ 8 h m \sqrt{m } \cdot \log{4m} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
 \end{split}
 \end{equation*}
 \end{lem}
@@ -469,17 +469,17 @@ Denote $\bar{\rmW}_\xi \triangleq \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \ri
     &\le \int_{0}^{1}{ \left| \left\langle \frac{d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)}, \rmW^\prime - \rmW \right\rangle \right| d\xi} \\
     &\le \int_{0}^{1}{  \left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d\left( \bar{\rmW}_\xi \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
     &= \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d \bar{\rvw}_r}\right\|_2^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
-    &\le \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left( 4 \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \right)^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
-    &= 4 \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i d\xi} \\
-    &\le 4 \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \left( \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h m \cdot \sqrt{\log{2m}} \cdot \left\| \bar{\rmW}_\xi - \rmW \right\|_F \right) d\xi} \\
-    &\le 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 8 h m \cdot \sqrt{m \log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2.
+    &\le \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left( 2 \sqrt{\log{4m}} \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \right)^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
+    &= 2 \sqrt{m \log{4m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i d\xi} \\
+    &\le 2 \sqrt{m \log{4m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \left( \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h m \cdot \sqrt{\log{2m}} \cdot \left\| \bar{\rmW}_\xi - \rmW \right\|_F \right) d\xi} \\
+    &\le 2 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 8 h m \sqrt{m } \cdot \log{4m} \left\| \rmW^\prime - \rmW \right\|_F^2.
 \end{split}
 \end{equation*}
 Combine the above with the following,
 \begin{equation*}
 \begin{split}
     \left| \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \right| &\le \left\| \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
-    &\le 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
+    &\le 2 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
