@@ -414,14 +414,50 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{equation*}
 \end{proof}
 
-\subsection{Regret Smoothness}
+\subsection{Regret Semi-Smoothness}
 
 \begin{lem}
-    Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the corresponding neural network policies.
+    Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the neural network policies parameterized by $\rmW$ and $\rmW^\prime$, respectively. $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
-    \rvpi\left( \rmW^\prime \right)^\top \rvtilder_i &\le \rvpi\left( \rmW \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \\
-    &\quad + 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F
+    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4h \cdot \sqrt{\log{2m}} \cdot m \cdot \left\| \rmW^\prime - \rmW \right\|_F.
+\end{split}
+\end{equation*}
+\end{lem}
+\begin{proof}
+    Denote $\rvo_i$ and $\rvo_i^\prime$ as the logits of $\rmW$ and $\rmW^\prime$, respectively. $\forall k \in [h]$,
+\begin{equation*}
+\begin{split}
+    \pi_{i,k}\left( \rmW \right) = \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} }}, &\quad \pi_{i,k}\left( \rmW^\prime \right) = \frac{\exp\left\{ o_{i,k}^\prime \right\}}{\sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} }}, \\
+    o_{i,k} = \sum\limits_{r=1}^{m}{a_{k,r} \cdot u_{i,r}} = \sum\limits_{r=1}^{m}{a_{k,r} \cdot \sigma\left( \rvw_r^\top \rvs_i \right)}, &\quad o_{i,k}^\prime = \sum\limits_{r=1}^{m}{a_{k,r} \cdot u_{i,r}^\prime} = \sum\limits_{r=1}^{m}{a_{k,r} \cdot \sigma\left( {\rvw_r^\prime}^\top \rvs_i \right)}.
+\end{split}
+\end{equation*}
+Define $k_*^i = \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k} \right| \right\}$, $\forall i \in [n]$,
+\begin{equation*}
+\begin{split}
+    &\left| \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i - \rvpi_i\left( \rmW \right)^\top \rvtilder_i \right| \le \left\| \rvpi_i\left( \rmW^\prime \right) - \rvpi_i\left( \rmW \right) \right\|_1 \cdot \left\| \rvtilder_i \right\|_\infty \\
+    &\le \left\| \log{ \rvpi_i\left( \rmW^\prime \right)} - \log{ \rvpi_i\left( \rmW \right) }  \right\|_1 \\
+    &= \left\| \rvo_i^\prime - \rvo_i + \left( \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} } } - \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} } } \right) \cdot \rvone\right\|_1 \\
+    &\le \left\| \rvo_i^\prime - \rvo_i \right\|_1 + h \cdot \left| \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} } } - \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} } } \right| \\
+    &\le \left\| \rvo_i^\prime - \rvo_i \right\|_1 + h \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_\infty \\
+    &\le 2 h \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_\infty \\
+    &= 2 h \cdot \left| o_{i,k_*^i}^\prime - o_{i,k_*^i} \right| \\
+    &= 2 h \cdot \left| \sum\limits_{r=1}^{m}{a_{k_*^i,r} \left( \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right) } \right| \\
+    &\le 2 h \cdot \sum\limits_{r=1}^{m}{ \left| a_{k_*^i,r} \right| \cdot \left| \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right| } \\
+    &\le 2 h \cdot 2 \sqrt{\log{2m}} \cdot \sum\limits_{r=1}^{m}{ \left| {\rvw_r^\prime}^\top \rvs_i - {\rvw_r}^\top \rvs_i \right| } \quad \left( \text{w.p. at least } 1 - \frac{1}{m} \right) \\
+    &\le 4h \sqrt{\log{2m}} \cdot \sum\limits_{r=1}^{m}{ \left\| \rvw_r^\prime - \rvw_r \right\|_2 } \\
+    &\le 4h \sqrt{\log{2m}} \cdot m \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
+
+\begin{lem}
+     $\forall$ $\rmW$, $\rmW^\prime \in \sR^{d \times m}$, $\forall i \in [n]$,
+\begin{equation*}
+\begin{split}
+    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i &\le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \\
+    &\quad + 8 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
+    &+ 8hm \cdot \sqrt{m \log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
 \end{split}
 \end{equation*}
 \end{lem}
@@ -429,23 +465,27 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 Denote $\bar{\rmW}_\xi \triangleq \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) = \left[ \bar{\rvw}_1, \bar{\rvw}_2, \dots, \bar{\rvw}_m \right]$.
 \begin{equation*}
 \begin{split}
-    \left| \rvpi\left( \rmW^\prime \right)^\top \rvtilder_i - \rvpi\left( \rmW \right)^\top \rvtilder_i \right| &= \left| \int_{0}^{1} { \frac{ d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\xi} } d\xi \right| \\
+    &\left| \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i - \rvpi_i\left( \rmW \right)^\top \rvtilder_i \right| = \left| \int_{0}^{1} { \frac{ d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\xi} } d\xi \right| \\
     &= \left| \int_{0}^{1}{ \left\langle \frac{d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)}, \rmW^\prime - \rmW \right\rangle d\xi} \right| \\
     &\le \int_{0}^{1}{ \left| \left\langle \frac{d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)}, \rmW^\prime - \rmW \right\rangle \right| d\xi} \\
     &\le \int_{0}^{1}{  \left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d\left( \bar{\rmW}_\xi \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
     &= \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d \bar{\rvw}_r}\right\|_2^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
     &\le \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left( 4 \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \right)^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
-    &= 4 \sqrt{m} \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F
+    &= 4 \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i d\xi} \\
+    &\le 4 \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \left( \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h m \cdot \sqrt{\log{2m}} \cdot \left\| \bar{\rmW}_\xi - \rmW \right\|_F \right) d\xi} \\
+    &\le 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 8 h m \cdot \sqrt{m \log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
 \end{split}
 \end{equation*}
-
+Combine the above with the following,
 \begin{equation*}
 \begin{split}
     \left| \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \right| &\le \left\| \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
-    &\le 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F  \qedhere
+    &\le 4 \sqrt{m} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
+
+
 
 \subsection{Other}
 
