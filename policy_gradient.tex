@@ -75,7 +75,7 @@ Bold letters refer to vectors, and non-bold letters refer to scalars. For exampl
 	\item $\pi_{i,k} \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}}$ is the  probability for choosing arm $k$ in bandit $i$.
 	\item $\rvr_i \in \sR^h$ is the reward vector for bandit $i$.
 	\item $\r_i^{\max} \triangleq \max\limits_{k}\left\{ r_{i,k} \right\}$ is the maximum reward of bandit $i$.
-	\item The loss/regret $\ell \triangleq \regret(\rvpi) \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \regret(\rvpi_i) } \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) }$. Regret minimization is equivalent with maximizing reward $\frac{1}{n} \sum\limits_{i=1}^{n}{\rvpi_i^\top \rvr_i}$.
+	\item The loss/regret $\ell \triangleq \regret(\rvpi) \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) }$. Regret minimization is equivalent with maximizing reward $\frac{1}{n} \sum\limits_{i=1}^{n}{\rvpi_i^\top \rvr_i}$.
 \end{itemize}
 
 Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzero$. The regret at time step $t$ is,
@@ -183,7 +183,7 @@ where $\rva_{\cdot, r} \in \sR^h$ refers to $\rva_{\cdot, r} \triangleq \left( a
 \begin{equation*}
 	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-	For any $\tau > 0$, with probability at least $\left( 1 - \frac{2}{e^4} \right) \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$, $\forall t \in \mathcal{O}\left(\frac{\tau}{\eta}\right)$,
+	For any $\tau > 0$, with probability at least $\frac{1}{2} \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$, $\forall t \in \mathcal{O}\left(\frac{\tau}{\eta  \sqrt{\log{m}}}\right)$,
 \begin{equation}
 	\frac{d\ell}{d \rvw_r(t)} = \frac{d \tilde{\ell}}{d \rvw_r(t)}.
 \end{equation}
@@ -193,22 +193,21 @@ The policy gradient is,
 \begin{equation*}
 	\frac{d\ell}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-Since $a_{k,r}, a_{k^\prime,r} \sim \gN(0, 1)$, we have $a_{k,r} - a_{k^\prime,r} \sim \gN(0, 2)$, therefore $\left| a_{k,r} - a_{k^\prime,r} \right| \le 4$ with  probability at least $1 - \frac{2}{e^4} $. Then we have,
+Since $a_{k,r}, a_{k^\prime,r} \sim \gN(0, 1)$, we have $a_{k,r} - a_{k^\prime,r} \sim \gN(0, 2)$, therefore $\left| a_{k,r} - a_{k^\prime,r} \right| \le 2 \sqrt{\log{4m}}$, $\forall k \in [m]$, with  probability at least $\frac{1}{2} $. Then we have,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left| \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \right| \cdot \left\| \rvs_i \right\|_2 }} \\
-	&\le \frac{4}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t)  } \cdot \left\| \rvs_i \right\|_2  }} \\
-	&\le \frac{4}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) }} \\
-	&= \frac{4}{n} \cdot \sum\limits_{i=1}^{n}{ \regret(\rvpi_{i}(t)) } \\
-	&= 4 \cdot \regret(\rvpi(t)).
+	&\le \frac{2 \sqrt{\log{4m}}}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t)  } \cdot \left\| \rvs_i \right\|_2  }} \\
+	&\le \frac{2 \sqrt{\log{4m}}}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_i } \\
+	&= 2 \sqrt{\log{4m}} \cdot \regret(\rvpi(t)).
 \end{split}
 \end{equation*}
 Denote $\regret_{\max} \triangleq \max\limits_{s \ge 0}\left\{\regret\left( \rvpi(s) \right)\right\}$. $\rvw_r(t)$ will be closed to $\rvw_r(0)$,
 \begin{equation*}
 \begin{split}
 	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d\ell}{d \rvw_r(s)} \right\|_2} \\
-	&\le 4 \eta \cdot \sum\limits_{s=0}^{t-1}{ \regret(\rvpi(s)) } \\
-	&\le 4 \eta \cdot \regret_{\max} \cdot t .
+	&\le \eta \cdot 2 \sqrt{\log{4m}} \cdot \sum\limits_{s=0}^{t-1}{ \regret(\rvpi(s)) } \\
+	&\le \eta \cdot 2 \sqrt{\log{4m}} \cdot \regret_{\max} \cdot t .
 \end{split}
 \end{equation*}
 Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) \le  \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$,
@@ -219,11 +218,11 @@ Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^
 	&\ge 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma},
 \end{split}
 \end{equation*}
-Condition on the above event happens, let $t \le \frac{\tau}{ 4 \eta \cdot \regret_{\max} }$, $\forall i \in [n]$,
+Condition on the above event happens, let $t \le \frac{\tau}{ \eta \cdot 2 \sqrt{\log{4m}} \cdot \regret_{\max} }$, $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
 	\left| \left( \rvw_r(t) - \rvw_r(0) \right)^\top \rvs_i \right| &\le \left\| \rvw_r(t) - \rvw_r(0) \right\|_2 \cdot \left\| \rvs_i \right\|_2 \\
-	&\le 4 \eta \cdot \regret_{\max} \cdot t \\
+	&\le \eta \cdot 2 \sqrt{\log{4m}} \cdot \regret_{\max} \cdot t \\
 	&\le \tau < \left| \rvw_r(0)^\top \rvs_i \right|,
 \end{split}
 \end{equation*}
