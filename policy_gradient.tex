@@ -69,7 +69,7 @@ Bold letters refer to vectors, and non-bold letters refer to scalars. For exampl
 \begin{itemize}
 	\item $\rvs_i \in \sR^d$, $i \in [n]$ is a state/bandit.
 	\item $\rvw_r \in \sR^d$, $r \in [m]$ is a weight vector in the first hidden layer.
-	\item $u_{i,r} \triangleq \sigma(\rvw_r^\top \rvs_i)$, where $\sigma(\cdot) \triangleq \max\left\{ \cdot, 0 \right\}$.
+	\item $u_{i,r} \triangleq \sigma(\rvw_r^\top \rvs_i)$, where $\sigma(\cdot) \triangleq \max\left\{ \cdot, 0 \right\}$ is the ReLU activation function.
 	\item $\rva_k \in \sR^m$, $k \in [h]$ is a weight vector in the second layer. $\rva_k \sim \gN(0, \rmI)$.
 	\item $o_{i,k} \triangleq \sum\limits_{r=1}^{m}{a_{k,r} \cdot u_{i,r}}$ is the logit of the $k$th arm for state $\rvs_i$.
 	\item $\pi_{i,k} \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}}$ is the  probability for choosing arm $k$ in bandit $i$.
@@ -145,7 +145,7 @@ Therefore after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \righ
     &\le t + \frac{n^4}{\eta m c^2 \delta^2} \cdot \frac{T}{t} \\
     &\le \frac{2 n^2}{c \delta} \cdot \frac{1}{\sqrt{\eta m}} \cdot \sqrt{T} \\
     &\le \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \log{\left(4m\right)} \cdot \sqrt{T} \\
-    &\le \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \tilde{O}\left(\sqrt{T}\right) \qedhere
+    &\le \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \tilde{O}\left(\sqrt{T}\right). \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -514,7 +514,7 @@ Denote $\bar{\rmW}_\xi \triangleq \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \ri
     &\le \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left( 2 \sqrt{\log{\left(4m\right)}} \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \right)^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
     &= 2 \sqrt{m \log{\left(4m\right)}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i d\xi} \\
     &\le 2 \sqrt{m \log{\left(4m\right)}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \left( \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h \sqrt{m \log{2m}} \cdot \left\| \bar{\rmW}_\xi - \rmW \right\|_F \right) d\xi} \\
-    &\le 2 \sqrt{m \log{\left(4m\right)}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 4 h m \log{\left(4m\right)} \left\| \rmW^\prime - \rmW \right\|_F^2.
+    &\le 2 \sqrt{m \log{\left(4m\right)}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 4 h m   \log{\left(4m\right)} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2.
 \end{split}
 \end{equation*}
 Combine the above with the following,
