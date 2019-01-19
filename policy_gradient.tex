@@ -110,7 +110,7 @@ We analyze the policy gradient method,
 \end{proof}
 
 \begin{thm}
-    Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c^2 \delta^2}{32 n^4 h m \sqrt{m} \left( \log{4m} \right)^2} \right)$, after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$, and the regret $\sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \le  \tilde{O}\left(\frac{16 n^4 \sqrt{h}}{c^2 \delta^2}\right) \cdot \sqrt{T}$.
+    Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c^2 \delta^2}{32 n^4 h m \left( \log{4m} \right)^2} \right)$, after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$, and the regret $\sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \le  \frac{16 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \tilde{O}\left( \sqrt{T} \right)$.
 \end{thm}
 \begin{proof}
     Let $\rmW^\prime = \rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \ell}{d \rmW(t)}$, and $\rmW = \rmW(t)$, by \cref{lem:semi_smoothness},
@@ -118,14 +118,14 @@ We analyze the policy gradient method,
 \begin{split}
     \rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F^2 \\
     &\qquad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F \\
-    &\qquad + 8 h m \sqrt{m } \cdot \log{4m} \cdot \eta^2 \left\| \frac{d \ell}{d \rmW(t)} \right\|_F^2 \\
+    &\qquad + 8 h m \log{4m} \cdot \eta^2 \left\| \frac{d \ell}{d \rmW(t)} \right\|_F^2 \\
     &= \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
     &\qquad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F \\
-    &\qquad + 8 h m \sqrt{m } \cdot \log{4m} \cdot \eta^2 \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\qquad + 8 h m \log{4m} \cdot \eta^2 \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
     &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
     &\qquad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \eta \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 } \\
-    &\qquad + 8 h m \sqrt{m } \cdot \log{4m} \cdot \eta^2 \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
-    \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 &\cdot \left[ \frac{\eta m c^2 \delta^2}{n^4} - 8 \eta m \sqrt{m} \log{4m} - 32 \eta^2 h m^2 \sqrt{m} \left( \log{4m} \right)^2 \right] \\
+    &\qquad + 8 h m \log{4m} \cdot \eta^2 \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
+    \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 &\cdot \left[ \frac{\eta m c^2 \delta^2}{n^4} - 8 \eta m \sqrt{m} \log{4m} - 32 \eta^2 h m^2 \left( \log{4m} \right)^2 \right] \\
     &= \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \Omega\left( \frac{\eta m c^2 \delta^2}{n^4} \right).
 \end{split}
 \end{equation*}
@@ -147,7 +147,8 @@ Therefore after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \righ
     \sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } &\le t \cdot 1 + \left(T - t\right) \cdot \varepsilon \\
     &\le t + \frac{n^4}{\eta m c^2 \delta^2} \cdot \frac{T}{t} \\
     &\le \frac{2 n^2}{c \delta} \cdot \frac{1}{\sqrt{\eta m}} \cdot \sqrt{T} \\
-    &\le \tilde{O}\left(\frac{16 n^4 \sqrt{h}}{c^2 \delta^2}\right) \cdot \sqrt{T} \qedhere
+    &\le \frac{16 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \log{4m} \cdot \sqrt{T} \\
+    &\le \frac{16 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \tilde{O}\left(\sqrt{T}\right) \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -462,7 +463,7 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
     Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the neural network policies parameterized by $\rmW$ and $\rmW^\prime$, respectively. $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
-    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h m \sqrt{\log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F.
+    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h  \sqrt{m \log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F.
 \end{split}
 \end{equation*}
 \end{lem}
@@ -488,7 +489,7 @@ Define $k_*^i = \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k
     &\le 2 h \cdot \sum\limits_{r=1}^{m}{ \left| a_{k_*^i,r} \right| \cdot \left| \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right| } \\
     &\le 2 h \cdot 2 \sqrt{\log{2m}} \cdot \sum\limits_{r=1}^{m}{ \left| {\rvw_r^\prime}^\top \rvs_i - {\rvw_r}^\top \rvs_i \right| } \quad \left( \text{w.p. at least } 1 - \frac{1}{m} \right) \\
     &\le 4h \sqrt{\log{2m}} \cdot \sum\limits_{r=1}^{m}{ \left\| \rvw_r^\prime - \rvw_r \right\|_2 } \\
-    &\le 4h \sqrt{\log{2m}} \cdot m \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
+    &\le 4h \sqrt{\log{2m}} \cdot \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -500,7 +501,7 @@ Define $k_*^i = \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k
 \begin{split}
     \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i &\le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \\
     &\quad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
-    &+ 8 h m \sqrt{m } \cdot \log{4m} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
+    &+ 8 h m \log{4m} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2.
 \end{split}
 \end{equation*}
 \end{lem}
@@ -515,8 +516,8 @@ Denote $\bar{\rmW}_\xi \triangleq \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \ri
     &= \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d \bar{\rvw}_r}\right\|_2^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
     &\le \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left( 2 \sqrt{\log{4m}} \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \right)^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
     &= 2 \sqrt{m \log{4m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i d\xi} \\
-    &\le 2 \sqrt{m \log{4m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \left( \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h m \cdot \sqrt{\log{2m}} \cdot \left\| \bar{\rmW}_\xi - \rmW \right\|_F \right) d\xi} \\
-    &\le 2 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 8 h m \sqrt{m } \cdot \log{4m} \left\| \rmW^\prime - \rmW \right\|_F^2.
+    &\le 2 \sqrt{m \log{4m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \left( \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h \sqrt{m \log{2m}} \cdot \left\| \bar{\rmW}_\xi - \rmW \right\|_F \right) d\xi} \\
+    &\le 2 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 8 h m \log{4m} \left\| \rmW^\prime - \rmW \right\|_F^2.
 \end{split}
 \end{equation*}
 Combine the above with the following,
