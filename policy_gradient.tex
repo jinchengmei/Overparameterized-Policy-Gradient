@@ -109,6 +109,49 @@ We analyze the policy gradient method,
 (Sketch) By \cref{lem:gradient_lower_bound}, unless $\regret\left( \rvpi(t)\right) \le \varepsilon n$, there are $\Omega\left( \frac{m\delta}{n} \right)$ of $\rvw_r(t)$ such that $\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta \varepsilon}{n} \right)$. By \cref{lem:gradient_upper_bound}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta \varepsilon}{n} \right)$. For $\eta$ small enough, each gradient descent will decrease $l(\rvw)$ by $\Omega\left( \frac{\eta m c^2\delta^2\varepsilon^2}{n^2} \right)$, which means it converges in $O\left( \frac{n^2}{\eta m c^2\delta^2\varepsilon^2} \right)$ steps. Let $\sigma = \left( \frac{1}{\sqrt{m}} \right)$, and $\frac{n^2}{\eta m c^2\delta^2\varepsilon^2} \le \frac{\tau}{\eta} = \frac{\sigma}{\eta n}$, we have $m \ge \frac{n^6}{c^4 \delta^4 \varepsilon^4}$.
 \end{proof}
 
+\begin{thm}
+    Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c^2 \delta^2}{32 n^4 h m \sqrt{m} \left( \log{4m} \right)^2} \right)$, after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$, and the regret $\sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \le  \tilde{O}\left(\frac{16 n^4 \sqrt{h}}{c^2 \delta^2}\right) \cdot \sqrt{T}$.
+\end{thm}
+\begin{proof}
+    Let $\rmW^\prime = \rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \ell}{d \rmW(t)}$, and $\rmW = \rmW(t)$, by \cref{lem:semi_smoothness},
+\begin{equation*}
+\begin{split}
+    \rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F^2 \\
+    &\qquad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F \\
+    &\qquad + 8 h m \sqrt{m } \cdot \log{4m} \cdot \eta^2 \left\| \frac{d \ell}{d \rmW(t)} \right\|_F^2 \\
+    &= \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\qquad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F \\
+    &\qquad + 8 h m \sqrt{m } \cdot \log{4m} \cdot \eta^2 \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\qquad + 4 \sqrt{m \log{4m}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \eta \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 } \\
+    &\qquad + 8 h m \sqrt{m } \cdot \log{4m} \cdot \eta^2 \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
+    \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 &\cdot \left[ \frac{\eta m c^2 \delta^2}{n^4} - 8 \eta m \sqrt{m} \log{4m} - 32 \eta^2 h m^2 \sqrt{m} \left( \log{4m} \right)^2 \right] \\
+    &= \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \Omega\left( \frac{\eta m c^2 \delta^2}{n^4} \right).
+\end{split}
+\end{equation*}
+From the above we have,
+\begin{equation*}
+\begin{split}
+    \frac{1}{\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i} - \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i} \ge \frac{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i}{\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i} \cdot \Omega\left( \frac{\eta m c^2 \delta^2}{n^4} \right) \ge \Omega\left( \frac{\eta m c^2 \delta^2}{n^4} \right),
+\end{split}
+\end{equation*}
+which implies,
+\begin{equation*}
+\begin{split}
+    \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i} \ge \Omega\left( \frac{\eta m c^2 \delta^2}{n^4} \right) \cdot t + \frac{1}{\rvpi_i\left( \rmW(0) \right)^\top \rvtilder_i} \ge \Omega\left( \frac{\eta m c^2 \delta^2}{n^4} \right) \cdot t.
+\end{split}
+\end{equation*}
+Therefore after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$. Let $\frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \le \frac{\tau}{\eta} = \frac{\sigma}{n \eta} = \frac{1}{n \eta \sqrt{m}}$, we have $m \ge \frac{n^{10}}{c^4 \delta^4 \varepsilon^2}$. And the regret is,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } &\le t \cdot 1 + \left(T - t\right) \cdot \varepsilon \\
+    &\le t + \frac{n^4}{\eta m c^2 \delta^2} \cdot \frac{T}{t} \\
+    &\le \frac{2 n^2}{c \delta} \cdot \frac{1}{\sqrt{\eta m}} \cdot \sqrt{T} \\
+    &\le \tilde{O}\left(\frac{16 n^4 \sqrt{h}}{c^2 \delta^2}\right) \cdot \sqrt{T} \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
+
 \subsection{Policy Gradient}
 
 \subsubsection{One Form}
@@ -451,6 +494,7 @@ Define $k_*^i = \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k
 \end{proof}
 
 \begin{lem}
+\label{lem:semi_smoothness}
      $\forall$ $\rmW$, $\rmW^\prime \in \sR^{d \times m}$, $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
