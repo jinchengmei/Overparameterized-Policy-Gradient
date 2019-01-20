@@ -1,15 +1,16 @@
-\section{Main Results}
+\section{Background}
 
 \subsection{Settings}
 
-\subsubsection{Bandit}
+\subsubsection{Bandit Setting}
 
-We first analyze the standard bandit setting, i.e., $n = 1$ , and then generalize the results to many state dependent bandits setting. For simplicity, assume the reward $\rvr \in \sR^h$ is a deterministic vector. Using concentration the results can be generalized to random reward vectors, therefore recovering the stochastic bandit setting. Also we assume $r_k \in [0, 1]$, $\forall k \in [h]$.
+For simplicity, we first present the main results in the standard bandit setting, and then discuss several general settings.
 
-In this setting, we use the NN policy to pull one arm $A_t \in [h]$ in each time step $t$, then observe the reward $r_{A_t}$. The policy net then uses the reward to update its weight vectors, using policy gradient method. After such $T$ steps, we are concerned with the regret,
+In the standard bandit setting, we have $n = 1$. At each time step $t$, the agent takes an action $A_t \in [h]$ according to some strategies, and observes a reward $r_{A_t} \in \sR$. The agent then uses the reward to improve its action selection strategies. After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation*}
-    \ell \triangleq \regret(\rvpi) \triangleq \r^{\max} \cdot T - \sum\limits_{t=0}^{T-1}{ \rvpi(t)^\top \rvr } = \sum\limits_{t=0}^{T-1}{ \rvpi(t)^\top \rvtilder }
+    \ell \triangleq \r^{\max} \cdot T - \sE \left[ \sum\limits_{t=0}^{T-1}{  \rvr_{A_t}  } \right] = \sum\limits_{t=0}^{T-1}{ \sE \left[ \rvtilder_{A_t} \right] },
 \end{equation*}
+where the expectation is taken over the randomness of action selection, if the agent is using stochastic strategies.
 
 \subsubsection{Episodic MDP}
 
