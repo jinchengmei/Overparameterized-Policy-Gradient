@@ -41,6 +41,7 @@ The objective of our analysis is the policy gradient method, mixed with uniform 
 The policy gradient method works as follows. After initialization, the policy net $\rvpi$ will be updated using policy gradient calculated from collected reward. In the first $\sqrt{T}$ steps, actions are selected up to an uniform distribution over all actions. After that the NN policy $\rvpi$ is used to select actions.
 
 \subsection{Main Results}
+\label{subsec:main_results}
 
 The first main result of the bandit setting is summarized in \cref{thm:main_result_1}.
 
@@ -90,20 +91,60 @@ After $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterat
 
 \section{Theoretical Analysis}
 
-Citations within the text should include the authors' last names and
-year. If the authors' names are included in the sentence, place only
-the year in parentheses, for example when referencing Arthur Samuel's
-pioneering work \yrcite{Samuel59}. Otherwise place the entire
-reference in parentheses with the authors and year separated by a
-comma \cite{Samuel59}. List multiple references separated by
-semicolons \cite{kearns89,Samuel59,mitchell80}. Use the `et~al.'
-construct only for citations with three or more authors or after
-listing all authors to a publication in an earlier reference \cite{MachineLearningI}.
+We present more detailed analysis than \cref{subsec:main_results}. We first show the bandit case. Note that in the proof of \cref{thm:main_result_1}, the $T$ steps are divided into two parts. In the first $\sqrt{T}$ exploration phase, we uniformly sample actions, and use collected rewards to make the expected regret of NN policy converge to smaller than $\varepsilon$. And in the second commit phase, we use NN policy to play, and because of the expected reward is small, we have the gradient norm lower bounded by positive constant times regret, so the NN policy will keep improving itself. Therefore our analysis will also be partitioned into two parts.
 
-Authors should cite their own work in the third person
-in the initial version of their paper submitted for blind review.
-Please refer to Section~\ref{author info} for detailed instructions on how to
-cite your own papers.
+\subsection{Exploring Phase}
+
+In the exploring phase, we uniformly sample actions and rewards to update NN policy. The convergence of policy regret mainly relies on the following ``smoothness" like property over NN weights.
+
+\begin{lem}
+    Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the neural network policies parameterized by $\rmW$ and $\rmW^\prime$, respectively. $\forall i \in [n]$,
+\begin{equation*}
+\begin{split}
+    &\rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \\
+    &\qquad + 4 \sqrt{m \log{\left(4m\right)}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
+    &\qquad + 4 h m \log{\left(4m\right)} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2.
+\end{split}
+\end{equation*}
+\end{lem}
+
+Combining this smoothness condition with other objective properties like convexity one can prove convergence results. However, the policy regret is non-convex function of weights. Therefore we need the recent results in overparameterized NN optimization, i.e., the gradient coupling and gradient (lower) bounds.
+
+\begin{lem}
+\label{lem:gradient_coupling}
+	Define the pseudo gradient as,
+\begin{equation*}
+\begin{split}
+	\frac{d \tilde{\ell}}{d \rvw_r(t)} &\triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) } } \\
+	&\qquad { { \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i } },
+\end{split}
+\end{equation*}
+where $v_{k^\prime,k,i}(t)$ is defined as,
+\begin{equation*}
+	v_{k^\prime,k,i}(t) = \begin{cases}
+    1 - \pi_{i,k^\prime}(t), & \text{if $k^\prime = k$}, \\
+    - \pi_{i,k^\prime}(t), & \text{otherwise}.
+  \end{cases}
+\end{equation*}
+	For any $\tau > 0$, with probability at least $\frac{1}{2} \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$, $\forall t \in O\left(\frac{\tau}{\eta  \sqrt{\log{m}}}\right)$, $\forall r \in [m]$,
+\begin{equation}
+	\frac{d\ell}{d \rvw_r(t)} = \frac{d \tilde{\ell}}{d \rvw_r(t)}.
+\end{equation}
+\end{lem}
+
+The true gradient can be calculated as,
+\begin{equation*}
+\begin{split}
+    \frac{d\ell}{d \rvw_r(t)} &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{  \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) }} \\
+    &\qquad  {{ \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i } }.
+\end{split}
+\end{equation*}
+
+\cref{lem:gradient_coupling} means $\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} $ for bounded time steps $t$ with constant probability, therefore the true gradient can be replaced with the simpler pseudo gradient.
+
+The next lemma 
+
+\subsection{Playing Phase}
 
 Use an unnumbered first-level section heading for the references, and use a
 hanging indent style, with the first line of the reference flush against the
