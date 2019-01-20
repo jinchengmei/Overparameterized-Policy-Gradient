@@ -157,79 +157,49 @@ Since DRL combines techniques of Deep Learning (DL) and Reinforcement Learning (
 
 On the RL side, it is well studied that under bandit setting and tabular case of Markov decision process (MDP) setting, many popular algorithms enjoy theoretical guarantees. In particular, either the algorithm converges asymptotically, or its regret of has finite time sublinear upper bound. However, once it goes beyond the tabular cases, the theoretical guarantee becomes weaker. For example, in linear function approximation, only fixed point property is known for the algorithm. Even worse, when we combine RL methods with non-linear neural networks, such as DQN algorithm, little is known in theory.
 
-On the DL side, 
+On the DL side, empirical achievements are also much more advanced than theoretical results. However, there are still progress in the expressiveness, optimization, and generalization of DL theory. In particular, very recently, it has been discovered that, in supervised learning (regression and classification), the training loss can be globally optimized (in linear convergence rate for $\ell_2$ loss in regression, and in constant time for classification) by gradient descent (GD) and stochastic gradient descent (SGD) method, given that the number of parameters in hidden layer is quite large, i.e., overparameterization. With some additional structured data distribution assumptions, the convergent training loss can be generalized to testing loss, making the neural network have provable generalization ability. 
+
+In this paper, based on the recent progresses in overparameterized neural network, we make one step forward to theoretically understanding DRL. In particular, we make the following contributions.
+\begin{itemize}
+    \item We prove that in bandit setting, with enough exploration, a widely-used policy gradient method, with policy net represented by a overparameterized two layer neural network (NN), achieves $\tilde{O}\left( \sqrt{T} \right)$ regret.
+    \item We show that in episodic MDP setting, with the same exploration strategy and policy net as above, policy gradient method achieves $\tilde{O}\left( \sqrt{T} \right)$ regret.
+    \item In many state dependent bandit and MDP setting, similar results hold.
+\end{itemize}
+
+We would like to point that the above results can be generalized to policy net represented by multi-layered neural networks. Assuming a two layer NN policy is just for simplicity. We provide the generalization to multi-layered NN for completeness.
+
+To our knowledge, our finding is the first convergence result for popular RL methods (here, policy gradient) with non-linear NN function approximations, which provides theoretical support for DRL methods. Our result is just beginning of understanding many other DRL methods (like DQN, A3C, PCL, etc), with more practical NN function approximations (e.g., less overparameterized), using many other policy optimization techniques (such as mirror descent, and relative entropy policy search).
+
+The rest of the paper is organized as follows.
 
 \subsection{Notations}
 
+Bold letters refer to vectors, and non-bold letters refer to scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $n$ is the total number of data points, while $m$ is the total number of nodes in each hidden layer. $h$ is the total number of arms/trajectories of each bandit/starting state.
 
-\subsection{Title}
+\begin{itemize}
+	\item $\rvs_i \in \sR^d$, $i \in [n]$ is a state/bandit.
+	\item $\rvw_r \in \sR^d$, $r \in [m]$ is a weight vector in the first hidden layer.
+	\item $u_{i,r} \triangleq \sigma(\rvw_r^\top \rvs_i)$, where $\sigma(\cdot) \triangleq \max\left\{ \cdot, 0 \right\}$ is the ReLU activation function.
+	\item $\rva_k \in \sR^m$, $k \in [h]$ is a weight vector in the second layer. $\rva_k \sim \gN(0, \rmI)$.
+	\item $o_{i,k} \triangleq \sum\limits_{r=1}^{m}{a_{k,r} \cdot u_{i,r}}$ is the logit of the $k$th arm for state $\rvs_i$.
+	\item $\pi_{i,k} \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}}$ is the  probability for choosing arm $k$ in bandit $i$.
+	\item $\rvr_i \in \sR^h$ is the reward vector for bandit $i$.
+	\item $\r_i^{\max} \triangleq \max\limits_{k}\left\{ r_{i,k} \right\}$ is the maximum reward of bandit $i$.
+	\item The loss/regret $\ell \triangleq \regret(\rvpi) \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) }$. Regret minimization is equivalent with maximizing reward $\frac{1}{n} \sum\limits_{i=1}^{n}{\rvpi_i^\top \rvr_i}$.
+\end{itemize}
 
-The paper title should be set in 14~point bold type and centered
-between two horizontal rules that are 1~point thick, with 1.0~inch
-between the top rule and the top edge of the page. Capitalize the
-first letter of content words and put the rest of the title in lower
-case.
+Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzero$. The regret at time step $t$ is,
+\begin{equation*}
+\begin{split}
+	\ell(t) \triangleq \regret(\rvpi(t)) &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_{i}(t)^\top \rvr_i \right) } \\
+	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \left( \r_i^{\max} \cdot \rvone - \rvr_{i} \right) } \\
+	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_{i} }.
+\end{split}
+\end{equation*}
 
-\subsection{Author Information for Submission}
-\label{author info}
+\section{Main Results}
 
-ICML uses double-blind review, so author information must not appear. If
-you are using \LaTeX\/ and the \texttt{icml2019.sty} file, use
-\verb+\icmlauthor{...}+ to specify authors and \verb+\icmlaffiliation{...}+ to specify affiliations. (Read the TeX code used to produce this document for an example usage.) The author information
-will not be printed unless \texttt{accepted} is passed as an argument to the
-style file.
-Submissions that include the author information will not
-be reviewed.
-
-\subsubsection{Self-Citations}
-
-If you are citing published papers for which you are an author, refer
-to yourself in the third person. In particular, do not use phrases
-that reveal your identity (e.g., ``in previous work \cite{langley00}, we
-have shown \ldots'').
-
-Do not anonymize citations in the reference section. The only exception are manuscripts that are
-not yet published (e.g., under submission). If you choose to refer to
-such unpublished manuscripts \cite{anonymous}, anonymized copies have
-to be submitted
-as Supplementary Material via CMT\@. However, keep in mind that an ICML
-paper should be self contained and should contain sufficient detail
-for the reviewers to evaluate the work. In particular, reviewers are
-not required to look at the Supplementary Material when writing their
-review.
-
-\subsubsection{Camera-Ready Author Information}
-\label{final author}
-
-If a paper is accepted, a final camera-ready copy must be prepared.
-%
-For camera-ready papers, author information should start 0.3~inches below the
-bottom rule surrounding the title. The authors' names should appear in 10~point
-bold type, in a row, separated by white space, and centered. Author names should
-not be broken across lines. Unbolded superscripted numbers, starting 1, should
-be used to refer to affiliations.
-
-Affiliations should be numbered in the order of appearance. A single footnote
-block of text should be used to list all the affiliations. (Academic
-affiliations should list Department, University, City, State/Region, Country.
-Similarly for industrial affiliations.)
-
-Each distinct affiliations should be listed once. If an author has multiple
-affiliations, multiple superscripts should be placed after the name, separated
-by thin spaces. If the authors would like to highlight equal contribution by
-multiple first authors, those authors should have an asterisk placed after their
-name in superscript, and the term ``\textsuperscript{*}Equal contribution"
-should be placed in the footnote block ahead of the list of affiliations. A
-list of corresponding authors and their emails (in the format Full Name
-\textless{}email@domain.com\textgreater{}) can follow the list of affiliations.
-Ideally only one or two names should be listed.
-
-A sample file with author names is included in the ICML2019 style file
-package. Turn on the \texttt{[accepted]} option to the stylefile to
-see the names rendered. All of the guidelines above are implemented
-by the \LaTeX\ style file.
-
-\subsection{Abstract}
+\subsection{Settings}
 
 The paper abstract should begin in the left column, 0.4~inches below the final
 address. The heading `Abstract' should be centered, bold, and in 11~point type.
