@@ -56,10 +56,10 @@ According to \cref{alg:policy_gradient_uniform_exploration}, the first $\sqrt{T}
     \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le O\left( \frac{n^4}{\eta m c^2 \delta^2 \sqrt{T}} \right),
 \end{split}
 \end{equation*}
-for all the $t \ge \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^2 \sqrt{T}}$, the regret can be upper bounded by the sum of two parts,
+for $t = \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^2 \sqrt{T}}$. By \cref{subsec:playing_phase}, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$, $\forall t \ge \sqrt{T}$. Therefore the regret can be upper bounded by the sum of two parts,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(\sqrt{T}) \right)^\top \rvtilder_i } &\le t \cdot 1 + \left(T - \sqrt{T} \right) \cdot \varepsilon \\
+    \sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } &\le \sqrt{T} \cdot 1 + \left(T - \sqrt{T} \right) \cdot \varepsilon \\
     &\le \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \log{\left(4m\right)} \cdot \sqrt{T} \\
     &\le \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \tilde{O}\left(\sqrt{T}\right). \qedhere
 \end{split}
@@ -183,6 +183,7 @@ After $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterat
 \end{proof}
 
 \subsection{Playing Phase}
+\label{subsec:playing_phase}
 
 In this phase, we use the NN policy net to select actions and collect rewards. We still need to use the  results in \cref{subsec:exploring_phase} to make sure that the expected regret of running policies will not deteriorate. Fortunately, because of the enough exploration phase, we have the exploration item $c$ large enough.
 
