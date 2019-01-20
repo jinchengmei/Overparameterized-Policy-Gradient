@@ -215,28 +215,27 @@ In this setting, we use the NN policy to pull one arm $A_t \in [h]$ in each time
 In the Episodic MDP setting, in each time step, we use NN policy to take one action $A_t$, then observe a reward $R_{t+1}$ and next state $S_{t+1}$. After such $H$ steps, there is an ending state, and this trajectory terminates. Since we use policy gradient method (no value learning method here), the policy updates its weights using the cumulative reward collected from each trajectory. 
 
 
-\subsubsection{Sections and Subsections}
+\subsection{Policy Gradient Method}
 
-Section headings should be numbered, flush left, and set in 11~pt bold
-type with the content words capitalized. Leave 0.25~inches of space
-before the heading and 0.15~inches after the heading.
+\begin{algorithm}[h]
+   \caption{Policy Gradient Method Mixed with Uniform Exploration}
+   \label{alg:example}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} state feature vectors $\rvs_i$
+   \STATE Initialize $\rvw_r \sim \gN\left( 0, \sigma \cdot \rmI \right)$, $\forall r \in [m]$, $\rva_k \sim \gN(0, \rmI)$, $\forall k \in [h]$.
+   \FOR{$t=0$ {\bfseries to} $T-1$}
+   \IF{$t < \sqrt{T}$}
+   \STATE Uniformly randomly take action $A_{i,t}$. 
+   \STATE Observe reward and next state.
+   \ELSE
+   \STATE Take action $A_{i,t} \sim \rvpi_{i}\left(\cdot \middle| S_{i,t} \right)$. 
+   \ENDIF
+   \STATE $\rvw_r(t+1) = \rvw_r(t) - \eta \cdot \frac{d\ell}{d \rvw_r(t)}$, $\forall r \in [m]$.
+   \ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
-Similarly, subsection headings should be numbered, flush left, and set
-in 10~pt bold type with the content words capitalized. Leave
-0.2~inches of space before the heading and 0.13~inches afterward.
-
-Finally, subsubsection headings should be numbered, flush left, and
-set in 10~pt small caps with the content words capitalized. Leave
-0.18~inches of space before the heading and 0.1~inches after the
-heading.
-
-Please use no more than three levels of headings.
-
-\subsubsection{Paragraphs and Footnotes}
-
-Within each section or subsection, you should further partition the
-paper into paragraphs. Do not indent the first line of a given
-paragraph, but insert a blank line between succeeding ones.
+The objective of our analysis is the policy gradient method, mixed with uniform exploration. The reason why we need exploration will be explained later on, and technically it seems cannot be eliminated.
 
 You can use footnotes\footnote{Footnotes
 should be complete sentences.} to provide readers with additional
