@@ -155,22 +155,22 @@ Deep Reinforcement Learning (DRL) has recently achieved great successes in many 
 
 Since DRL combines techniques of Deep Learning (DL) and Reinforcement Learning (RL), to understand DRL, we need to combine findings from both DL and RL sides.
 
-On the RL side, it is well studied that under bandit setting and tabular case of Markov decision process (MDP) setting, many popular algorithms enjoy theoretical guarantees. In particular, either the algorithm converges asymptotically, or its regret of has finite time sublinear upper bound. However, once it goes beyond the tabular cases, the theoretical guarantee becomes weaker. For example, in linear function approximation, only fixed point property is known for the algorithm. Even worse, when we combine RL methods with non-linear neural networks, such as DQN algorithm, little is known in theory.
+On the RL side, it is well studied that under bandit setting and tabular cases of Markov decision process (MDP) setting, many popular algorithms enjoy favorable theoretical guarantees. In particular, either the algorithm converges asymptotically, or its regret of has finite time sublinear upper bound. However, once it goes beyond the tabular cases, the theoretical guarantee becomes weaker. For example, in linear function approximation, only fixed point property is known for the algorithm. Even worse, when we combine RL methods with non-linear neural networks, such as DQN algorithm, little is known in theory.
 
-On the DL side, empirical achievements are also much more advanced than theoretical results. However, there are still progress in the expressiveness, optimization, and generalization of DL theory. In particular, very recently, it has been discovered that, in supervised learning (regression and classification), the training loss can be globally optimized (in linear convergence rate for $\ell_2$ loss in regression, and in constant time for classification) by gradient descent (GD) and stochastic gradient descent (SGD) method, given that the number of parameters in hidden layer is quite large, i.e., overparameterization. With some additional structured data distribution assumptions, the convergent training loss can be generalized to testing loss, making the neural network have provable generalization ability. 
+On the DL side, empirical achievements are also much more advanced than theoretical results. However, there are still progresses in the expressiveness, optimization, and generalization aspects of DL theory. In particular, very recently, it has been discovered that, in supervised learning (regression and classification) settings, the training loss can be globally optimized (in linear convergence rate for $\ell_2$ loss in regression, and in constant time for classification) by gradient descent (GD) and stochastic gradient descent (SGD) method, given that the number of parameters in hidden layer is quite large, i.e., overparameterization. With some additional structured data distribution assumptions, the convergent training loss can be generalized to testing loss, making the neural network have provable generalization ability. 
 
-In this paper, based on the recent progresses in overparameterized neural network, we make one step forward to theoretically understanding DRL. In particular, we make the following contributions.
+In this paper, based on the recent progresses in overparameterized neural network optimization, we make one step forward to theoretically understanding DRL. In particular, we make the following contributions.
 \begin{itemize}
-    \item We prove that in bandit setting, with enough exploration, a widely-used policy gradient method, with policy net represented by a overparameterized two layer neural network (NN), achieves $\tilde{O}\left( \sqrt{T} \right)$ regret.
+    \item We prove that in bandit setting, with enough exploration, the widely-used policy gradient method, with policy net represented by a overparameterized two layer neural network (NN), achieves $\tilde{O}\left( \sqrt{T} \right)$ regret.
     \item We show that in episodic MDP setting, with the same exploration strategy and policy net as above, policy gradient method achieves $\tilde{O}\left( \sqrt{T} \right)$ regret.
-    \item In many state dependent bandit and MDP setting, similar results hold.
+    \item In many state dependent bandit and MDP settings, similar results also hold.
 \end{itemize}
 
-We would like to point that the above results can be generalized to policy net represented by multi-layered neural networks. Assuming a two layer NN policy is just for simplicity. We provide the generalization to multi-layered NN for completeness.
+We would like to point that the above results can be generalized to policy net represented by multi-layered neural networks. Assuming a two layer NN policy is just for simplicity and conciseness. We provide the generalization to multi-layered NN for completeness.
 
 To our knowledge, our finding is the first convergence result for popular RL methods (here, policy gradient) with non-linear NN function approximations, which provides theoretical support for DRL methods. Our result is just beginning of understanding many other DRL methods (like DQN, A3C, PCL, etc), with more practical NN function approximations (e.g., less overparameterized), using many other policy optimization techniques (such as mirror descent, and relative entropy policy search).
 
-The rest of the paper is organized as follows.
+The rest of the paper is organized as follows. Some proofs are deferred to appendix due to space limit.
 
 \subsection{Notations}
 
@@ -201,19 +201,19 @@ Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzer
 
 \subsection{Settings}
 
-The paper abstract should begin in the left column, 0.4~inches below the final
-address. The heading `Abstract' should be centered, bold, and in 11~point type.
-The abstract body should use 10~point type, with a vertical spacing of
-11~points, and should be indented 0.25~inches more than normal on left-hand and
-right-hand margins. Insert 0.4~inches of blank space after the body. Keep your
-abstract brief and self-contained, limiting it to one paragraph and roughly 4--6
-sentences. Gross violations will require correction at the camera-ready phase.
+\subsubsection{Bandit}
 
-\subsection{Partitioning the Text}
+We first analyze the standard bandit setting, i.e., $n = 1$ , and then generalize the results to many state dependent bandits setting. For simplicity, assume the reward $\rvr \in \sR^h$ is a deterministic vector. Using concentration the results can be generalized to random reward vectors, therefore recovering the stochastic bandit setting. Also we assume $r_k \in [0, 1]$, $\forall k \in [h]$.
 
-You should organize your paper into sections and paragraphs to help
-readers place a structure on the material and understand its
-contributions.
+In this setting, we use the NN policy to pull one arm $A_t \in [h]$ in each time step $t$, then observe the reward $r_{A_t}$. The policy net then uses the reward to update its weight vectors, using policy gradient method. After such $T$ steps, we are concerned with the regret,
+\begin{equation*}
+    \ell \triangleq \regret(\rvpi) \triangleq \r^{\max} \cdot T - \sum\limits_{t=0}^{T-1}{ \rvpi(t)^\top \rvr } = \sum\limits_{t=0}^{T-1}{ \rvpi(t)^\top \rvtilder }
+\end{equation*}
+
+\subsubsection{Episodic MDP}
+
+In the Episodic MDP setting, in each time step, we use NN policy to take one action $A_t$, then observe a reward $R_{t+1}$ and next state $S_{t+1}$. After such $H$ steps, there is an ending state, and this trajectory terminates. Since we use policy gradient method (no value learning method here), the policy updates its weights using the cumulative reward collected from each trajectory. 
+
 
 \subsubsection{Sections and Subsections}
 
