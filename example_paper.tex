@@ -96,35 +96,16 @@
 In this paper, we provide theoretical analysis for policy gradient method, where the policy is parameterized by neural networks. We first show that in bandit setting, with two layered overparameterized ReLU neural net policy and enough exploration, policy gradient method achieves sublinear regret. For episodic Markov decision process setting, we then prove that similar results hold. The results can be generalized to policy parameterized by multil-layered neural networks.
 \end{abstract}
 
-\section{Electronic Submission}
+\section{Introduction}
 \label{submission}
 
-Submission to ICML 2019 will be entirely electronic, via a web site
-(not email). Information about the submission process and \LaTeX\ templates
-are available on the conference web site at:
-\begin{center}
-\textbf{\texttt{http://icml.cc/}}
-\end{center}
+Deep Reinforcement Learning (DRL) has recently achieved great successes in many fields, e.g, defeating professional players in Go, two player Hold'em, and Atari games, to name a few. However, comparing with its practical performance, the theoretical understanding and explanation of the mechanism behind its success is not enough.
 
-The guidelines below will be enforced for initial submissions and
-camera-ready copies. Here is a brief summary:
-\begin{itemize}
-\item Submissions must be in PDF\@.
-\item Submitted papers can be up to eight pages long, not including references, and up to twelve pages when references and acknowledgments are included. Any paper exceeding this length will automatically be rejected. 
-\item \textbf{Do not include author information or acknowledgements} in your
-    initial submission.
-\item Your paper should be in \textbf{10 point Times font}.
-\item Make sure your PDF file only uses Type-1 fonts.
-\item Place figure captions \emph{under} the figure (and omit titles from inside
-    the graphic file itself). Place table captions \emph{over} the table.
-\item References must include page numbers whenever possible and be as complete
-    as possible. Place multiple citations in chronological order.
-\item Do not alter the style template; in particular, do not compress the paper
-    format by reducing the vertical spaces.
-\item Keep your abstract brief and self-contained, one paragraph and roughly
-    4--6 sentences. Gross violations will require correction at the
-    camera-ready phase. The title should have content words capitalized.
-\end{itemize}
+Since DRL combines techniques of Deep Learning (DL) and Reinforcement Learning (RL), to understand DRL, we need to combine findings from both DL and RL sides.
+
+In the RL side, it is well studied that under bandit setting and tabular case of Markov decision process (MDP) setting, many popular algorithms enjoy theoretical guarantees. In particular, either the algorithm converges asymptotically, or its regret of has finite time sublinear upper bound. However, once it goes beyond tabular cases, the theoretical guarantee becomes weak. For example, in linear function approximation, only fixed point property is know for the algorithm. Even worse, with non-linear function approximation, like neural neural used in DQN algorithm, there is no theoretical analysis.
+
+In the DL side, 
 
 \subsection{Submitting Papers}
 
