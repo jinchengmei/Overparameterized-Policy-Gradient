@@ -45,12 +45,12 @@ During the process of interacting with the environment, the agent can use any st
 \end{equation}
 according to \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i(t)$ to sample an action, and obtain an estimation of the expected loss $\ell(t)$. Doing policy gradient descent with respect to the NN weights $\rmW(t)$ will arguably decrese the expected loss, thus reduce the expected regret. 
 
-However, the above mentioned method, vanilla policy gradient, 
+However, the above mentioned method, vanilla policy gradient, often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Unfortunately, our technique cannot circumvent this issue. Actually, as our proof shown later on, the convergence of policy expected loss relies on non-zero probability of exploring optimal arms, which is consistent with intuition. For this reason, we need mix the vanilla policy gradient method with explicit exploration.
 
 \subsection{Policy Gradient with Uniform Exploration}
 
 \begin{algorithm}[h]
-   \caption{Policy Gradient Method Mixed with Uniform Exploration}
+   \caption{Policy Gradient with Uniform Exploration}
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
    \STATE {\bfseries Input:} state feature vectors $\rvs_i$
