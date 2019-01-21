@@ -6,15 +6,17 @@
 
 For simplicity, we first present the main results in the standard bandit setting, and then discuss several general settings.
 
-In the standard bandit setting, we have $n = 1$. At each time step $t$, the agent takes an action $A_t \in [h]$ according to some strategies, and observes a reward $r_{A_t} \in \sR$. The agent then uses the reward to improve its action selection strategies. After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
+In the standard bandit setting, we have $n = 1$. At each time step $t$, the agent takes an action $A_t \in [h]$ according to some strategies, and then it observes a reward $r_{A_t} \in \sR$. The agent then uses the reward to improve its action selection strategies. After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation*}
     \ell \triangleq \r^{\max} \cdot T - \sE \left[ \sum\limits_{t=0}^{T-1}{  \rvr_{A_t}  } \right] = \sum\limits_{t=0}^{T-1}{ \sE \left[ \rvtilder_{A_t} \right] },
 \end{equation*}
 where the expectation is taken over the randomness of action selection, if the agent is using stochastic strategies.
 
-\subsubsection{Episodic MDP}
+\subsubsection{Episodic Markov decision process (MDP)}
 
-In the Episodic MDP setting, in each time step, we use NN policy to take one action $A_t$, then observe a reward $R_{t+1}$ and next state $S_{t+1}$. After such $H$ steps, there is an ending state, and this trajectory terminates. Since we use policy gradient method (no value learning method here), the policy updates its weights using the cumulative reward collected from each trajectory. 
+The episodic MDP setting recovers the bandit setting as a special case. The environment randomly select a starting state $\rvs_i^0 \in \sR^d$. At each time step $t$, the agent takes one action $A_t \in [h]$ according to some strategies, and then it observes a reward $r_{A_t} \in \sR$ and next state $S_{t+1} \sim \sP\left( \cdot \middle| S_t, A_t \right)$. After such $H$ steps, the agent observes an ending state $S_H$, and the current trajectory terminates. At the next time step, the agent will observe a new starting state $\rvs_i^0$ provided by the environment. Since we use policy gradient method (no value learning), the agent updates its NN policy weights using the cumulative reward collected after each trajectory terminates.
+
+\subsection{Neural Network (NN) Policy}
 
 
 \subsection{Policy Gradient Method}
