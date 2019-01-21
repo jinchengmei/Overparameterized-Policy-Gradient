@@ -18,6 +18,21 @@ The episodic MDP setting recovers the bandit setting as a special case. The envi
 
 \subsection{Neural Network (NN) Policy}
 
+The structure of the neural network policy is shown in \cref{fig:nn_policy}. The policy NN takes the feature vector of each state $\rvs_i \in \sR^d$ as the input. Then it calculates the hidden node value vectors
+
+\begin{figure}[ht]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=\columnwidth]{nn_policy.pdf}}
+\caption{Historical locations and number of accepted papers for International
+Machine Learning Conferences (ICML 1993 -- ICML 2008) and International
+Workshops on Machine Learning (ML 1988 -- ML 1992). At the time this figure was
+produced, the number of accepted papers for ICML 2008 was unknown and instead
+estimated.}
+\label{fig:nn_policy}
+\end{center}
+\vskip -0.2in
+\end{figure}
 
 \subsection{Policy Gradient Method}
 
