@@ -19,7 +19,7 @@ The episodic MDP setting recovers the bandit setting as a special case. The envi
 \subsection{Neural Network (NN) Policy}
 
 The structure of the neural network policy is shown in \cref{fig:nn_policy}. The policy NN takes the feature vector of each state $\rvs_i \in \sR^d$ as the input. Then it calculates the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. Finally, the policy probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right)$.
-\begin{figure}[ht]
+\begin{figure}[t]
 \vskip 0.2in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{nn_policy.pdf}}
