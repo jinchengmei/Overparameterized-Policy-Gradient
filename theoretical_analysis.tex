@@ -19,7 +19,8 @@ According to \cref{alg:policy_gradient_uniform_exploration}, the agent uniformly
 for $t = \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^2 \sqrt{T}}$. By \cref{subsec:playing_phase}, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$, $\forall t \ge \sqrt{T}$. Therefore the regret can be upper bounded by the sum of two parts,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=1}^{T}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } &\le \sqrt{T} \cdot 1 + \left(T - \sqrt{T} \right) \cdot \varepsilon \\
+    \sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } &\le \sum\limits_{t=0}^{\sqrt{T}-1}{ 1 } + \sum\limits_{t=\sqrt{T}}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \\
+    &\le \sqrt{T} + \left( T - \sqrt{T} \right) \varepsilon \\
     &\le \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \log{\left(4m\right)} \cdot \sqrt{T} \\
     &\le \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \tilde{O}\left(\sqrt{T}\right). \qedhere
 \end{split}
