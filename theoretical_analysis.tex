@@ -7,7 +7,7 @@ We first present the main results in the bandit setting, as shown in \cref{thm:m
 
 \begin{thm}
 \label{thm:main_result}
-    Given a two layer NN policy $\rvpi_i$, with number of parameters $m \in \tilde{\Theta}\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c^2 \delta^2}{16 n^4 h m \left( \log{\left(4m\right)} \right)^2} \right)$, the regret of \cref{alg:policy_gradient_uniform_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \tilde{O}\left( \sqrt{T} \right)$.
+    Given a two layer NN policy $\rvpi_i$, with number of parameters $m \in \tilde{\Theta}\left( \frac{\log{T}}{c^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c^2}{16 h m \left( \log{\left(4m\right)} \right)^2} \right)$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{8\sqrt{h}}{c^2} \cdot \tilde{O}\left( \sqrt{T} \right)$.
 \end{thm}
 \begin{proof}
 According to \cref{alg:policy_gradient_uniform_exploration}, the agent uniformly samples and takes actions in the exploring phase, which leads to at most $\sqrt{T}$ regret. At the end of the exploring phase, each action is taken $\frac{\sqrt{T}}{h}$ times in expectation, by \cref{thm:regret_convergence}, 
@@ -27,7 +27,7 @@ for $t = \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^
 \end{equation*}
 \end{proof}
 
-We present more detailed analysis than \cref{subsec:main_results}. We first show the bandit case. Note that in the proof of \cref{thm:regret_convergence}, the $T$ steps are divided into two parts. In the first $\sqrt{T}$ exploration phase, we uniformly sample actions, and use collected rewards to make the expected regret of NN policy converge to smaller than $\varepsilon$. And in the second commit phase, we use NN policy to play, and because of the expected reward is small, we have the gradient norm lower bounded by positive constant times regret, so the NN policy will keep improving itself. Therefore our analysis will also be partitioned into two parts.
+\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first $\sqrt{T}$ exploring phase steps, the agent uniformly samples actions, and learnd the NN policy with expected loss convergent to smaller than $\varepsilon$. Intuitively, this phase is necessary because of: (a) unlike tabular algorithms, i.e., maintaining a scalar value for each arm, the NN policy evolves in a much slower way, due to the usually very small learning rate $\eta$; (b) it is sufficient that the expected loss of the the NN policy is small enough, to make the NN policy have large enough probability for the optimal arm. While in the second playing phase, because of the expected loss of the NN policy is small enough, the gradient norm will be lower bounded by positive constant times expected loss. Therefore the NN policy will keep reducing its expected loss, which means the expected regret will also be reduced. Our detailed analysis also consists of corresponding two parts.
 
 \subsection{Exploring Phase}
 \label{subsec:exploring_phase}
