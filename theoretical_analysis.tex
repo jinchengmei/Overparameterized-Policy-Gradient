@@ -16,7 +16,7 @@ According to \cref{alg:policy_gradient_uniform_exploration}, the agent uniformly
     \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le O\left( \frac{n^4}{\eta m c^2 \delta^2 \sqrt{T}} \right),
 \end{split}
 \end{equation*}
-for $t = \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^2 \sqrt{T}}$. By \cref{subsec:playing_phase}, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$, $\forall t \ge \sqrt{T}$. Therefore the regret can be upper bounded by the sum of two parts,
+for $t = \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^2 \sqrt{T}}$. By \cref{subsec:playing_phase}, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$, $\forall t \ge \sqrt{T}$. Therefore the expected regret can be upper bounded by the sum of two parts,
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } &\le \sum\limits_{t=0}^{\sqrt{T}-1}{ 1 } + \sum\limits_{t=\sqrt{T}}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \\
