@@ -3,7 +3,7 @@
 \subsection{Main Results}
 \label{subsec:main_results}
 
-We first present the main results in the bandit setting, as shown in \cref{thm:main_result}, and defer the results of more general settings later.
+We first present the main results in the bandit setting, as shown in \cref{thm:main_result}, and then show the detailed proofs and some intuitive explanations.
 
 \begin{thm}
 \label{thm:main_result}
@@ -32,12 +32,15 @@ for $t = \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^
 \subsection{Exploration in Policy Learning}
 
 In \cref{subsec:vanilla_policy_gradient}, it is claimed that the vanilla policy gradient method will suffer lack of exploration. Now we intuitively explain the reason. Consider the derivative of the expected loss with respect to the logits,
-\begin{equation*}
+\begin{equation}
+\label{eq:logit_derivative}
 \begin{split}
     \frac{d \rvpi_i^\top \rvtilder_i}{d \rvo_i} = \left[ \Delta\left( \rvpi_i \right) - \rvpi_i \rvpi_i^\top \right] \rvtilder_i,
 \end{split}
-\end{equation*}
+\end{equation}
 where $\Delta\left( \rvpi_i \right)$ is a diagonal matrix with $\Delta\left( \rvpi_i \right)_{k,k} = \pi_{i,k}$, $\forall k \in [h]$. For the $k$th action, the derivative value is $\pi_{i,k} \cdot \left( \tilde{r}_{i,k} - \rvpi_i^\top \rvtilder_i \right)$. Suppose the $k$th action is worth learning, i.e, $\rvpi_i^\top \rvtilder_i - \tilde{r}_{i,k} > 0$ is large, meaning this action will occur loss $\tilde{r}_{i,k}$ much smaller than the expected loss of the current policy, so the agent should increase its action logit. But if $\pi_{i,k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{i,k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{i,k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
+
+\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{i,k}(t) > c > 0$ should hold for each time step $t$, where $c$ is a constant. In particular, to learn an optimal policy, $\pi_{i,k^*}(t) > c > 0$, where $\tilde{r}_{i,k^*} = 0$.
 
 \subsection{Exploring Phase}
 \label{subsec:exploring_phase}
