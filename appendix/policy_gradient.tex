@@ -464,7 +464,7 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \begin{lem}
     Denote $\gH\left( \rvpi_i \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi_i \left(\rvo \right) \right) - \rvpi_i \left(\rvo \right) \rvpi_i \left(\rvo \right)^\top$.
 \begin{equation*}
-    \lambda_{\max}\left\{ \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \right\} \le 4.
+    \left\| \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \right\|_2 \le 4.
 \end{equation*}
 \end{lem}
 \begin{proof}
@@ -509,8 +509,8 @@ Denote $\bar{\rvo}_\xi = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
     &= \int_0^1{ \left\| \gH\left( \rvpi_i\left( \bar{\rvo}_\xi \right)\right) \rvtilder_i - \gH\left( \rvpi_i\left( \rvo \right)\right) \rvtilder_i \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
     &= \int_0^1{ \left\| \int_0^1{\left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)}, \bar{\rvo}_\xi - \rvo \right\rangle d\mu} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
     &\le \int_0^1{  \int_0^1{ \left\| \left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)}, \bar{\rvo}_\xi - \rvo \right\rangle \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\le \int_0^1{  \int_0^1{ \lambda_{\max} \left\{ \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\} \cdot \left\| \bar{\rvo}_\xi - \rvo \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &= \int_0^1{  \int_0^1{ \lambda_{\max} \left\{ \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\} d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
+    &\le \int_0^1{  \int_0^1{ \left\| \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\|_2 \cdot \left\| \bar{\rvo}_\xi - \rvo \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &= \int_0^1{  \int_0^1{ \left\| \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\|_2 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
     &\le \int_0^1{  \int_0^1{ 4 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
     &= 2 \cdot \left\| \rvo^\prime - \rvo \right\|_2^2. \qedhere
 \end{split}

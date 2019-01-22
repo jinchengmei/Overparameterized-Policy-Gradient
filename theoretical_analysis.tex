@@ -27,7 +27,17 @@ for $t = \sqrt{T}$. Denote $\varepsilon \triangleq \frac{n^4}{\eta m c^2 \delta^
 \end{equation*}
 \end{proof}
 
-\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first $\sqrt{T}$ exploring phase steps, the agent uniformly samples actions, and learnd the NN policy with expected loss convergent to smaller than $\varepsilon$. Intuitively, this phase is necessary because of: (a) unlike tabular algorithms, i.e., maintaining a scalar value for each arm, the NN policy evolves in a much slower way, due to the usually very small learning rate $\eta$; (b) it is sufficient that the expected loss of the the NN policy is small enough, to make the NN policy have large enough probability for the optimal arm. While in the second playing phase, because of the expected loss of the NN policy is small enough, the gradient norm will be lower bounded by positive constant times expected loss. Therefore the NN policy will keep reducing its expected loss, which means the expected regret will also be reduced. Our detailed analysis also consists of corresponding two parts.
+\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first $\sqrt{T}$ exploring phase steps, the agent uniformly samples actions, and learnd the NN policy with expected loss convergent to smaller than $\varepsilon$. Intuitively, this phase is necessary because of: (a) unlike tabular algorithms, i.e., maintaining a scalar value for each arm, the NN policy evolves in a much slower way, due to the usually very small learning rate $\eta$; (b) it is sufficient that the expected loss of the the NN policy is small enough, to make the NN policy have large enough probability for the optimal arm. While in the second playing phase, because of the expected loss of the NN policy is small enough, the gradient norm will be lower bounded by positive constant times expected loss. Therefore the NN policy will keep reducing its expected loss, which means the expected regret will also be reduced.
+
+\subsection{Exploration in Policy Learning}
+
+In \cref{subsec:vanilla_policy_gradient}, it is claimed that the vanilla policy gradient method will suffer lack of exploration. Now we intuitively explain the reason. Consider the derivative of the expected loss with respect to the logits,
+\begin{equation*}
+\begin{split}
+    \frac{d \rvpi_i^\top \rvtilder_i}{d \rvo_i} = \left[ \Delta\left( \rvpi_i \right) - \rvpi_i \rvpi_i^\top \right] \rvtilder_i,
+\end{split}
+\end{equation*}
+where $\Delta\left( \rvpi_i \right)$ is a diagonal matrix with $\Delta\left( \rvpi_i \right)_{k,k} = \pi_{i,k}$, $\forall k \in [h]$. For the $k$th action, the derivative value is $\pi_{i,k} \cdot \left( \tilde{r}_{i,k} - \rvpi_i^\top \rvtilder_i \right)$. Suppose the $k$th action is worth learning, i.e, $\rvpi_i^\top \rvtilder_i - \tilde{r}_{i,k} > 0$ is large, meaning this action will occur loss $\tilde{r}_{i,k}$ much smaller than the expected loss of the current policy, so the agent should increase its action logit. But if $\pi_{i,k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{i,k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{i,k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
 
 \subsection{Exploring Phase}
 \label{subsec:exploring_phase}
