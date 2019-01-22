@@ -21,7 +21,7 @@ The episodic MDP setting recovers the bandit setting as a special case. The envi
 
 \subsection{Neural Network (NN) Policy}
 
-The structure of the neural network policy is shown in \cref{fig:nn_policy}. The policy NN takes the feature vector of each state $\rvs_i \in \sR^d$ as the input. Then it calculates the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. Finally, the policy probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right) = f\left( \rmA^\top \sigma\left( \rmW^\top \rvs_i \right) \right)$. 
+The structure of the neural network policy is shown in \cref{fig:nn_policy}. The policy NN takes the feature vector of each state $\rvs_i \in \sR^d$ as the input. Then it calculates the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. Finally, the policy probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right) = f\left( \rmA \sigma\left( \rmW \rvs_i \right) \right)$. 
 \begin{figure}[t]
 \vskip 0.2in
 \begin{center}
@@ -32,7 +32,7 @@ The structure of the neural network policy is shown in \cref{fig:nn_policy}. The
 \vskip -0.2in
 \end{figure}
 
-The above neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{d \times m}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss can be calculated according to \cref{eq:expected_loss}.
+The above neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{m \times d}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss can be calculated according to \cref{eq:expected_loss}.
 
 \subsection{Vanilla Policy Gradient}
 \label{subsec:vanilla_policy_gradient}
@@ -46,7 +46,7 @@ During the process of interacting with the environment, the agent can use any st
 \end{equation}
 according to \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i(t)$ to sample an action, and obtain an estimation of the expected loss $\ell(t)$. Doing policy gradient descent with respect to the NN weights $\rmW(t)$ will arguably decrese the expected loss, thus reduce the expected regret. 
 
-However, the above mentioned method, called as vanilla policy gradient, often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Unfortunately, without any other techniques the vanilla policy gradient method cannot circumvent this issue. Actually, as our proof shown later on, the convergence of policy expected loss relies on non-zero probability of exploring optimal arms, which is consistent with intuition. For this reason, we need mix the vanilla policy gradient method with explicit exploration.
+However, the above mentioned method, called as vanilla policy gradient, often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Unfortunately, without any other techniques the vanilla policy gradient method cannot avoid this issue. Actually, as our proof shown later on, the convergence of policy expected loss relies on non-zero probability of exploring optimal arms, which is consistent with intuition. For this reason, we need mix the vanilla policy gradient method with explicit exploration.
 
 \subsection{Policy Gradient with Uniform Exploration}
 
