@@ -40,6 +40,7 @@
 
 \def\rvpi{{\boldsymbol{\pi}}}
 
+\def\rmA{{\mathbf{A}}}
 \def\rmI{{\mathbf{I}}}
 \def\rmW{{\mathbf{W}}}
 \def\rmX{{\mathbf{X}}}
@@ -48,6 +49,7 @@
 \def\sR{{\mathbb{R}}}
 \def\sI{{\mathbb{I}}}
 
+\def\gH{{\mathcal{H}}}
 \def\gN{{\mathcal{N}}}
 \def\gE{{\mathcal{E}}}
 \def\gU{{\mathcal{U}}}
@@ -59,6 +61,7 @@
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\probability}{Pr}
+\DeclareMathOperator*{\expectation}{\sE}
 
 \begin{document}
 
@@ -77,13 +80,13 @@ Bold letters refer to vectors, and non-bold letters refer to scalars. For exampl
 	\item $\pi_{i,k} \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}}$ is the  probability for choosing arm $k$ in bandit $i$.
 	\item $\rvr_i \in \sR^h$ is the reward vector for bandit $i$.
 	\item $\r_i^{\max} \triangleq \max\limits_{k}\left\{ r_{i,k} \right\}$ is the maximum reward of bandit $i$.
-	\item The loss/regret $\ell \triangleq \regret(\rvpi) \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) }$. Regret minimization is equivalent with maximizing reward $\frac{1}{n} \sum\limits_{i=1}^{n}{\rvpi_i^\top \rvr_i}$.
+	\item The expected loss $\ell \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) }$. Minimizing the expected loss is equivalent with maximizing the expected reward $\frac{1}{n} \sum\limits_{i=1}^{n}{\rvpi_i^\top \rvr_i}$.
 \end{itemize}
 
-Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzero$. The regret at time step $t$ is,
+Denote $\rvtilder_{i} \triangleq \r_i^{\max} \cdot \rvone -  \rvr_{i} \ge \rvzero$. The expected loss at time step $t$ is,
 \begin{equation*}
 \begin{split}
-	\ell(t) \triangleq \regret(\rvpi(t)) &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_{i}(t)^\top \rvr_i \right) } \\
+	\ell(t) &\triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_{i}(t)^\top \rvr_i \right) } \\
 	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \left( \r_i^{\max} \cdot \rvone - \rvr_{i} \right) } \\
 	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_{i} }.
 \end{split}
@@ -457,6 +460,62 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{proof}
 
 \subsection{Regret Semi-Smoothness}
+
+\begin{lem}
+    Denote $\gH\left( \rvpi_i \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi_i \left(\rvo \right) \right) - \rvpi_i \left(\rvo \right) \rvpi_i \left(\rvo \right)^\top$.
+\begin{equation*}
+    \lambda_{\max}\left\{ \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \right\} \le 4.
+\end{equation*}
+\end{lem}
+\begin{proof}
+    Denote $\rmA \triangleq \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \in \sR^{h \times h}$.
+\begin{equation*}
+\begin{split}
+    A_{s, t} &= \frac{d \pi_{i,s} \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) }{d o_t} \\
+    &= \frac{d \pi_{i,s} }{d o_t} \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) + \pi_{i,s} \frac{d \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) }{d o_t} \\
+    &=\left ( \sI\left\{ s = t\right\} \pi_{i,t} -  \pi_{i,s } \pi_{i,t} \right) \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) - \pi_{i,s} \left( \pi_{i,t} \tilde{r}_{i,t} - \pi_{i,t} \rvpi_i^\top \rvtilder_i \right).
+\end{split}
+\end{equation*}
+For any vector $\rvx \in \sR^h$, 
+\begin{equation*}
+\begin{split}
+    \rvx^\top \rmA \rvx &= \sum\limits_{s=1}^{h}{ \sum\limits_{t=1}^{h}{ A_{s,t} x_s x_t} } \\
+    &= \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \cdot \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \right] \cdot \expectation\limits_{\rvpi_i}\left[ \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \cdot \rvx \right] \cdot \expectation\limits_{\rvpi_i}\left[ \rvx \right] + \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \right] \cdot \left( \expectation\limits_{\rvpi_i}\left[ \rvx \right] \right)^2 \\
+    &\qquad - \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \cdot \rvx \right] \cdot \expectation\limits_{\rvpi_i}\left[ \rvx \right] + \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \right] \cdot \left( \expectation\limits_{\rvpi_i}\left[ \rvx \right] \right)^2 \\
+    &\le \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \cdot \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \cdot \rvx \right] \cdot \expectation\limits_{\rvpi_i}\left[ \rvx \right] - \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \cdot \rvx \right] \cdot \expectation\limits_{\rvpi_i}\left[ \rvx \right] + \expectation\limits_{\rvpi_i}\left[ \rvtilder_i \right] \cdot \left( \expectation\limits_{\rvpi_i}\left[ \rvx \right] \right)^2 \\
+    &\le \left\| \rvpi_i \right\|_2 \cdot \left\| \rvtilder_i \cdot \rvx \cdot \rvx \right\|_2 + 2 \cdot \left\| \rvpi_i \right\|_2 \cdot \left\| \rvtilder_i \cdot \rvx \right\|_2 \cdot \left\| \rvpi_i \right\|_2 \cdot \left\| \rvx \right\|_2 + \left\| \rvpi_i \right\|_2^2 \cdot \left\| \rvtilder_i \cdot \rvx \right\|_2^2 \\
+    &\le \left\| \rvtilder_i \cdot \rvx \cdot \rvx \right\|_2 + 2 \cdot \left\| \rvtilder_i \cdot \rvx \right\|_2 \cdot \left\| \rvx \right\|_2 + \left\| \rvtilder_i \cdot \rvx \right\|_2^2 \\
+    &\le \left\| \rvx \cdot \rvx \right\|_2 + 2 \cdot \left\| \rvx \right\|_2^2 + \left\| \rvx \right\|_2^2 \\
+    &\le 4 \cdot \left\| \rvx \right\|_2^2. \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
+
+\begin{lem}
+\begin{equation*}
+    \rvpi_i\left( \rvo^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rvo \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle + 2 \left\| \rvo^\prime - \rvo \right\|_2^2.
+\end{equation*}
+\end{lem}
+\begin{proof}
+Denote $\bar{\rvo}_\xi = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
+\begin{equation*}
+\begin{split}
+    &\left| \rvpi_i\left( \rvo^\prime \right)^\top \rvtilder_i - \rvpi_i\left( \rvo \right)^\top \rvtilder_i - \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
+    &= \left| \int_0^1{ \frac{d \rvpi_i\left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)^\top \rvtilder_i}{d \xi} d\xi} - \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
+    &= \left| \int_0^1{ \left\langle \frac{d \rvpi_i\left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)^\top \rvtilder_i}{d \left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)}, \rvo^\prime - \rvo \right\rangle d\xi} - \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
+    &= \left| \int_0^1{ \left\langle \frac{d \rvpi_i\left( \bar{\rvo}_\xi \right)^\top \rvtilder_i}{d \bar{\rvo}_\xi} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle d\xi} \right| \\
+    &\le \int_0^1{ \left| \left\langle \frac{d \rvpi_i\left( \bar{\rvo}_\xi \right)^\top \rvtilder_i}{d \bar{\rvo}_\xi} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| d\xi} \\
+    &\le \int_0^1{ \left\| \frac{d \rvpi_i\left( \bar{\rvo}_\xi \right)^\top \rvtilder_i}{d \bar{\rvo}_\xi} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &= \int_0^1{ \left\| \gH\left( \rvpi_i\left( \bar{\rvo}_\xi \right)\right) \rvtilder_i - \gH\left( \rvpi_i\left( \rvo \right)\right) \rvtilder_i \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &= \int_0^1{ \left\| \int_0^1{\left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)}, \bar{\rvo}_\xi - \rvo \right\rangle d\mu} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &\le \int_0^1{  \int_0^1{ \left\| \left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)}, \bar{\rvo}_\xi - \rvo \right\rangle \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &\le \int_0^1{  \int_0^1{ \lambda_{\max} \left\{ \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\} \cdot \left\| \bar{\rvo}_\xi - \rvo \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &= \int_0^1{  \int_0^1{ \lambda_{\max} \left\{ \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\} d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
+    &\le \int_0^1{  \int_0^1{ 4 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
+    &= 2 \cdot \left\| \rvo^\prime - \rvo \right\|_2^2. \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
 
 \begin{lem}
     Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the neural network policies parameterized by $\rmW$ and $\rmW^\prime$, respectively. $\forall i \in [n]$,

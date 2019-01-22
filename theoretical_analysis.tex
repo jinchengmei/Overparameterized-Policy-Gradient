@@ -143,7 +143,9 @@ After $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterat
 \subsection{Playing Phase}
 \label{subsec:playing_phase}
 
-In this phase, we use the NN policy net to select actions and collect rewards. We still need to use the  results in \cref{subsec:exploring_phase} to make sure that the expected regret of running policies will not deteriorate. Fortunately, because of the enough exploration phase, we have the exploration item $c$ large enough.
+In this phase, we use the learned NN policy to sample and take actions. It is important that  
+
+Fortunately, because of the enough exploration phase, we have the exploration item $c$ large enough.
 
 \begin{lem}
     $c > 1 - \frac{1}{\Delta \sqrt{T}}$.
