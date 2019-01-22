@@ -97,52 +97,61 @@ where $\tilde{\rmD}_{k,k} \triangleq \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right
     \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \triangleq \rmD(t) \rmA^\top \left[ \Delta\left( \rvpi_i(t) \right) - \rvpi_i(t) \rvpi_i(t)^\top \right] \rvtilder_i \rvs^\top.
 \end{split}
 \end{equation*}
-where $\rmD(t)_{k,k} \triangleq \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\}$, $\forall k \in [m]$. For any $\tau > 0$, with probability at least $\frac{1}{2} - \frac{n\tau}{\sqrt{2\pi}\sigma}$, $\forall t \in O\left(\frac{\tau}{\eta}\right)$, $\forall r \in [m]$,
+where $\rmD(t)_{k,k} \triangleq \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\}$, $\forall k \in [m]$. For any $\tau > 0$, with probability at least $1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma}$, $\forall t \in O\left(\frac{\tau}{\eta}\right)$, $\forall r \in [m]$,
 \begin{equation*}
 	\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)},
 \end{equation*}
 where $\rvw_r(t)$ is the $r$th row vector of $\rmW(t)$.
 \end{lem}
 
-\cref{lem:gradient_coupling} implies that with constant probability, for bounded numbers of policy gradient updates, the signs of the true policy gradient will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}$, thus the true gradient is equal to the pseudo gradient, which leads to the following result,
+\cref{lem:gradient_coupling} implies that with constant probability, for bounded numbers of policy gradient updates, the signs of the true policy gradient will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}$, thus combining with \cref{lem:logit_smoothness} leads to the following result.
+\begin{lem}
+\label{lem:parameter_smoothness}
+    Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)}$, where $t \in O\left( \frac{\tau}{\eta}\right)$,
+\begin{equation}
+\label{eq:parameter_smoothness}
+\begin{split}
+\small
+    \rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \\
+    &\!\!\!\!\!\!\!\!\!\!\!\!\!\! - \eta \cdot \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 + 2 \left\| \rvo(t+1) - \rvo(t) \right\|_2^2.
+\end{split}
+\end{equation}
+\end{lem}
 
-
-Usually, combining this smoothness condition with other objective properties like convexity, one can prove convergence results. However, the policy expected loss is non-convex over NN weights. We resort to the recent progresses in the overparameterized NN optimization theory, i.e., the gradient coupling and gradient lower bounds \citep{li2018learning}.
-
-The next lemma shows that the true policy gradient norm is upper bounded by the expected loss.
+To use \cref{lem:parameter_smoothness} we need upper bound the last term in \cref{eq:parameter_smoothness} by the policy expected loss.
 \begin{lem}
 \label{lem:gradient_upper_bound}
-With probability at least $\frac{1}{2}$,
+$\forall r \in [m]$, $\forall t > 0$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 \le 2 \sqrt{\log{\left(4m\right)}} \cdot \rvpi_{i}(t)^\top \rvtilder_i.
+	\left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2 \le \rvpi_{i}(t)^\top \rvtilder_i.
 \end{split}
 \end{equation*}
 \end{lem}
 
-Now comes the key insight of the recent progresses of the overparameterized NN optimization theory. With constants probability, the pseudo policy gradient norm is lower bounded by the expected loss. However, due to the inherent difference between RL and supervised learning, our result contains an exploration related term, which directly leads to the necessity of the exploring phase in \cref{alg:policy_gradient_uniform_exploration}. 
+Now comes the key insight of the recent progresses of the overparameterized NN optimization theory. With constants probability, the pseudo policy gradient norm is lower bounded by the expected loss \citep{li2018learning}. However, unlike the supervised learning setting, RL has exploration issue, as shown in \cref{subsec:exploration_in_policy_learning}. Our result contains an exploration related term, which is consistent with \cref{eq:logit_derivative_lower_bound}, making the exploring phase in \cref{alg:policy_gradient_uniform_exploration} necessary.
 
 \begin{lem}
 \label{lem:gradient_lower_bound}
-	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\rvpi_i(t)^\top \rvtilder_i \right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ r_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $\rvs_{i^*(t)}$. If $\pi_{i^*(t), k^*(t)}(t) > c_t > 0$, then with probability at least $\Omega\left( \frac{\delta}{n} \right)$,
+	$\forall i \in [n]$, define $k_i^* \triangleq \argmin\limits_{k \in [h]}\left\{ \tilde{r}_{i,k} \right\}$, i.e., the optimal action at state $\rvs_{i}$. If $\pi(t)_{i, k_i^*} > c_t > 0$, then with probability at least $\Omega\left( \frac{\delta}{n} \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot c_t \cdot  \rvpi_{i^*(t)}(t)^\top \rvtilder_{i^*(t)}.
+	\left\| \frac{d\tilde{\ell}(t)}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot c_t \cdot  \rvpi_{i}(t)^\top \rvtilder_{i}.
 \end{split}
 \end{equation*}
 \end{lem}
 
-\cref{lem:gradient_lower_bound} is a generalization of recent overparameterized NN optimization results into the RL field. By \cref{lem:gradient_lower_bound}, whenever the policy expected loss $\rvpi_{i^*(t)}(t)^\top \rvtilder_{i^*(t)}$ is large, with enough exploration of the optimal action (the term $c_t > 0$ here), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, we can get the true policy gradient norm is also large, which is necessary for making progresses to reduce the policy expected loss. Carefully applying all the stated results, we get the policy expected loss convergence result for the exploring phase.
+\cref{lem:gradient_lower_bound} is a generalizes the overparameterized NN optimization theory into the RL field. By \cref{lem:gradient_lower_bound}, whenever the policy expected loss $\rvpi_{i}(t)^\top \rvtilder_{i}$ is large, with enough exploration of the optimal action ($\pi(t)_{i, k_i^*} > c_t > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:parameter_smoothness}. Carefully applying all the stated results, the policy expected loss converges after the exploring phase.
 
 \begin{thm}
 \label{thm:regret_convergence}
-    Let $\rvpi_i\left( \rmW(t) \right)$ be the NN policy parameterized by the weights $\rmW$. Assume $m \in \tilde{\Theta}\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c^2 \delta^2}{16 n^4 h m \left( \log{\left(4m\right)} \right)^2} \right)$, after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ policy gradient descent iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$.
+    Let $\rvpi_i\left( \rmW \right)$ be the NN policy parameterized by the weights $\rmW$. Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c^2 \delta^2}{16 n^4 h m \left( \log{\left(4m\right)} \right)^2} \right)$, after $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ policy gradient descent iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$.
 \end{thm}
 \begin{proof}
-    By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 = \left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2$, $\forall t \in O\left( \frac{\sigma}{\eta n \sqrt{\log{m}}} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \ell}{d \rmW(t)}$, by \cref{lem:smoothness},
+    By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)}$, $\forall t \in O\left( \frac{\sigma}{\eta n} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)}$, by \cref{lem:parameter_smoothness},
 \begin{equation*}
 \begin{split}
-    &\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F^2 \\
+    &\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 \\
     &\qquad + 4 \sqrt{m \log{\left(4m\right)}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \eta \cdot \left\| \frac{d \ell}{d \rmW(t)} \right\|_F \\
     &\qquad + 4 h m \log{\left(4m\right)} \cdot \eta^2 \left\| \frac{d \ell}{d \rmW(t)} \right\|_F^2 \\
     &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2^2 } \\
@@ -166,7 +175,7 @@ Sum up the inequality from $0$ to $t$,
     \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i} \ge \Omega\left( \frac{\eta m c^2 \delta^2}{n^4} \right) \cdot t.
 \end{split}
 \end{equation*}
-After $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$. Let $\frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta \sqrt{\log{m}}} = \frac{1}{n \eta \sqrt{m \log{m}}}$, we have $m \ge \frac{n^{10}}{c^4 \delta^4 \varepsilon^2}\log{\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)}$.
+After $t \in O\left( \frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$. Let $\frac{n^4}{\eta m c^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta \sqrt{\log{m}}} = \frac{1}{n \eta \sqrt{m \log{m}}}$, we have $m \ge \frac{n^{10}}{c^4 \delta^4 \varepsilon^2}$.
 \end{proof}
 
 \subsection{Playing Phase}
