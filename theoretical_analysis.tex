@@ -20,7 +20,7 @@ According to \cref{alg:policy_gradient_uniform_exploration}, $T$ rounds are divi
      &\le T^{\frac{2}{3} + \beta } + \log{T} - 1 + 2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + T^{\frac{2}{3} + \beta},
 \end{split}
 \end{equation*}
-where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$, and the second inequality is according to \cref{thm:regret_convergence} and H{\"o}lder's inequality. The third inequality is by \cref{thm:loss_estimation_hoeffding}. Since $2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \le 1$, $\forall \beta > 0$, we obtain the regret upper bound.
+where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$, and the second inequality is according to \cref{thm:fake_expected_loss_convergence} and H{\"o}lder's inequality. The third inequality is by \cref{thm:loss_estimation_hoeffding}. Since $2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \le 1$, $\forall \beta > 0$, we obtain the regret upper bound.
 \end{proof}
 
 \cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first $\sqrt{T}$ exploring phase steps, the agent uniformly samples actions, and learnd the NN policy with expected loss convergent to smaller than $\varepsilon$. Intuitively, this phase is necessary because of: (a) unlike tabular algorithms, i.e., maintaining a scalar value for each arm, the NN policy evolves in a much slower way, due to the usually very small learning rate $\eta$; (b) it is sufficient that the expected loss of the the NN policy is small enough, to make the NN policy have large enough probability for the optimal arm. While in the second playing phase, because of the expected loss of the NN policy is small enough, the gradient norm will be lower bounded by positive constant times expected loss. Therefore the NN policy will keep reducing its expected loss, which means the expected regret will also be reduced.
@@ -52,6 +52,43 @@ Denote $k^* = \argmax\limits_{k \in [h]}{ \left| \hat{\tilde{r}}_{i, k} - \tilde
 \end{split}
 \end{equation*}
 where the last inequality is by \cref{eq:loss_estimation_hoeffding}, $\left| \hat{\tilde{r}}_{i, k^*} - \tilde{r}_{i,k^*} \right| \le 1$, and $\pr\left\{ \left| \hat{\tilde{r}}_{i, k} - \tilde{r}_{i,k} \right| \le T^{\beta - \frac{1}{3}} \right\} \le 1$. 
+\end{proof}
+
+\subsection{Playing-Learning Phase}
+\label{subsec:playing_learning_phase}
+
+The good estimation of the true mean loss $\hat{\rvtilder}_i$ obtained at the end of the exploring phase will be used to train the NN policy $\rvpi_i\left( \rmW(t) \right)$. We carefully combine the overparameterized NN optimization theory for supervized learning \citep{li2018learning,allen2018convergenceB} with the optimal exploration conditions in RL (explained later on in \cref{subsec:exploration_in_policy_learning}), and show that the ``fake" expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i$ converges at rate $O\left(\frac{1}{t} \right)$. We first prove the main result, then show some intuitions with lemmas, the proofs of which can be found in the appendix.
+
+\begin{thm}
+\label{thm:fake_expected_loss_convergence}
+    Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c_t^2 \delta^2}{8 n^4 h m} \right)$,
+    $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \frac{n^4}{\eta m c_t^2 \delta^2 t}$.
+\end{thm}
+\begin{proof}
+    By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)}$, $\forall t \in O\left( \frac{\sigma}{\eta n} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)}$, by \cref{lem:parameter_smoothness},
+\begin{equation*}
+\begin{split}
+    &\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \\
+    &- \eta \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 + 8 h m \eta^2 \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 \\
+    &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } + 8 h m \eta^2 \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \left[ \frac{\eta m c_t^2 \delta^2}{n^4} - 8 \eta^2 h m^2 \right] \\
+    &= \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right).
+\end{split}
+\end{equation*}
+Divide $\left( \rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i\right) \cdot \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)$,
+\begin{equation*}
+\begin{split}
+    &\frac{1}{\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i} - \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i} \ge \\
+    &\frac{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i}{\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i} \cdot \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right) \ge \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right).
+\end{split}
+\end{equation*}
+Sum up the inequality from $0$ to $t$,
+\begin{equation*}
+\begin{split}
+    \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i} \ge \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right) \cdot t.
+\end{split}
+\end{equation*}
+After $t \in O\left( \frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$. Let $\frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta} = \frac{1}{n \eta \sqrt{m}}$, we have $m \ge \frac{n^{10}}{c_t^4 \delta^4 \varepsilon^2}$.
 \end{proof}
 
 \subsection{Policy Learning in Logit Space}
@@ -153,37 +190,6 @@ Now comes the key insight of the recent progresses of the overparameterized NN o
 \end{lem}
 
 \cref{lem:gradient_lower_bound} is a generalizes the overparameterized NN optimization theory into the RL field. By \cref{lem:gradient_lower_bound}, whenever the policy expected loss $\rvpi_{i}(t)^\top \rvtilder_{i}$ is large, with enough exploration of the optimal action ($\pi(t)_{i, k_i^*} > c_t > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:parameter_smoothness}. Carefully applying all the stated results, the policy expected loss converges after the exploring phase.
-
-\begin{thm}
-\label{thm:regret_convergence}
-    Let $\rvpi_i\left( \rmW \right)$ be the NN policy parameterized by the weights $\rmW$. Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c_t^2 \delta^2}{8 n^4 h m} \right)$, after $t \in O\left( \frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \right)$ policy gradient descent iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$.
-\end{thm}
-\begin{proof}
-    By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)}$, $\forall t \in O\left( \frac{\sigma}{\eta n} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)}$, by \cref{lem:parameter_smoothness},
-\begin{equation*}
-\begin{split}
-    &\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \\
-    &- \eta \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 + 8 h m \eta^2 \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 \\
-    &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } + 8 h m \eta^2 \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } \\
-    &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \left[ \frac{\eta m c_t^2 \delta^2}{n^4} - 8 \eta^2 h m^2 \right] \\
-    &= \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right).
-\end{split}
-\end{equation*}
-Divide $\left( \rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i\right) \cdot \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)$,
-\begin{equation*}
-\begin{split}
-    &\frac{1}{\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i} - \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i} \ge \\
-    &\frac{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i}{\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i} \cdot \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right) \ge \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right).
-\end{split}
-\end{equation*}
-Sum up the inequality from $0$ to $t$,
-\begin{equation*}
-\begin{split}
-    \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i} \ge \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right) \cdot t.
-\end{split}
-\end{equation*}
-After $t \in O\left( \frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$. Let $\frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta} = \frac{1}{n \eta \sqrt{m}}$, we have $m \ge \frac{n^{10}}{c_t^4 \delta^4 \varepsilon^2}$.
-\end{proof}
 
 \subsection{Exploration in Policy Learning}
 \label{subsec:exploration_in_policy_learning}
