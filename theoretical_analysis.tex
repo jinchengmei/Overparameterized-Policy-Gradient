@@ -194,7 +194,7 @@ Now by the key insight of the recent progresses of the overparameterized NN opti
 \subsection{Exploration in Policy Learning}
 \label{subsec:exploration_in_policy_learning}
 
-In \cref{subsec:vanilla_policy_gradient}, it is claimed that the vanilla policy gradient method will suffer the lack of exploration issue. Now we intuitively explain it. Consider the derivative of the true expected loss with respect to the logits,
+In \cref{subsec:vanilla_policy_gradient}, it is claimed that the vanilla policy gradient method will suffer the lack of exploration issue. Now we provide some intuitions. Consider the derivative of the true expected loss with respect to the logits,
 \begin{equation}
 \label{eq:logit_derivative}
 \begin{split}
@@ -207,62 +207,29 @@ where $\Delta\left( \rvpi_i \right)$ is a diagonal matrix with $\Delta\left( \rv
 
 Consider policy update using the logit derivatives \cref{eq:logit_derivative} with the true loss as the objective. With learning rate $\eta > 0$, for each action $k \in [h]$, the logit increment between two consecutive time steps is,
 \begin{equation*}
+\label{eq:logit_increment_logit_space}
 \begin{split}
-    o\left( t+1 \right)_{k} - o\left( t \right)_{k} = \eta \cdot \pi_{i,k} \cdot \left( \rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} \right),
+\small
+    o\left( t+1 \right)_{k} - o\left( t \right)_{k} = \eta \cdot \pi\left( \rvo(t)\right)_{i,k} \cdot \left( \rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} \right),
 \end{split}
 \end{equation*}
+which mean as long as $\pi\left( \rvo(t)\right)_{i,k} > 0$, for any valuable action $k$ with its true action loss smaller than the current policy expected loss, i.e., $\rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} > 0$, at the next time step $t+1$, the policy logit for this action will increase. While for any bad actions with $\rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} < 0$, their logits will decrease.
 
+Now consider the initialized policy $\rvpi_i\left( \rvo(0) \right)$, which is (very close to) the uniform policy, with $\pi\left( \rvo(0)\right)_{i,k_i^*} \approx \frac{1}{h} \in \Omega(1)$. Also note that $\rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k_i^*}$ is larger than any other action $k$, which is consistent with intuition because the optimal action is the most valuable for learning. With the same learning rate, the optimal action logit will have the largest positive increment than all the other suboptimal actions. After the softmax transform, the optimal action probability will be larger than its previous value. 
 \begin{lem}
-    $c > 1 - \frac{1}{\Delta \sqrt{T}}$.
+\label{lem:optimal_probability_increse_logit_space}
+$\forall t \ge 0$,
+\begin{equation*}
+    \pi\left( \rvo(t+1)\right)_{i,k_i^*} \ge \pi\left( \rvo(t)\right)_{i,k_i^*} \in \Omega(1).
+\end{equation*}
 \end{lem}
 
-With this result and \cref{subsec:exploring_phase}, we can prove that the objective progress is always positive and therefore the policy regret will be always less than $\varepsilon$ in the last $T - \sqrt{T}$ time steps. That is why we can safely use the NN policy to play without worrying lack of exploration issue.
-
-\section{Generalizations}
-
-\subsection{State Dependent Bandits}
-
-\subsection{MDPs}
-
-\subsection{Multi-Layered NN Policies}
-
-\section{Related Work}
-
-
-
-
-\if0
-% In the unusual situation where you want a paper to appear in the
-% references without citing it in the main text, use \nocite
-\nocite{langley00}
-\fi
-
-\if0
-\begin{table}[t]
-\caption{Classification accuracies for naive Bayes and flexible
-Bayes on various data sets.}
-\label{sample-table}
-\vskip 0.15in
-\begin{center}
-\begin{small}
-\begin{sc}
-\begin{tabular}{lcccr}
-\toprule
-Data set & Naive & Flexible & Better? \\
-\midrule
-Breast    & 95.9$\pm$ 0.2& 96.7$\pm$ 0.2& $\surd$ \\
-Cleveland & 83.3$\pm$ 0.6& 80.0$\pm$ 0.6& $\times$\\
-Glass2    & 61.9$\pm$ 1.4& 83.8$\pm$ 0.7& $\surd$ \\
-Credit    & 74.8$\pm$ 0.5& 78.3$\pm$ 0.6&         \\
-Horse     & 73.3$\pm$ 0.9& 69.7$\pm$ 1.0& $\times$\\
-Meta      & 67.1$\pm$ 0.6& 76.5$\pm$ 0.5& $\surd$ \\
-Pima      & 75.1$\pm$ 0.6& 73.9$\pm$ 0.5&         \\
-Vehicle   & 44.9$\pm$ 0.6& 61.5$\pm$ 0.4& $\surd$ \\
-\bottomrule
-\end{tabular}
-\end{sc}
-\end{small}
-\end{center}
-\vskip -0.1in
-\end{table}
-\fi
+With this result in mind, \cref{alg:policy_gradient_uniform_exploration} actually does similar things. First, after the exploring phase, it obtains a good estimation $\hat{\rvtilder}_i$ of the true loss $\rvtilder_i$, thus the surrogate expected loss will be closed to the true expected loss. Second, the initialized policy $\rvpi_i\left( \rmW(0) \right)$ is very closed to the uniform policy with $\pi\left( \rmW(0)\right)_{i, \hat{k}_i^*} \approx \frac{1}{h} \in \Omega(1)$. Third, since the policy gradient update is restrained around initialization \cref{lem:gradient_coupling}, the policy gradient updates behave similarly with the logit derivative updates, after each policy gradient update, the optimal action logit will increase more than any other  suboptimal actions, which implies similar results with \cref{lem:optimal_probability_increse_logit_space} as follows,
+\begin{lem}
+\label{lem:optimal_probability_increse_parameter_space}
+$\forall t \ge 0$,
+\begin{equation*}
+    \pi\left( \rmW(t+1)\right)_{i,\hat{k}_i^*} \ge \pi\left( \rmW(t)\right)_{i,\hat{k}_i^*} \in \Omega(1).
+\end{equation*}
+\end{lem}
+By \cref{lem:optimal_probability_increse_parameter_space}, we can safely replace the $c$ and $c_t$ values in the main result \cref{thm:main_result} and all the other intermediate lemmas and theorems, without incurring any additional regret dependent on $T$.
