@@ -56,8 +56,6 @@ However, the above mentioned method, called as vanilla policy gradient, often su
 
 Our proposed algorithm adds explicit uniform exploration to the vanilla policy gradient method, as shown in \cref{alg:policy_gradient_uniform_exploration}. After the random initialization, at each time step $t$, one of the two cases happens. If $t < T^{\frac{2}{3} + \beta}$, then agent gets into a purely ``exploring phase", without learning the policy NN, while just collecting empirically estimated rewards. If $t \ge T^{\frac{2}{3} + \beta}$, then the agent starts ``playing and learning". The agent samples and takes actions according to the current NN policy $\rvpi_{i}\left(\rmW(t)\right)$. In the meanwhile, the agent learn the NN policy by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
 
-Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $\rva_k \sim \gU\left\{-1, +1\right\}$, $\rva_k$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained NNs \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
-
 \begin{algorithm}[t]
    \caption{Policy Gradient with Uniform Exploration}
 \label{alg:policy_gradient_uniform_exploration}
@@ -83,4 +81,15 @@ Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initial
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
+
+Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $\rva_k \sim \gU\left\{-1, +1\right\}$, $\rva_k$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained NNs \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
+
+Also note that in \cref{alg:policy_gradient_uniform_exploration}, we write gradient descent over the loss objective  $\rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i$ for analysis. However, policy gradient update is doing gradient ascent over the reward objective $\rvpi_{i}\left(\rmW(t)\right)^\top \rvhat_i$. Actually,
+\begin{equation*}
+\begin{split}
+    \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} &= \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \left( \r_i^{\max} \cdot \rvone - \rvhat_i \right)}{d \rmW(t)} \\
+    &= - \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \rvhat_i}{d \rmW(t)}.
+\end{split}
+\end{equation*}
+Thus in practice we do not need to know $\r_i^{\max}$ and calculate $\hat{\rvtilder}_i$. It is for analysis purpose.
 
