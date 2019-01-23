@@ -2,11 +2,11 @@
 
 \subsection{Settings}
 
-\subsubsection{Bandit Setting}
+\subsubsection{Stochastic Bandit Setting}
 
 For simplicity, we first present the main results in the standard bandit setting, and then discuss several general settings.
 
-In the standard bandit setting, we have $n = 1$. At each time step $t$, the agent takes an action $A_t \in [h]$ according to some strategies, and then it observes a reward $r_{A_t} \in \sR$. The agent then uses the reward to improve its action selection strategies. After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
+In the standard stochastic bandit setting, we have $n = 1$. At each time step $t$, the agent takes an action $A_t \in [h]$ according to some strategies, and then it observes a reward $r_{A_t} \in \sR$. The agent then uses the reward to improve its action selection strategies. After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation}
 \label{eq:expected_regret}
     \r_i^{\max} \cdot T - \sE \left[ \sum\limits_{t=0}^{T-1}{  r_{i, A_t}  } \right] = \sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] },
