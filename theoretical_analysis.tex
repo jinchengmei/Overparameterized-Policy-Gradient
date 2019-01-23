@@ -8,7 +8,7 @@ We first present the main results in the bandit settings, as shown in \cref{thm:
 
 \begin{thm}
 \label{thm:main_result}
-    Given a two layer NN policy $\rvpi_i$, with number of parameters $m \in \Theta\left( \frac{n^{10}}{c_t^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c_t^2 \delta^2}{8 n^4 h m} \right)$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot T^{\frac{2}{3} + \beta }$, $\forall \beta > 0$.
+    Given a two layer NN policy $\rvpi_i$, with number of parameters $m \in \Theta\left( \frac{n^{10}}{c_t^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c_t^2 \delta^2}{8 n^4 h m} \right)$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{8 n^4 \sqrt{h}}{c^2 \delta^2} \cdot \log{T} + 2 \cdot T^{\frac{2}{3} + \beta }$, $\forall \beta > 0$.
 \end{thm}
 \begin{proof}
 According to \cref{alg:policy_gradient_uniform_exploration}, $T$ rounds are divided into two parts, where the uniform policy and $\rvpi_i\left( \rmW(t) \right)$ are used to sample and take actions, respectively. Therefore the regret consists of two corresponding parts, i.e., $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } =$
@@ -16,27 +16,43 @@ According to \cref{alg:policy_gradient_uniform_exploration}, $T$ rounds are divi
 \begin{split}
      &\sum\limits_{t=0}^{T^{\frac{2}{3} + \beta}}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ \tilde{r}_{i, A_t} \right] }} + \sum\limits_{t=T^{\frac{2}{3} + \beta} + 1}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \\
      &\le \small{\sum\limits_{t=0}^{T^{\frac{2}{3} + \beta}}{ 1 } + \sum\limits_{t=0}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i } + \sum\limits_{t=0}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \left( \rvtilder_i -  \hat{\rvtilder}_i \right) } } \\
-     &\le T^{\frac{2}{3} + \beta } + \sum\limits_{t=0}^{T-1}{ \frac{1}{t} } + \sum\limits_{t=0}^{T-1}{ \left\| \rvtilder_i -  \hat{\rvtilder}_i \right\|_\infty },
+     &\le T^{\frac{2}{3} + \beta } + \sum\limits_{t=0}^{T-1}{ \frac{1}{t} } + \sum\limits_{t=0}^{T-1}{ \left\| \hat{\rvtilder}_i - \rvtilder_i \right\|_\infty } \\
+     &\le T^{\frac{2}{3} + \beta } + \log{T} - 1 + 2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + T^{\frac{2}{3} + \beta},
 \end{split}
 \end{equation*}
-where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$, and the second inequality is according to \cref{thm:regret_convergence} and H{\"o}lder's inequality. The last inequality is by Theorem X.
+where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$, and the second inequality is according to \cref{thm:regret_convergence} and H{\"o}lder's inequality. The third inequality is by \cref{thm:loss_estimation_hoeffding}. Since $2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \le 1$, $\forall \beta > 0$, we obtain the regret upper bound.
 \end{proof}
 
 \cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first $\sqrt{T}$ exploring phase steps, the agent uniformly samples actions, and learnd the NN policy with expected loss convergent to smaller than $\varepsilon$. Intuitively, this phase is necessary because of: (a) unlike tabular algorithms, i.e., maintaining a scalar value for each arm, the NN policy evolves in a much slower way, due to the usually very small learning rate $\eta$; (b) it is sufficient that the expected loss of the the NN policy is small enough, to make the NN policy have large enough probability for the optimal arm. While in the second playing phase, because of the expected loss of the NN policy is small enough, the gradient norm will be lower bounded by positive constant times expected loss. Therefore the NN policy will keep reducing its expected loss, which means the expected regret will also be reduced.
 
-\subsection{Exploration in Policy Learning}
-\label{subsec:exploration_in_policy_learning}
+\subsection{Exploring Phase}
+\label{subsec:exploring_phase}
 
-In \cref{subsec:vanilla_policy_gradient}, it is claimed that the vanilla policy gradient method will suffer lack of exploration. Now we intuitively explain the reason. Consider the derivative of the expected loss with respect to the logits,
+The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides us good estimations of the true mean loss/reward as follows.
+\begin{thm}
+\label{thm:loss_estimation_hoeffding}
+    After the exploring phase of \cref{alg:policy_gradient_uniform_exploration},
+\begin{equation*}
+    \left\| \hat{\rvtilder}_i - \rvtilder_i \right\|_\infty \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + T^{\beta - \frac{1}{3}}.
+\end{equation*}
+\end{thm}
+\begin{proof}
+    The $k$th action is sampled $\frac{T^{\frac{2}{3} + \beta} }{h}$ times, $\forall k \in [h]$. By Hoeffding's inequality, $\forall k \in [h]$,
 \begin{equation}
-\label{eq:logit_derivative}
+\label{eq:loss_estimation_hoeffding}
 \begin{split}
-    \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo_i} = \left[ \Delta\left( \rvpi_i \right) - \rvpi_i \rvpi_i^\top \right] \rvtilder_i,
+    &\pr\left\{ \left| \hat{\tilde{r}}_{i, k} - \tilde{r}_{i,k} \right| > T^{\beta - \frac{1}{3}} \right\} = \pr\left\{ \left| \hat{r}_{i, k} - r_{i,k} \right| > T^{\beta - \frac{1}{3}} \right\} \\
+    &\le 2 \exp\left\{ - 2 \cdot  \frac{T^{\frac{2}{3} + \beta}}{h} \cdot T^{2\beta - \frac{2}{3}} \right\} = 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
 \end{split}
 \end{equation}
-where $\Delta\left( \rvpi_i \right)$ is a diagonal matrix with $\Delta\left( \rvpi_i \right)_{k,k} = \pi_{i,k}$, $\forall k \in [h]$. For the $k$th action, the derivative value is $\pi_{i,k} \cdot \left( \tilde{r}_{i,k} - \rvpi_i^\top \rvtilder_i \right)$. Suppose the $k$th action is worth learning, i.e, $\rvpi_i^\top \rvtilder_i - \tilde{r}_{i,k} > 0$ is large, meaning this action will occur loss $\tilde{r}_{i,k}$ much smaller than the expected loss of the current policy, so the agent should increase its action logit. But if $\pi_{i,k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{i,k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{i,k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
-
-\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{i,k}(t) > c > 0$ should hold for each time step $t$, where $c$ is a constant. In particular, to learn an optimal policy, $\pi_{i,k^*}(t) > c > 0$, where $\tilde{r}_{i,k^*} = 0$.
+Denote $k^* = \argmax\limits_{k \in [h]}{ \left| \hat{\tilde{r}}_{i, k} - \tilde{r}_{i,k} \right| }$. Then $\left\| \hat{\rvtilder}_i - \rvtilder_i \right\|_\infty =$
+\begin{equation*}
+\begin{split}
+    &\left| \hat{\tilde{r}}_{i, k^*} - \tilde{r}_{i,k^*} \right| \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \cdot 1 + 1 \cdot T^{\beta - \frac{1}{3}},
+\end{split}
+\end{equation*}
+where the last inequality is by \cref{eq:loss_estimation_hoeffding}, $\left| \hat{\tilde{r}}_{i, k^*} - \tilde{r}_{i,k^*} \right| \le 1$, and $\pr\left\{ \left| \hat{\tilde{r}}_{i, k} - \tilde{r}_{i,k} \right| \le T^{\beta - \frac{1}{3}} \right\} \le 1$. 
+\end{proof}
 
 \subsection{Policy Learning in Logit Space}
 
@@ -168,6 +184,20 @@ Sum up the inequality from $0$ to $t$,
 \end{equation*}
 After $t \in O\left( \frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$. Let $\frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta} = \frac{1}{n \eta \sqrt{m}}$, we have $m \ge \frac{n^{10}}{c_t^4 \delta^4 \varepsilon^2}$.
 \end{proof}
+
+\subsection{Exploration in Policy Learning}
+\label{subsec:exploration_in_policy_learning}
+
+In \cref{subsec:vanilla_policy_gradient}, it is claimed that the vanilla policy gradient method will suffer lack of exploration. Now we intuitively explain the reason. Consider the derivative of the expected loss with respect to the logits,
+\begin{equation}
+\label{eq:logit_derivative}
+\begin{split}
+    \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo_i} = \left[ \Delta\left( \rvpi_i \right) - \rvpi_i \rvpi_i^\top \right] \rvtilder_i,
+\end{split}
+\end{equation}
+where $\Delta\left( \rvpi_i \right)$ is a diagonal matrix with $\Delta\left( \rvpi_i \right)_{k,k} = \pi_{i,k}$, $\forall k \in [h]$. For the $k$th action, the derivative value is $\pi_{i,k} \cdot \left( \tilde{r}_{i,k} - \rvpi_i^\top \rvtilder_i \right)$. Suppose the $k$th action is worth learning, i.e, $\rvpi_i^\top \rvtilder_i - \tilde{r}_{i,k} > 0$ is large, meaning this action will occur loss $\tilde{r}_{i,k}$ much smaller than the expected loss of the current policy, so the agent should increase its action logit. But if $\pi_{i,k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{i,k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{i,k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
+
+\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{i,k}(t) > c > 0$ should hold for each time step $t$, where $c$ is a constant. In particular, to learn an optimal policy, $\pi_{i,k^*}(t) > c > 0$, where $\tilde{r}_{i,k^*} = 0$.
 
 \subsection{Playing Phase}
 \label{subsec:playing_phase}
