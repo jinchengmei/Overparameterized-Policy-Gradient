@@ -17,7 +17,7 @@ According to \cref{alg:policy_gradient_uniform_exploration}, $T$ rounds are divi
      &\sum\limits_{t=0}^{T^{\frac{2}{3} + \beta}}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ \tilde{r}_{i, A_t} \right] }} + \sum\limits_{t=T^{\frac{2}{3} + \beta} + 1}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \\
      &\le \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta}}{ 1 } + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i } \\
      &\qquad + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \left( \rvtilder_i -  \hat{\rvtilder}_i \right) }  \\
-     &\le T^{\frac{2}{3} + \beta } + \frac{2n^4}{\eta m c^2 \delta^2} \cdot \sum\limits_{t=0}^{T-1}{ \frac{1}{t} } +  \sum\limits_{t=1}^{T-1}{ \left\| \hat{\rvtilder}_i - \rvtilder_i \right\|_\infty } \\
+     &\le T^{\frac{2}{3} + \beta } + 1 + \frac{2n^4}{\eta m c^2 \delta^2} \cdot \sum\limits_{t=1}^{T-1}{ \frac{1}{t} } +  \sum\limits_{t=0}^{T-1}{ \left\| \hat{\rvtilder}_i - \rvtilder_i \right\|_\infty } \\
      &\le 2 T^{\frac{2}{3} + \beta } + \frac{32n^8h}{ c^4 \delta^4}\log{T} -O\left(1 \right) + 2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\},
 \end{split}
 \end{equation*}
