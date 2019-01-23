@@ -24,42 +24,5 @@ The exponential dependence of trajectory length $H$ is undesirable. This seems c
 
 \subsection{Multi-Layered NN Policies}
 
-For simplicity, we assume the policy is parameterized by a two layer NN. Recently, it has been proved that for general $L$ layer NNs, the node vector norm of the $(L-1)$th hidden layer, will be closed to the input vector norm at \textbf{and} around the random initialization \citep{allen2018convergenceA,allen2018convergenceB}. Taking the $(L-1)$th hidden layer as the input here, a multi-layered NN policy can also learn to minimize its surrogate expected loss from  good estimations obtained from the exploring phase in \cref{alg:policy_gradient_uniform_exploration}, with similar intermediate and regret results hold.
+For simplicity, we assume the policy is parameterized by a two layer ReLU NN. Recently, it has been proved that for general $L$ layer ReLU NNs, the node vector norm of the $(L-1)$th hidden layer, will be closed to the input vector norm at \textbf{and} around the random initialization \citep{allen2018convergenceA,allen2018convergenceB}. Taking the $(L-1)$th hidden layer as the input here, a multi-layered NN policy can also learn to minimize its surrogate expected loss from  good estimations obtained from the exploring phase in \cref{alg:policy_gradient_uniform_exploration}, with similar intermediate and regret results hold.
 
-\section{Related Work}
-
-\if0
-% In the unusual situation where you want a paper to appear in the
-% references without citing it in the main text, use \nocite
-\nocite{langley00}
-\fi
-
-\if0
-\begin{table}[t]
-\caption{Classification accuracies for naive Bayes and flexible
-Bayes on various data sets.}
-\label{sample-table}
-\vskip 0.15in
-\begin{center}
-\begin{small}
-\begin{sc}
-\begin{tabular}{lcccr}
-\toprule
-Data set & Naive & Flexible & Better? \\
-\midrule
-Breast    & 95.9$\pm$ 0.2& 96.7$\pm$ 0.2& $\surd$ \\
-Cleveland & 83.3$\pm$ 0.6& 80.0$\pm$ 0.6& $\times$\\
-Glass2    & 61.9$\pm$ 1.4& 83.8$\pm$ 0.7& $\surd$ \\
-Credit    & 74.8$\pm$ 0.5& 78.3$\pm$ 0.6&         \\
-Horse     & 73.3$\pm$ 0.9& 69.7$\pm$ 1.0& $\times$\\
-Meta      & 67.1$\pm$ 0.6& 76.5$\pm$ 0.5& $\surd$ \\
-Pima      & 75.1$\pm$ 0.6& 73.9$\pm$ 0.5&         \\
-Vehicle   & 44.9$\pm$ 0.6& 61.5$\pm$ 0.4& $\surd$ \\
-\bottomrule
-\end{tabular}
-\end{sc}
-\end{small}
-\end{center}
-\vskip -0.1in
-\end{table}
-\fi

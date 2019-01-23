@@ -1,0 +1,17 @@
+\section{Future Work}
+\label{sec:future_work}
+
+Our results are just at the beginning of theoretically understanding DRL. There are several open problems to our knowledge as follows.
+\begin{itemize}
+    \item In \cref{thm:main_result}, the regret is $O\left( T^{\frac{2}{3} + \beta}\right)$, $\forall \beta > 0$. We believe that the regret can be improved because the total regret in \cref{thm:main_result} is decomposed into NN learning part and exploration and estimation error part. The former one is $O\left(\log{T}\right)$, while the later one is $T^{\frac{2}{3} + \beta}$. With more delicately mixing the learning and the exploration, the later one term should be more close to the former term, leading to a better result.
+    \item We just consider uniform exploration. Some other popular strategies, like count based exploration \cite{auer2002finite}, EXP3 \citep{seldin2014one}, posterior sampling \citep{agrawal2012analysis} should also be investigated. However, one complication is that learning in a way like \cref{alg:policy_gradient_uniform_exploration}, it is not known whether the logit will converge to the true reward/value, which is necessary to make these explorations work.
+    \item In practice, it can always be found that gradient updates travel a long distance rather than around initialization \citep{liu2018deeptracker}. And usually, practical NNs do not have that much overparamerized scales. Any progresses in the DL theory will be helpful for the  improvements in DRL.
+    \item We just investigate the basic cumulative reward based policy gradient method. Many other successful RL algorithms including value based and actor critic methods, e.g, DQN \cite{mnih2015human}, A3C \citep{mnih2016asynchronous}, and PCL \citep{nachum2017bridging}, etc, should also be studied under NN function approximations. Also, other policy optimization methods beyong basic policy gradient, such as relative entropy policy search \citep{peters2010relative}, are also worth investigating.
+    \item For policy leaning with NN function approximations, there is no known lower bound, although at least the general $\Omega\left(\sqrt{T}\right)$ lower bound holds. We can get some sense from the two parts of the regret in \cref{thm:main_result}. The NN learning part seems cannot be improved, since this is the best one can obtain under smoothness like properties and gradient upper $\&$ lower bounds. While the other exploration and estimation error part seems still have space to be improved. But whether $\Omega\left(\sqrt{T}\right)$ is achievable is still unknown.
+\end{itemize}
+
+\if0
+% In the unusual situation where you want a paper to appear in the
+% references without citing it in the main text, use \nocite
+\nocite{langley00}
+\fi
