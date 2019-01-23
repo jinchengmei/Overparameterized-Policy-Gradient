@@ -130,9 +130,9 @@ Denote $\bar{\rvo}_\xi = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
 \label{lem:gradient_upper_bound}
 	Define the pseudo gradient as,
 \begin{equation*}
-	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
+	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-	For any $\tau > 0$, with probability at least $\frac{1}{2} \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$, $\forall t \in O\left(\frac{\tau}{\eta  \sqrt{\log{h}}}\right)$,
+	For any $\tau > 0$, with probability at least $\frac{1}{2} \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$, $\forall t \in O\left(\frac{\tau}{\eta }\right)$,
 \begin{equation}
 	\frac{d\ell}{d \rvw_r(t)} = \frac{d \tilde{\ell}}{d \rvw_r(t)}.
 \end{equation}
@@ -140,22 +140,22 @@ Denote $\bar{\rvo}_\xi = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
 \begin{proof}
 The policy gradient is,
 \begin{equation*}
-	\frac{d\ell}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
+	\frac{d\ell}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-Since $a_{k,r}, a_{k^\prime,r} \sim \gN(0, 1)$, we have $a_{k,r} - a_{k^\prime,r} \sim \gN(0, 2)$, therefore $\left| a_{k,r} - a_{k^\prime,r} \right| \le 2 \sqrt{\log{\left(4h\right)}}$, $\forall k \in [h]$, with  probability at least $\frac{1}{2} $. Then we have,
+By Cauchy-Schwarz,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left| \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \right| \cdot \left\| \rvs_i \right\|_2 }} \\
-	&\le \frac{2 \sqrt{\log{\left(4h\right)}}}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t)  } \cdot \left\| \rvs_i \right\|_2  }} \\
-	&\le \frac{2 \sqrt{\log{\left(4h\right)}}}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_i }.
+	&\le \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t)  } \cdot \left\| \rvs_i \right\|_2  }} \\
+	&\le \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_i }.
 \end{split}
 \end{equation*}
 $\rvw_r(t)$ will be closed to $\rvw_r(0)$,
 \begin{equation*}
 \begin{split}
 	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d\ell}{d \rvw_r(s)} \right\|_2} \\
-	&\le \eta \cdot 2 \sqrt{\log{\left(4h\right)}} \cdot \sum\limits_{s=0}^{t-1}{ \regret(\rvpi(s)) } \\
-	&\le \eta \cdot 2 \sqrt{\log{\left(4h\right)}} \cdot \regret_{\max} \cdot t .
+	&\le \eta \cdot 2 \cdot \sum\limits_{s=0}^{t-1}{ \rvpi_{i}(t)^\top \rvtilder_i } \\
+	&\le \eta \cdot 2 \cdot t .
 \end{split}
 \end{equation*}
 Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) \le  \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$,
@@ -166,11 +166,11 @@ Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^
 	&\ge 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma},
 \end{split}
 \end{equation*}
-Condition on the above event happens, let $t \le \frac{\tau}{ \eta \cdot 2 \sqrt{\log{\left(4h\right)}} \cdot \regret_{\max} }$, $\forall i \in [n]$,
+Condition on the above event happens, let $t \le \frac{\tau}{ \eta \cdot 2}$, $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
 	\left| \left( \rvw_r(t) - \rvw_r(0) \right)^\top \rvs_i \right| &\le \left\| \rvw_r(t) - \rvw_r(0) \right\|_2 \cdot \left\| \rvs_i \right\|_2 \\
-	&\le \eta \cdot 2 \sqrt{\log{\left(4h\right)}} \cdot \regret_{\max} \cdot t \\
+	&\le \eta \cdot 2 \cdot t \\
 	&\le \tau < \left| \rvw_r(0)^\top \rvs_i \right|,
 \end{split}
 \end{equation*}
@@ -185,10 +185,10 @@ which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, $\forall i \in [
 
 \begin{lem}
 \label{lem:gradient_lower_bound}
-	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\regret(\rvpi_i(t))\right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ r_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $i^*(t)$. If $\pi_{i^*(t), k^*(t)}(t) > c > 0$, where $c$ is a constant, then with probability $\Omega\left( \frac{\delta}{n} \right)$,
+	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\rvpi_i(t)^\top \rvtilder_i\right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ r_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $i^*(t)$. If $\pi_{i^*(t), k^*(t)}(t) > c > 0$, where $c$ is a constant, then with probability $\Omega\left( \frac{\delta}{n} \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \regret\left( \rvpi_{i^*(t)}(t) \right) \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \regret\left( \rvpi(t) \right).
+	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \left( \rvpi_{i^*(t)}(t)^\top \rvtilder_i \right) \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \ell(\rvpi(t)).
 \end{split}
 \end{equation*}
 \end{lem}
@@ -275,28 +275,28 @@ Note the first part of $h_{k^*,r}$ is a convex function of $x$, and the second p
 	\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } &= \underbrace{\tilde{r}_{i^*,k^*} \cdot \pi_{i^*,k^*}(t) \cdot v_{k^*,k^*,i^*}(t)}_{\tilde{r}_{i^*,k^*} = \r_{i^*}^{\max} -  r_{i^*,k^*} = 0} + \sum\limits_{k\not=k^*}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \\
 	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k\not=k^*}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
 	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
-	&= - \pi_{i^*,k^*}(t) \cdot \regret(\rvpi_{i^*}(t)).
+	&= - \pi_{i^*,k^*}(t) \cdot \rvpi_{i^*}(t)^\top \rvtilder_{i^*}.
 \end{split}
 \end{equation*}
 By assumption, if $\pi_{i^*,k^*}(t) > c > 0$, then ,
 \begin{equation*}
 \begin{split}
 	\left| \partial{h_{k^*,r}}_{\max}{(0)} - \partial{h_{k^*,r}}_{\min}{(0)} \right| &= \frac{1}{n} \cdot \left| \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \right| \\
-	&= \frac{1}{n} \cdot \pi_{i^*,k^*}(t) \cdot \regret(\rvpi_{i^*}(t)) \\
-	&\ge \frac{c}{n} \cdot \regret(\rvpi(t)).
+	&= \frac{1}{n} \cdot \pi_{i^*,k^*}(t) \cdot \rvpi_{i^*}(t)^\top \rvtilder_{i^*} \\
+	&\ge \frac{c}{n} \cdot \ell(\rvpi(t)).
 \end{split}
 \end{equation*}
 where $\partial{h_{k^*,r}}_{\max}{(0)} = \max\left\{ \partial{h_{k^*,r}}{(0)} \right\}$, $\partial{h_{k^*,r}}_{\min}{(0)} = \min\left\{ \partial{h_{k^*,r}}{(0)} \right\}$ are the maximum and minimum of $\partial{h_{k^*,r}}{(0)}$, i.e., the subdifferential of $h_{k^*,r}$ at $0$. Therefore, by \cref{lem:non_smooth_convex},
 \begin{equation*}
 \begin{split}
-	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \right\} > \frac{1}{8}.
+	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \ell(\rvpi(t)) \right\} > \frac{1}{8}.
 \end{split}
 \end{equation*}
 Therefore, we have,
 \begin{equation}
 \label{eq:h_regret_lower_bound}
 \begin{split}
-	\probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \right\} &\ge \probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \regret(\rvpi(t)) \middle| \gE_1 \land \gE_2 \right\} \cdot \probability\left\{ \gE_1 \land \gE_2 \right\} \\
+	\probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \ell(\rvpi(t)) \right\} &\ge \probability\left\{ h_{k^*,r} \ge \frac{c\tau}{8n} \cdot \ell(\rvpi(t)) \middle| \gE_1 \land \gE_2 \right\} \cdot \probability\left\{ \gE_1 \land \gE_2 \right\} \\
 	&\ge \frac{1}{8} \cdot \frac{5\sqrt{2}}{6\sqrt{\pi}} \cdot \frac{\tau}{\sigma} \cdot \left( 1 - \frac{1}{\sqrt{\pi}} \right) \\
 	&= \frac{5\sqrt{2}}{48\sqrt{\pi}} \cdot \left( 1 - \frac{1}{\sqrt{\pi}} \right) \cdot \frac{\tau}{\sigma}.
 \end{split}
@@ -313,7 +313,7 @@ Combining \cref{eq:gradient_p_lowerbound}, \cref{eq:h_regret_lower_bound} and \c
 \begin{split}
 	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 &\ge \left\| \rvp_{k^*, r}\right\|_2 \\
 	&> \frac{h_{k^*,r}}{2\sigma} \\
-	&\ge \frac{c\tau}{16\sigma n} \cdot \regret(\rvpi(t)),
+	&\ge \frac{c\tau}{16\sigma n} \cdot \ell(\rvpi(t)),
 \end{split}
 \end{equation*}
 with probability at least $\left( \frac{1}{2} - \frac{1}{\sqrt{2\pi}} \right) \cdot \left( 1 - \frac{1}{e^2} \right) \cdot \frac{5\sqrt{2}}{48\sqrt{\pi}} \cdot \left( 1 - \frac{1}{\sqrt{\pi}} \right) \cdot \frac{\tau}{\sigma}$. Plugging in $\tau = \frac{\delta\sigma}{2n}$, we obtain the result.
@@ -358,6 +358,22 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 	\left| \phi(x) \right| \ge \left| \frac{-\phi(0)}{x_0} \left( x - x_0 \right) \right| = \frac{-\phi(0)}{x_0} \left( x_0 - x \right) \ge \frac{\rho\tau}{8}. \qedhere
 \end{equation*}
 \end{proof}
+
+
+\begin{lem}
+Denote $k_*^i \triangleq \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k} \right| \right\}$, $\forall i \in [n]$,
+\begin{equation*}
+\begin{split}
+    \left\| \rvo^\prime - \rvo \right\|_2^2 &\le \sum\limits_{k = 1}^{h}{ \left\| \rvo^\prime - \rvo \right\|_\infty^2} \\
+    &= h \cdot \left| o_{i,k_*^i}^\prime - o_{i,k_*^i} \right|^2 \\
+    &\le 4 h \left| o_{i,k_*^i}^\prime - o_{i,k_*^i} \right|^2 \\
+    &= 4 h \cdot \left| \sum\limits_{r=1}^{m}{a_{k_*^i,r} \left( \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right) } \right|^2 \\
+    &\le 4 h \cdot \sum\limits_{r=1}^{m}{ \left| a_{k_*^i,r} \right| \cdot \left| \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right|^2 } \\
+    &\le 4h \cdot \sum\limits_{r=1}^{m}{ \left\| \rvw_r^\prime - \rvw_r \right\|_2^2 } \\
+    &\le 4h m \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
+\end{split}
+\end{equation*}
+\end{lem}
 
 \section{Policy Gradient}
 
@@ -425,93 +441,6 @@ First note that, $\forall k \in [h]$,
 \end{equation}
 where $\rva_{\cdot, r} \in \sR^h$ refers to $\rva_{\cdot, r} \triangleq \left( a_{1,r}, a_{2,r}, \dots, a_{h,r} \right)^\top$. It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
 
-\subsection{Regret Semi-Smoothness}
-
-\begin{lem}
-    Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the neural network policies parameterized by $\rmW$ and $\rmW^\prime$, respectively. $\forall i \in [n]$,
-\begin{equation*}
-\begin{split}
-    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h  \sqrt{m \log{2m}} \cdot \left\| \rmW^\prime - \rmW \right\|_F.
-\end{split}
-\end{equation*}
-\end{lem}
-\begin{proof}
-    Denote $\rvo_i$ and $\rvo_i^\prime$ as the logits of $\rmW$ and $\rmW^\prime$, respectively. $\forall k \in [h]$,
-\begin{equation*}
-\begin{split}
-    \pi_{i,k}\left( \rmW \right) = \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} }}, &\quad \pi_{i,k}\left( \rmW^\prime \right) = \frac{\exp\left\{ o_{i,k}^\prime \right\}}{\sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} }}, \\
-    o_{i,k} = \sum\limits_{r=1}^{m}{a_{k,r} \cdot u_{i,r}} = \sum\limits_{r=1}^{m}{a_{k,r} \cdot \sigma\left( \rvw_r^\top \rvs_i \right)}, &\quad o_{i,k}^\prime = \sum\limits_{r=1}^{m}{a_{k,r} \cdot u_{i,r}^\prime} = \sum\limits_{r=1}^{m}{a_{k,r} \cdot \sigma\left( {\rvw_r^\prime}^\top \rvs_i \right)}.
-\end{split}
-\end{equation*}
-Define $k_*^i = \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k} \right| \right\}$, $\forall i \in [n]$,
-\begin{equation*}
-\begin{split}
-    &\left| \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i - \rvpi_i\left( \rmW \right)^\top \rvtilder_i \right| \le \left\| \rvpi_i\left( \rmW^\prime \right) - \rvpi_i\left( \rmW \right) \right\|_1 \cdot \left\| \rvtilder_i \right\|_\infty \\
-    &\le \left\| \log{ \rvpi_i\left( \rmW^\prime \right)} - \log{ \rvpi_i\left( \rmW \right) }  \right\|_1 \\
-    &= \left\| \rvo_i^\prime - \rvo_i + \left( \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} } } - \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} } } \right) \cdot \rvone\right\|_1 \\
-    &\le \left\| \rvo_i^\prime - \rvo_i \right\|_1 + h \cdot \left| \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime} \right\} } } - \log{ \sum\limits_{k^\prime=1}^{h}{ \exp\left\{ o_{i,k^\prime}^\prime \right\} } } \right| \\
-    &\le \left\| \rvo_i^\prime - \rvo_i \right\|_1 + h \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_\infty \\
-    &\le 2 h \cdot \left\| \rvo_i^\prime - \rvo_i \right\|_\infty \\
-    &= 2 h \cdot \left| o_{i,k_*^i}^\prime - o_{i,k_*^i} \right| \\
-    &= 2 h \cdot \left| \sum\limits_{r=1}^{m}{a_{k_*^i,r} \left( \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right) } \right| \\
-    &\le 2 h \cdot \sum\limits_{r=1}^{m}{ \left| a_{k_*^i,r} \right| \cdot \left| \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right| } \\
-    &\le 2 h \cdot 2 \sqrt{\log{2m}} \cdot \sum\limits_{r=1}^{m}{ \left| {\rvw_r^\prime}^\top \rvs_i - {\rvw_r}^\top \rvs_i \right| } \quad \left( \text{w.p. at least } 1 - \frac{1}{m} \right) \\
-    &\le 4h \sqrt{\log{2m}} \cdot \sum\limits_{r=1}^{m}{ \left\| \rvw_r^\prime - \rvw_r \right\|_2 } \\
-    &\le 4h \sqrt{\log{2m}} \cdot \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
-\end{split}
-\end{equation*}
-\end{proof}
-
-\begin{lem}
-\label{lem:semi_smoothness}
-     $\forall$ $\rmW$, $\rmW^\prime \in \sR^{d \times m}$, $\forall i \in [n]$,
-\begin{equation*}
-\begin{split}
-    \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i &\le \rvpi_i\left( \rmW \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \\
-    &\quad + 4 \sqrt{m \log{\left(4h\right)}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
-    &+ 4 h m \sqrt{\log{\left(2m\right)} \log{\left(4h\right)}} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2.
-\end{split}
-\end{equation*}
-\end{lem}
-\begin{proof}
-Denote $\bar{\rmW}_\xi \triangleq \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) = \left[ \bar{\rvw}_1, \bar{\rvw}_2, \dots, \bar{\rvw}_m \right]$.
-\begin{equation*}
-\begin{split}
-    &\left| \rvpi_i\left( \rmW^\prime \right)^\top \rvtilder_i - \rvpi_i\left( \rmW \right)^\top \rvtilder_i \right| = \left| \int_{0}^{1} { \frac{ d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\xi} } d\xi \right| \\
-    &= \left| \int_{0}^{1}{ \left\langle \frac{d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)}, \rmW^\prime - \rmW \right\rangle d\xi} \right| \\
-    &\le \int_{0}^{1}{ \left| \left\langle \frac{d \rvpi_i\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)^\top \rvtilder_i }{d\left( \rmW +  \xi \cdot\left( \rmW^\prime - \rmW \right) \right)}, \rmW^\prime - \rmW \right\rangle \right| d\xi} \\
-    &\le \int_{0}^{1}{  \left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d\left( \bar{\rmW}_\xi \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
-    &= \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left\| \frac{d \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i }{d \bar{\rvw}_r}\right\|_2^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
-    &\le \int_{0}^{1}{  \sqrt{ \sum\limits_{r=1}^{m}{\left( 2 \sqrt{\log{\left(4h\right)}} \cdot \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i \right)^2 } } \cdot \left\| \rmW^\prime - \rmW \right\|_F d\xi} \\
-    &= 2 \sqrt{m \log{\left(4h\right)}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \rvpi_i\left( \bar{\rmW}_\xi \right)^\top \rvtilder_i d\xi} \\
-    &\le 2 \sqrt{m \log{\left(4h\right)}} \cdot \left\| \rmW^\prime - \rmW \right\|_F  \cdot \int_{0}^{1}{ \left( \rvpi_i\left( \rmW \right)^\top \rvtilder_i + 4 h \sqrt{m \log{\left(2m\right)}} \cdot \left\| \bar{\rmW}_\xi - \rmW \right\|_F \right) d\xi} \\
-    &\le 2 \sqrt{m \log{\left(4h\right)}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F + 4 h m   \sqrt{\log{\left(2m\right)} \log{\left(4h\right)}} \cdot \left\| \rmW^\prime - \rmW \right\|_F^2.
-\end{split}
-\end{equation*}
-Combine the above with the following,
-\begin{equation*}
-\begin{split}
-    \left| \left\langle \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)}, \rmW^\prime - \rmW \right\rangle \right| &\le \left\| \frac{d \rvpi_i\left( \rmW \right)^\top \rvtilder_i }{d\left( \rmW \right)} \right\|_F \cdot \left\| \rmW^\prime - \rmW \right\|_F \\
-    &\le 2 \sqrt{m \log{\left(4h\right)}} \cdot \rvpi_i\left( \rmW \right)^\top \rvtilder_i \cdot \left\| \rmW^\prime - \rmW \right\|_F. \qedhere
-\end{split}
-\end{equation*}
-\end{proof}
-
-
-
-\subsection{Other}
-
-\begin{lem}[Chernoff]
-    Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{ X_i  }$. Denote $\mu \triangleq \sE\left[ X \right]$. $\forall \alpha \in [0,1]$,
-\begin{equation*}
-    \pr\left\{ X \le (1 - \alpha) \mu \right\} \le \exp\left\{ - \frac{\alpha^2 \mu}{2} \right\}.
-\end{equation*}
-\end{lem}
-
-\begin{equation*}
-\begin{split}
-\end{split}
-\end{equation*}
 
 
 \end{document}
