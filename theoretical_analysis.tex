@@ -169,7 +169,7 @@ where $\rvw_r(t)$ is the $r$th row vector of $\rmW(t)$.
 To use \cref{lem:parameter_smoothness} we need upper bound the last term in \cref{eq:parameter_smoothness} by the policy surrogate expected loss.
 \begin{lem}
 \label{lem:gradient_upper_bound}
-$\forall r \in [m]$, $\forall t > 0$,
+$\forall r \in [m]$, $\forall t \ge 0$,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} \right\|_2 \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i.
@@ -203,12 +203,14 @@ In \cref{subsec:vanilla_policy_gradient}, it is claimed that the vanilla policy 
 \end{equation}
 where $\Delta\left( \rvpi_i \right)$ is a diagonal matrix with $\Delta\left( \rvpi_i \right)_{k,k} = \pi_{i,k}$, $\forall k \in [h]$. For the $k$th action, the derivative value is $\pi_{i,k} \cdot \left( \tilde{r}_{i,k} - \rvpi_i^\top \rvtilder_i \right)$. Suppose the $k$th action is worth learning, i.e, $\rvpi_i^\top \rvtilder_i - \tilde{r}_{i,k} > 0$ is large, meaning this action will occur loss $\tilde{r}_{i,k}$ much smaller than the expected loss of the current policy, so the agent should increase its action logit. But if $\pi_{i,k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{i,k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{i,k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
 
-\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{i,k}(t) > c > 0$ should hold for each time step $t$, where $c$ is a constant. In particular, to learn an optimal policy, $\pi_{i,k^*}(t) > c > 0$, where $\tilde{r}_{i,k^*} = 0$.
+\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{i,k}(t) > c_t > 0$ should hold for each time step $t$, where $c_t$ is a constant (cannot be something like $\frac{1}{t^\alpha}$, $\alpha> 0$). In particular, to learn an optimal policy, $\pi_{i,k_i^*}(t) > c > 0$ should be guaranteed, $\forall t \ge 0$, where $\tilde{r}_{i,k_i^*} = 0$, and $c \triangleq \min\limits_{t \ge 0}{\left\{  c_t \right\}}$.
 
-\subsection{Playing Phase}
-\label{subsec:playing_phase}
-
-In this phase, the agent uses the learned NN policy to sample and take actions. If the agent stops learning in this phase, then the expected loss of the maintained NN policy will always be small, therefore the expected regret will be sublinear. On the other hand, if the agent keep learning, the expected loss will decrease after each iteration, thus reduce the expected regret.
+Consider policy update using the logit derivatives \cref{eq:logit_derivative} with the true loss as the objective. With learning rate $\eta > 0$, for each action $k \in [h]$, the logit increment between two consecutive time steps is,
+\begin{equation*}
+\begin{split}
+    o\left( t+1 \right)_{k} - o\left( t \right)_{k} = \eta \cdot \pi_{i,k} \cdot \left( \rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} \right),
+\end{split}
+\end{equation*}
 
 \begin{lem}
     $c > 1 - \frac{1}{\Delta \sqrt{T}}$.
