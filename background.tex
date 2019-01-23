@@ -35,48 +35,51 @@ The structure of the two layer policy neural network with ReLU activation is sho
 \vskip -0.2in
 \end{figure}
 
-The above neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{m \times d}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss can be calculated according to \cref{eq:expected_loss}.
-
-In the paper, after the random initialization $\rva_k \sim \gU\left\{-1, +1\right\}$, $\rva_k$ will be fixed. This assumption is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and has been empirically verified that has no impact on the performance of trained neural networks \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
+The above neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{m \times d}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss of the NN policy can be calculated according to \cref{eq:expected_loss}.
 
 \subsection{Vanilla Policy Gradient}
 \label{subsec:vanilla_policy_gradient}
 
-During the process of interacting with the environment, the agent can use any strategies to select actions. In particular, if at each time step $t$, the agent's action selection strategy is the NN policy $\rvpi_i(t)$, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi_i$, i.e., 
+During interacting with the environment, the agent can use any strategies to select actions. In particular, if at each time step $t$, the agent's action selection strategy is the NN policy $\rvpi_i\left(\rmW(t)\right)$, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi_i\left(\rmW(t)\right)$, i.e., 
 \begin{equation}
 \label{eq:vanilla_policy_gradient_expected_regret}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i(t)} \left[ \tilde{r}_{i, A_t} \right] } = \sum\limits_{t=0}^{T-1}{\rvpi_i(t)^\top \rvtilder_i} = \sum\limits_{t=0}^{T-1}{\ell(t)},
+    \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ \tilde{r}_{i, A_t} \right] } = \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvtilder_i},
 \end{split}
 \end{equation}
-according to \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i(t)$ to sample an action, and obtain an estimation of the expected loss $\ell(t)$. Doing policy gradient descent with respect to the NN weights $\rmW(t)$ will arguably decrese the expected loss, thus reduce the expected regret. 
+according to \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i\left(\rmW(t)\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi_i\left(\rmW(t)\right)^\top \rvtilder_i$. Doing policy gradient updates with respect to the NN weights $\rmW(t)$ will arguably decrease the expected loss, thus reduce the expected regret. 
 
-However, the above mentioned method, called as vanilla policy gradient, often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Unfortunately, without any other techniques the vanilla policy gradient method cannot avoid this issue. Actually, as our proof shown later on, the convergence of policy expected loss relies on non-zero probability of exploring optimal arms, which is consistent with intuition. For this reason, we need mix the vanilla policy gradient method with explicit exploration.
+However, the above mentioned method, called as vanilla policy gradient, often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Unfortunately, without any other techniques, the vanilla policy gradient method cannot avoid this issue. Actually, as our analysis shown later on, the convergence rate of the policy expected loss relies on non-zero probability of exploring the optimal arms, which is consistent with intuition. For this reason, we need mix the vanilla policy gradient method with explicit exploration.
 
 \subsection{Policy Gradient with Uniform Exploration}
 \label{subsec:policy_gradient_with_uniform_exploration}
 
-A natural way is to add uniform exploration to the policy gradient method, as shown in \cref{alg:policy_gradient_uniform_exploration}. The policy gradient method with uniform exploration works as follows. After the random initialization, at each time step $t$, the learning is performed by updating the NN policy $\rvpi_i(t)$, using the estimated policy gradient calculated from the collected reward. In the first $\sqrt{T}$ steps, actions are sampled subject to an uniform distribution over all actions, which we call it the ``exploring phase". After that, the NN policy $\rvpi_i(t)$ is used to sample actions, called as the ``playing phase".
+Our proposed algorithm adds explicit uniform exploration to the vanilla policy gradient method, as shown in \cref{alg:policy_gradient_uniform_exploration}. After the random initialization, at each time step $t$, one of the two cases happens. If $t < T^{\frac{2}{3} + \beta}$, then agent gets into a purely ``exploring phase", without learning the policy NN, while just collecting empirically estimated rewards. If $t \ge T^{\frac{2}{3} + \beta}$, then the agent starts ``playing and learning". The agent samples and takes actions according to the current NN policy $\rvpi_{i}\left(\rmW(t)\right)$. In the meanwhile, the agent learn the NN policy by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
+
+Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $\rva_k \sim \gU\left\{-1, +1\right\}$, $\rva_k$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained NNs \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
 
 \begin{algorithm}[t]
    \caption{Policy Gradient with Uniform Exploration}
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
-   \STATE {\bfseries Input:} State feature vectors $\rvs_i$, learning rate $\eta > 0$.
-   \STATE Initialize $\rvw_r \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$, $\rva_k \sim \gN(0, \rmI)$, $\forall k \in [h]$.
+   \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\beta > 0$.
+   \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $\rva_k \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$.
+   \STATE Initialize $\hat{r}_{i,k} = 0$, $n_{i,k} = 0$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
-   \IF{$t < \sqrt{T}$}
+   \IF{$t < T^{\frac{2}{3} + \beta}$}
    \STATE (Exploring Phase)
-   \STATE Uniformly randomly sample action $A_{t} \in [h]$. 
+   \STATE Uniformly randomly sample action $A_{t} \in [h]$.
+   \STATE Take action $A_{t}$.  Observe reward $r_{i, A_{t}}$.
+   \STATE $\hat{r}_{i,A_{t}} \leftarrow \frac{\hat{r}_{i,A_{t}} \cdot 
+   n_{A_{t}}}{ n_{A_{t}} + 1}$, $n_{A_{t}} \leftarrow n_{A_{t}} + 1$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t)$.
    \ELSE
-   \STATE (Playing Phase)
-   \STATE Sample action $A_{t} \sim \rvpi_{i}(t)\left(\cdot \middle| \rvs_i \right)$.
+   \STATE (Playing-Learning Phase)
+   \STATE Sample action $A_{t} \sim \rvpi_{i}\left(\rmW(t)\right)\left(\cdot \middle| \rvs_i \right)$.
+   \STATE Take action $A_{t}$. Observe reward $r_{i, A_{t}}$.
+   \STATE $\hat{\rvtilder}_i \triangleq \r_i^{\max} \cdot \rvone - \rvhat_i$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)}$.
    \ENDIF
-   \STATE Take action $A_{t}$.
-   \STATE Observe reward $r_{i, A_{t}}$.
-   \STATE Calculate estimated loss $\ell(t)$.
-   \STATE Update $\rvpi_{i}(t)$ to $\rvpi_{i}(t+1)$ by policy gradient: 
-   \STATE $\rvw_r(t+1) = \rvw_r(t) - \eta \cdot \frac{d\ell(t)}{d \rvw_r(t)}$, $\forall r \in [m]$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}

@@ -13,7 +13,7 @@ However, the DL theory is developed in supervised learning, which makes it diffi
 
 In this paper, using the recent progresses in overparameterized neural network optimization theory, we take one step forward to theoretically understanding DRL. In particular, we make the following contributions.
 \begin{itemize}
-    \item We prove that in the stochastic bandit setting, with enough exploration, the widely-used policy gradient method, with policy overparameterized by a two layer neural network (NN), achieves $O\left( T^{\frac{2}{3} + \varepsilon} \right)$ regret, $\forall \varepsilon > 0$. This result can be generalized to the many state dependent stochastic bandit settings, and the episodic MDP settings.
+    \item We prove that in the stochastic bandit setting, with enough exploration, the widely-used policy gradient method, with policy overparameterized by a two layer neural network (NN), achieves $O\left( T^{\frac{2}{3} + \beta} \right)$ regret, $\forall \beta > 0$. This result can be generalized to the many state dependent stochastic bandit settings, and the episodic MDP settings.
 \end{itemize}
 
 We would like to point that the above results can be generalized to policy parameterized by multi-layered NNs. Assuming a two layer NN policy is just for simplicity and conciseness. We provide the generalization to multi-layered NN in the appendix for completeness.
@@ -31,7 +31,7 @@ Denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. $\rvs_i \in \sR^d$, $i \
 \begin{equation}
 \label{eq:expected_loss}
 \begin{split}
-    \ell \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) } = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}^\top \rvtilder_{i} }.
+    \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( \r_i^{\max} - \rvpi_i^\top \rvr_i \right) } = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}^\top \rvtilder_{i} }.
 \end{split}
 \end{equation}
 
