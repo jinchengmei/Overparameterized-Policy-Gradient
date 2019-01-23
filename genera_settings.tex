@@ -6,11 +6,25 @@ Our results can be easily generalized to the following more general settings wit
 \subsection{State Dependent Bandit Setting}
 
 The standard stochastic bandit setting is a special case of the many state dependent bandit setting, with $n = 1$ and $\delta = 1$. Firstly, all the intermediate results work for general $n > 0$, including the $n > 1$ case.
-For $n > 1$ and $\delta > 0$, we slightly modify \cref{alg:policy_gradient_uniform_exploration}, by setting the exploring phase have $n \cdot T^{\frac{2}{3} + \beta}$ steps. Consider the average expected loss over all the states \cref{eq:expected_loss}, regret results similar with \cref{thm:main_result}, up to an additional factor $n$, can be easily reproduced.
+For $n > 1$ and $\delta > 0$, we slightly modify \cref{alg:policy_gradient_uniform_exploration}, by setting the exploring phase have $n \cdot T^{\frac{2}{3} + \beta}$ steps. Consider the average expected loss over all the states \cref{eq:expected_loss}, regret results similar with \cref{thm:main_result}, up to an additional factor $n$, can be easily reproduced,
+\begin{thm}
+\label{thm:many_state_dependent_bandit_setting}
+     Supose $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$ is the number of parameters in the policy NN \cref{fig:nn_policy}, $\eta = \frac{c^2 \delta^2}{16 n^4 h m}$, the expected regret of modified \cref{alg:policy_gradient_uniform_exploration}, with $n \cdot T^{\frac{2}{3}+\beta}$ steps in the exploring phase, satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{32n^8h}{ c^4 \delta^4} \cdot \log{T} + 2n \cdot T^{\frac{2}{3} + \beta }$, $\forall \beta > 0$.
+\end{thm}
 
-\subsection{MDPs}
+\subsection{Episodic MDPs}
+
+In the stadard bandit setting, each action at the same state can be viewed as a special trajectory with length $H = 1$. In the general episodic MDP setting with $H > 1$, $n > 1$, and $\delta > 0$, \cref{alg:policy_gradient_uniform_exploration} with $n \cdot T^{\frac{2}{3}+\beta}$ steps in the exploring phase can achieve similar result, with the total trajectory number change from $h$ to $h^H$.
+\begin{thm}
+\label{thm:episodic_mdp_setting}
+     Supose $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$ is the number of parameters in the policy NN \cref{fig:nn_policy}, $\eta = \frac{c^2 \delta^2}{16 n^4 h m}$, the expected regret of modified \cref{alg:policy_gradient_uniform_exploration}, with $n \cdot T^{\frac{2}{3}+\beta}$ steps in the exploring phase, satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{32n^8h^H}{ c^4 \delta^4} \cdot H \cdot \log{T} + 2n \cdot T^{\frac{2}{3} + \beta }$, $\forall \beta > 0$.
+\end{thm}
+
+The exponential dependence of trajectory length $H$ is undesirable. This seems cannot be eliminated if we only use policy based RL methods, without taking advantage of the intermediate rewards in value based RL methods, such as Q-Learning \citep{jin2018q}. It is open whether value based RL methods enjoy nice theoretical guarantees with NN function approximations.
 
 \subsection{Multi-Layered NN Policies}
+
+For simplicity, we assume the policy is parameterized by a two layer NN. Recently, it has been proved that for general $L$ layer NNs, the node vector norm of the $(L-1)$th hidden layer, will be closed to the input vector norm at \textbf{and} around the random initialization \citep{allen2018convergenceA,allen2018convergenceB}. Taking the $(L-1)$th hidden layer as the input here, a multi-layered NN policy can also learn to minimize its surrogate expected loss from  good estimations obtained from the exploring phase in \cref{alg:policy_gradient_uniform_exploration}, with similar intermediate and regret results hold.
 
 \section{Related Work}
 

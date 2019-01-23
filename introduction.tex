@@ -16,7 +16,7 @@ In this paper, using the recent progresses in overparameterized neural network o
     \item We prove that in the stochastic bandit setting, with enough exploration, the widely-used policy gradient method, with policy overparameterized by a two layer neural network (NN), achieves $O\left( T^{\frac{2}{3} + \beta} \right)$ regret, $\forall \beta > 0$. This result can be generalized to the many state dependent stochastic bandit settings, and the episodic MDP settings.
 \end{itemize}
 
-We would like to point that the above results can be generalized to policy parameterized by multi-layered NNs. Assuming a two layer NN policy is just for simplicity and conciseness. We provide the generalization to multi-layered NN in the appendix for completeness.
+We would like to point that the above results can be generalized to policy parameterized by multi-layered NNs. Assuming a two layer NN policy is just for simplicity and conciseness. Our results can be combined with recently discovered properties of multi-layered NN   \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}.
 
 To our knowledge, our finding is the first convergent analysis for popular RL methods (policy gradient here) with non-linear NN function approximations, which provides theoretical support for DRL methods. Our results are just the beginning of understanding many other DRL methods (such as DQN \cite{mnih2015human}, A3C \citep{mnih2016asynchronous}, and PCL \citep{nachum2017bridging}), with more practical NN function approximations (e.g., less overparameterized), using many other policy optimization techniques (like relative entropy policy search \citep{peters2010relative}).
 

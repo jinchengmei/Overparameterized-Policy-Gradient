@@ -62,7 +62,7 @@ The good estimation of the true mean loss $\hat{\rvtilder}_i$ obtained at the en
 
 \begin{thm}
 \label{thm:surrogate_expected_loss_convergence}
-    Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta = \frac{c_t^2 \delta^2}{16 n^4 h m}$, During the playing-learning phase, $\forall t \ge T^{\frac{2}{3} + \beta}$, denote $t^\prime \triangleq t - T^{\frac{2}{3} + \beta} \ge 0$. After $t^\prime = \frac{2n^4}{\eta m c^2 \delta^2 \varepsilon}$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \le \varepsilon$, $\forall \varepsilon > 0$.
+    Suppose $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta = \frac{c_t^2 \delta^2}{16 n^4 h m}$, During the playing-learning phase, $\forall t \ge T^{\frac{2}{3} + \beta}$, denote $t^\prime \triangleq t - T^{\frac{2}{3} + \beta} \ge 0$. After $t^\prime = \frac{2n^4}{\eta m c^2 \delta^2 \varepsilon}$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \le \varepsilon$, $\forall \varepsilon > 0$.
 \end{thm}
 \begin{proof}
     By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)}$, $\forall t \in O\left( \frac{\sigma}{\eta n} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)}$, by \cref{lem:parameter_smoothness},
