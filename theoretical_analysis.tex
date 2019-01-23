@@ -20,10 +20,10 @@ According to \cref{alg:policy_gradient_uniform_exploration}, $T$ rounds are divi
      &\le T^{\frac{2}{3} + \beta } + \log{T} - 1 + 2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + T^{\frac{2}{3} + \beta},
 \end{split}
 \end{equation*}
-where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$, and the second inequality is according to \cref{thm:fake_expected_loss_convergence} and H{\"o}lder's inequality. The third inequality is by \cref{thm:loss_estimation_hoeffding}. Since $2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \le 1$, $\forall \beta > 0$, we obtain the regret upper bound.
+where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$, and the second inequality is according to \cref{thm:surrogate_expected_loss_convergence} and H{\"o}lder's inequality. The third inequality is by \cref{thm:loss_estimation_hoeffding}. Since $2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \in o(1)$, $\forall \beta > 0$, we obtain the expected regret upper bound.
 \end{proof}
 
-\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first $\sqrt{T}$ exploring phase steps, the agent uniformly samples actions, and learnd the NN policy with expected loss convergent to smaller than $\varepsilon$. Intuitively, this phase is necessary because of: (a) unlike tabular algorithms, i.e., maintaining a scalar value for each arm, the NN policy evolves in a much slower way, due to the usually very small learning rate $\eta$; (b) it is sufficient that the expected loss of the the NN policy is small enough, to make the NN policy have large enough probability for the optimal arm. While in the second playing phase, because of the expected loss of the NN policy is small enough, the gradient norm will be lower bounded by positive constant times expected loss. Therefore the NN policy will keep reducing its expected loss, which means the expected regret will also be reduced.
+\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the NN policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the NN policy.  While in the second playing-learning phase, since the loss estimation is good, the NN policy will keep reducing its surrogate expected loss, which is highly related to its true expected loss, which is identical with the expected regret of this phase.
 
 \subsection{Exploring Phase}
 \label{subsec:exploring_phase}
@@ -57,12 +57,11 @@ where the last inequality is by \cref{eq:loss_estimation_hoeffding}, $\left| \ha
 \subsection{Playing-Learning Phase}
 \label{subsec:playing_learning_phase}
 
-The good estimation of the true mean loss $\hat{\rvtilder}_i$ obtained at the end of the exploring phase will be used to train the NN policy $\rvpi_i\left( \rmW(t) \right)$. We carefully combine the overparameterized NN optimization theory for supervized learning \citep{li2018learning,allen2018convergenceB} with the optimal exploration conditions in RL (explained later on in \cref{subsec:exploration_in_policy_learning}), and show that the ``fake" expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i$ converges at rate $O\left(\frac{1}{t} \right)$. We first prove the main result, then show some intuitions with lemmas, the proofs of which can be found in the appendix.
+The good estimation of the true mean loss $\hat{\rvtilder}_i$ obtained at the end of the exploring phase will be used to train the NN policy $\rvpi_i\left( \rmW(t) \right)$. We carefully combine the overparameterized NN optimization theory for supervized learning \citep{li2018learning,allen2018convergenceB} with the optimal exploration conditions in RL (explained later on in \cref{subsec:exploration_in_policy_learning}), and show that the ``surrogate" expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i$ converges at rate $O\left(\frac{1}{t} \right)$. We first prove the main result, then show some intuitions with lemmas, the proofs of which can be found in the appendix.
 
 \begin{thm}
-\label{thm:fake_expected_loss_convergence}
-    Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c_t^2 \delta^2}{8 n^4 h m} \right)$, $\forall t \ge T^{\frac{2}{3} + \beta}$, denote $t^\prime \triangleq t - T^{\frac{2}{3} + \beta} \ge 0$.
-    $\rvpi_i\left( \rmW(t^\prime) \right)^\top \hat{\rvtilder}_i \le \frac{n^4}{\eta m c_t^2 \delta^2 t^\prime}$,
+\label{thm:surrogate_expected_loss_convergence}
+    Assume $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta \in \Theta\left( \frac{c_t^2 \delta^2}{8 n^4 h m} \right)$, During the playing-learning phase, $\forall t \ge T^{\frac{2}{3} + \beta}$, denote $t^\prime \triangleq t - T^{\frac{2}{3} + \beta} \ge 0$. After $t^\prime = \frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon}$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \le \varepsilon$.
 \end{thm}
 \begin{proof}
     By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)}$, $\forall t \in O\left( \frac{\sigma}{\eta n} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)}$, by \cref{lem:parameter_smoothness},
@@ -70,7 +69,8 @@ The good estimation of the true mean loss $\hat{\rvtilder}_i$ obtained at the en
 \begin{split}
     &\rvpi_i\left( \rmW(t+1) \right)^\top \rvtilder_i \le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \\
     &- \eta \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 + 8 h m \eta^2 \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)} \right\|_F^2 \\
-    &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } + 8 h m \eta^2 \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \eta \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } \\
+    &+ 8 h m \eta^2 \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rvw_r(t)} \right\|_2^2 } \\
     &\le \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \left[ \frac{\eta m c_t^2 \delta^2}{n^4} - 8 \eta^2 h m^2 \right] \\
     &= \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i - \left( \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \right)^2 \cdot \Omega\left( \frac{\eta m c_t^2 \delta^2}{n^4} \right).
 \end{split}
@@ -91,45 +91,40 @@ Sum up the inequality from $0$ to $t$,
 After $t \in O\left( \frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \right)$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i \le \varepsilon$. Let $\frac{n^4}{\eta m c_t^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta} = \frac{1}{n \eta \sqrt{m}}$, we have $m \ge \frac{n^{10}}{c_t^4 \delta^4 \varepsilon^2}$.
 \end{proof}
 
-\subsection{Policy Learning in Logit Space}
-
-We first show that in the logit space, the policy gradient method converges in expected loss. The overparameterization theory briges the gap between the policy gradient in the parameter space and the logit space.
+\cref{thm:surrogate_expected_loss_convergence} relies on two arguments. First, the surrogate expected loss is smooth in the logit space, and small policy gradient updates preserve the signs of ReLU outputs, therefore highly correlates the logit derivative and the policy gradient. Second, by the overparameterization theory, gradient norm is lower bounded by expected loss around initialization, which means there is no bad local minima near the randomly initialized NN policy $\rvpi_i\left( \rmW(0) \right)$.
 
 \begin{lem}
 \label{lem:logit_smoothness}
 Let $\rvpi_i\left( \rvo^\prime \right)$ and $\rvpi_i\left( \rvo \right)$ be softmax policies of logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively.
 \begin{equation*}
 \small
-    \rvpi_i\left( \rvo^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rvo \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle + 2 \left\| \rvo^\prime - \rvo \right\|_2^2.
+    \rvpi_i\left( \rvo^\prime \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rvo \right)^\top \hat{\rvtilder}_i + \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \hat{\rvtilder}_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle + 2 \left\| \rvo^\prime - \rvo \right\|_2^2.
 \end{equation*}
 \end{lem}
-Let $\rvo(t+1) = \rvo(t) - \eta \cdot \frac{d \rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i}{d \rvo(t)}$, by \cref{eq:logit_derivative},
+Let $\rvo(t+1) = \rvo(t) - \eta \cdot \frac{d \rvpi_i\left( \rvo(t) \right)^\top \hat{\rvtilder}_i}{d \rvo(t)}$, by \cref{lem:logit_smoothness},
 \begin{equation*}
 \begin{split}
 \small
-    \rvpi_i\left( \rvo(t+1) \right)^\top \rvtilder_i \le \rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \left( \eta - 2 \eta^2 \right) \left\| \frac{d \rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i}{d \rvo(t)} \right\|_2^2.
+    \rvpi_i\left( \rvo(t+1) \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rvo(t) \right)^\top \hat{\rvtilder}_i - \left( \eta - 2 \eta^2 \right) \left\| \frac{d \rvpi_i\left( \rvo(t) \right)^\top \hat{\rvtilder}_i}{d \rvo(t)} \right\|_2^2.
 \end{split}
 \end{equation*}
-Combining with the following from \cref{eq:logit_derivative}, let $\eta = \frac{1}{4}$,
+Note the logit derivative norm is lower bounded by loss,
 \begin{equation}
 \label{eq:logit_derivative_lower_bound}
 \begin{split}
-    \left\| \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo_i} \right\|_2 &\ge \left| \pi_{i,k^*} \cdot \left( \tilde{r}_{i,k^*} - \rvpi_i^\top \rvtilder_i \right) \right| \\
-    &= \pi_{i,k^*} \cdot \rvpi_i^\top \rvtilder_i,
+    \left\| \frac{d \rvpi_i\left( \rvo \right)^\top \hat{\rvtilder}_i}{d \rvo} \right\|_2 &\ge \left| \pi_{i,\hat{k}_i^*} \cdot \left( \hat{\tilde{r}}_{i,\hat{k}_i^*} - \rvpi_i\left( \rvo \right)^\top \hat{\rvtilder}_i \right) \right| \\
+    &= \pi_{i,\hat{k}_i^*} \cdot \rvpi_i\left( \rvo \right)^\top \hat{\rvtilder}_i,
 \end{split}
 \end{equation}
-we have $\rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i \le \frac{8}{c^2 t}$, $\forall t > 0$. It is consistent with \cref{subsec:exploration_in_policy_learning} that small $c$ will lead to long convergent time.
+where $\hat{k}_i^* \triangleq \argmax\limits_{ k \in [h]}{\left\{ \hat{r}_{i, k} \right\}}$, thus $\hat{\tilde{r}}_{i,\hat{k}_i^*} = \max\limits_{k \in [h]}{\left\{ \hat{r}_{i, k} \right\}} - \hat{r}_{i, \hat{k}_i^*} = 0$. Let $\eta = \frac{1}{4}$, by \cref{lem:logit_smoothness} and \cref{eq:logit_derivative_lower_bound}, we have $\rvpi_i\left( \rvo(t) \right)^\top \hat{\rvtilder}_i \le \frac{8}{c^2 t}$, $\forall t > 0$, where $c \triangleq \min\limits_{t \ge 0}{ \left\{ \pi(t)_{i, \hat{k}_i^*}\right\}}  > 0$ because $\rvpi_i\left( \rvo \right)$ is softmax transform of $\rvo$. It is intuitively reasonable that small $c$ means rarely exploring the optimal action $\hat{k}_i^*$, which will lead to long convergent time.
 
-\subsection{Overparameterized NN Policy}
-\label{subsec:overparameterized_nn_policy}
-
-In practice, $\rvpi_i$ is updated in the parameter space, i.e., $\rmW$. To use \cref{lem:logit_smoothness}, when the parameters are updated from $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$ to ${\rmW^\prime}^\top \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$,
+However, \cref{lem:logit_smoothness} is not good enouth because in practice, $\rvpi_i$ is updated in the parameter space rather than the logit space. When the parameters are updated from $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$ to ${\rmW^\prime}^\top \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$,
 \begin{equation*}
 \begin{split}
-    \rvo_i^\prime - \rvo_i = \rmA \left[ \sigma \left( \rmW^\prime \rvs_i \right) - \sigma \left( \rmW \rvs_i \right) \right].
+    \rvo^\prime - \rvo = \rmA \left[ \sigma \left( \rmW^\prime \rvs_i \right) - \sigma \left( \rmW \rvs_i \right) \right].
 \end{split}
 \end{equation*}
-The difficulty is that after updating the parameters, possibly many signs in the ReLU components also change. Overparameterization theory circumvents this by restraining the gradient updates around the initialization \citep{li2018learning}.
+The difficulty is that after updating the parameters, possibly many signs in the ReLU components also change. This can be circumvented by restraining the updates around the initialization \citep{li2018learning}.
 
 \begin{lem}
 \label{lem:gradient_coupling}
@@ -152,7 +147,7 @@ where $\rmD(t)_{k,k} \triangleq \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\}$, 
 where $\rvw_r(t)$ is the $r$th row vector of $\rmW(t)$.
 \end{lem}
 
-\cref{lem:gradient_coupling} implies that with constant probability, for bounded numbers of policy gradient updates, the signs of the true policy gradient will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}$, thus combining with \cref{lem:logit_smoothness} leads to the following result.
+\cref{lem:gradient_coupling} implies that for bounded numbers of policy gradient updates, the signs of the ReLUs will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}$. Combine \cref{lem:logit_smoothness} with \cref{lem:gradient_coupling}, we have the smoothness property of the surrogate expected loss in the parameter space.
 \begin{lem}
 \label{lem:parameter_smoothness}
     Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i(t)^\top \rvtilder_i}{d \rmW(t)}$, where $t \in O\left( \frac{\tau}{\eta}\right)$,

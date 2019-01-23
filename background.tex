@@ -75,7 +75,7 @@ Our proposed algorithm adds explicit uniform exploration to the vanilla policy g
    \STATE (Playing-Learning Phase)
    \STATE Sample action $A_{t} \sim \rvpi_{i}\left(\rmW(t)\right)\left(\cdot \middle| \rvs_i \right)$.
    \STATE Take action $A_{t}$. Observe reward $r_{i, A_{t}}$.
-   \STATE $\hat{\rvtilder}_i \triangleq \r_i^{\max} \cdot \rvone - \rvhat_i$.
+   \STATE $\hat{\rvtilder}_i \triangleq \max\limits_{k \in [h]}{\left\{ \hat{r}_{i, k} \right\}} \cdot \rvone - \rvhat_i$.
    \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)}$.
    \ENDIF
    \ENDFOR
@@ -87,8 +87,8 @@ Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initial
 Also note that in \cref{alg:policy_gradient_uniform_exploration}, we write gradient descent over the loss objective  $\rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i$ for analysis. However, policy gradient update is doing gradient ascent over the reward objective $\rvpi_{i}\left(\rmW(t)\right)^\top \rvhat_i$. Actually,
 \begin{equation*}
 \begin{split}
-    \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} &= \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \left( \r_i^{\max} \cdot \rvone - \rvhat_i \right)}{d \rmW(t)} \\
+    \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} &= \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \left( \max\limits_{k \in [h]}{\left\{ \hat{r}_{i, k} \right\}} \cdot \rvone - \rvhat_i \right)}{d \rmW(t)} \\
     &= - \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \rvhat_i}{d \rmW(t)}.
 \end{split}
 \end{equation*}
-Thus in practice, we do not need to know $\r_i^{\max}$ and calculate $\hat{\rvtilder}_i$. They are defined for our analysis purpose.
+Thus in practice, we do not need to know $\max\limits_{k \in [h]}{\left\{ \hat{r}_{i, k} \right\}}$ and calculate $\hat{\rvtilder}_i$. They are defined for our analysis purpose.
