@@ -41,6 +41,7 @@
 \def\rvpi{{\boldsymbol{\pi}}}
 
 \def\rmA{{\mathbf{A}}}
+\def\rmD{{\mathbf{D}}}
 \def\rmI{{\mathbf{I}}}
 \def\rmW{{\mathbf{W}}}
 \def\rmX{{\mathbf{X}}}
@@ -70,17 +71,17 @@
 \section{Proofs}
 
 \begin{lem}
-    Denote $\gH\left( \rvpi_i \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi_i \left(\rvo \right) \right) - \rvpi_i \left(\rvo \right) \rvpi_i \left(\rvo \right)^\top$.
+    Let $\rvo \in \sR^h$ be any logit vector, and $\rvpi_i(\rvo)$ be the softmax policy of $\rvo$ at state $\rvs_i$. Denote $\gH\left( \rvpi_i \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi_i \left(\rvo \right) \right) - \rvpi_i \left(\rvo \right) \rvpi_i \left(\rvo \right)^\top$.
 \begin{equation*}
     \left\| \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \right\|_2 \le 4.
 \end{equation*}
 \end{lem}
 \begin{proof}
-    Denote $\rmA \triangleq \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \in \sR^{h \times h}$.
+    Denote $\rmA \triangleq \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \in \sR^{h \times h}$. $\forall s, t \in [h]$,
 \begin{equation*}
 \begin{split}
-    A_{s, t} &= \frac{d \pi_{i,s} \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) }{d o_t} \\
-    &= \frac{d \pi_{i,s} }{d o_t} \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) + \pi_{i,s} \frac{d \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) }{d o_t} \\
+    A_{s, t} &= \frac{d \pi_{i,s} \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) }{d o_{t}} \\
+    &= \frac{d \pi_{i,s} }{d o_{t}} \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) + \pi_{i,s} \frac{d \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) }{d o_{t}} \\
     &=\left ( \sI\left\{ s = t\right\} \pi_{i,t} -  \pi_{i,s } \pi_{i,t} \right) \left( \tilde{r}_{i,s} - \rvpi_i^\top \rvtilder_i \right) - \pi_{i,s} \left( \pi_{i,t} \tilde{r}_{i,t} - \pi_{i,t} \rvpi_i^\top \rvtilder_i \right).
 \end{split}
 \end{equation*}
@@ -99,63 +100,77 @@ For any vector $\rvx \in \sR^h$,
 \end{equation*}
 \end{proof}
 
-\begin{lem}
-Lemma 1 in the paper.
+\begin{lem}[Lemma 1 in the paper]
 \begin{equation*}
     \rvpi_i\left( \rvo^\prime \right)^\top \rvtilder_i \le \rvpi_i\left( \rvo \right)^\top \rvtilder_i + \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle + 2 \left\| \rvo^\prime - \rvo \right\|_2^2.
 \end{equation*}
 \end{lem}
 \begin{proof}
-Denote $\bar{\rvo}_\xi = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
+Denote $\bar{\rvo}_{\xi} = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
 \begin{equation*}
 \begin{split}
     &\left| \rvpi_i\left( \rvo^\prime \right)^\top \rvtilder_i - \rvpi_i\left( \rvo \right)^\top \rvtilder_i - \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
     &= \left| \int_0^1{ \frac{d \rvpi_i\left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)^\top \rvtilder_i}{d \xi} d\xi} - \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
     &= \left| \int_0^1{ \left\langle \frac{d \rvpi_i\left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)^\top \rvtilder_i}{d \left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)}, \rvo^\prime - \rvo \right\rangle d\xi} - \left\langle \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
-    &= \left| \int_0^1{ \left\langle \frac{d \rvpi_i\left( \bar{\rvo}_\xi \right)^\top \rvtilder_i}{d \bar{\rvo}_\xi} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle d\xi} \right| \\
-    &\le \int_0^1{ \left| \left\langle \frac{d \rvpi_i\left( \bar{\rvo}_\xi \right)^\top \rvtilder_i}{d \bar{\rvo}_\xi} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| d\xi} \\
-    &\le \int_0^1{ \left\| \frac{d \rvpi_i\left( \bar{\rvo}_\xi \right)^\top \rvtilder_i}{d \bar{\rvo}_\xi} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &= \int_0^1{ \left\| \gH\left( \rvpi_i\left( \bar{\rvo}_\xi \right)\right) \rvtilder_i - \gH\left( \rvpi_i\left( \rvo \right)\right) \rvtilder_i \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &= \int_0^1{ \left\| \int_0^1{\left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)}, \bar{\rvo}_\xi - \rvo \right\rangle d\mu} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\le \int_0^1{  \int_0^1{ \left\| \left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)}, \bar{\rvo}_\xi - \rvo \right\rangle \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\le \int_0^1{  \int_0^1{ \left\| \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\|_2 \cdot \left\| \bar{\rvo}_\xi - \rvo \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &= \int_0^1{  \int_0^1{ \left\| \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_\xi - \rvo \right) \right)} \right\|_2 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
+    &= \left| \int_0^1{ \left\langle \frac{d \rvpi_i\left( \bar{\rvo}_{\xi} \right)^\top \rvtilder_i}{d \bar{\rvo}_{\xi}} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle d\xi} \right| \\
+    &\le \int_0^1{ \left| \left\langle \frac{d \rvpi_i\left( \bar{\rvo}_{\xi} \right)^\top \rvtilder_i}{d \bar{\rvo}_{\xi}} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| d\xi} \\
+    &\le \int_0^1{ \left\| \frac{d \rvpi_i\left( \bar{\rvo}_{\xi} \right)^\top \rvtilder_i}{d \bar{\rvo}_{\xi}} - \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &= \int_0^1{ \left\| \gH\left( \rvpi_i\left( \bar{\rvo}_{\xi} \right)\right) \rvtilder_i - \gH\left( \rvpi_i\left( \rvo \right)\right) \rvtilder_i \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &= \int_0^1{ \left\| \int_0^1{\left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right)}, \bar{\rvo}_{\xi} - \rvo \right\rangle d\mu} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &\le \int_0^1{  \int_0^1{ \left\| \left\langle \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right)}, \bar{\rvo}_{\xi} - \rvo \right\rangle \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &\le \int_0^1{  \int_0^1{ \left\| \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right)} \right\|_2 \cdot \left\| \bar{\rvo}_{\xi} - \rvo \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
+    &= \int_0^1{  \int_0^1{ \left\| \frac{d \gH \left( \rvpi_i\left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right) \right) \rvtilder_i }{d \left( \rvo + \mu\left( \bar{\rvo}_{\xi} - \rvo \right) \right)} \right\|_2 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
     &\le \int_0^1{  \int_0^1{ 4 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
     &= 2 \cdot \left\| \rvo^\prime - \rvo \right\|_2^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
 
-\begin{lem}
-\label{lem:gradient_upper_bound}
-	Define the pseudo gradient as,
+\begin{lem}[Lemma 2 in the paper]
+\label{lem:gradient_coupling}
+	Define the pseudo policy gradient as,
+\begin{equation*}
+\begin{split}
+\small
+	\frac{d \tilde{\ell}(t)}{d \rmW(t)} \triangleq \tilde{\rmD} \rmA^\top \left[ \Delta\left( \rvpi_i\left(\rmW(t)\right) \right) - \rvpi_i\left(\rmW(t)\right) \rvpi_i\left(\rmW(t)\right)^\top \right] \hat{\rvtilder}_i \rvs^\top,
+\end{split}
+\end{equation*}
+where $\tilde{\rmD}_{k,k} \triangleq \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}$, $\forall k \in [m]$, is a diagonal matrix. Note the true policy gradient is, $\frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \triangleq $
+\begin{equation*}
+\begin{split}
+\small
+    \rmD(t) \rmA^\top \left[ \Delta\left( \rvpi_i\left(\rmW(t)\right) \right) - \rvpi_i\left(\rmW(t)\right) \rvpi_i\left(\rmW(t)\right)^\top \right] \hat{\rvtilder}_i \rvs^\top.
+\end{split}
+\end{equation*}
+where $\rmD(t)_{k,k} \triangleq \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\}$, $\forall k \in [m]$. For any $\tau > 0$, with probability at least $1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma}$, $\forall t \in O\left(\frac{\tau}{\eta}\right)$, $\forall r \in [m]$,
+\begin{equation*}
+	\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)},
+\end{equation*}
+where $\rvw_r(t)$ is the $r$th row vector of $\rmW(t)$.
+\end{lem}
+\begin{proof}
+The $r$th row of the pseudo policy gradient as,
 \begin{equation*}
 	\frac{d \tilde{\ell}}{d \rvw_r(t)} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-	For any $\tau > 0$, with probability at least $\frac{1}{2} \cdot \left( 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma} \right)$, $\forall t \in O\left(\frac{\tau}{\eta }\right)$,
-\begin{equation}
-	\frac{d\ell}{d \rvw_r(t)} = \frac{d \tilde{\ell}}{d \rvw_r(t)}.
-\end{equation}
-\end{lem}
-\begin{proof}
-The policy gradient is,
+While the $r$th row of the true policy gradient is,
 \begin{equation*}
-	\frac{d\ell}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
+	\frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} = \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
-By Cauchy-Schwarz,
+The true policy gradient norm is upper bounded by the surrogate expected loss,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\ell}{d \rvw_r(t)} \right\|_2 &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left| \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \right| \cdot \left\| \rvs_i \right\|_2 }} \\
-	&\le \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t)  } \cdot \left\| \rvs_i \right\|_2  }} \\
-	&\le \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}(t)^\top \rvtilder_i }.
+	\left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} \right\|_2 &\le \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left| \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \cdot \sI\left\{ \rvw_r(t)^\top \rvs_i > 0 \right\} \right| \cdot \left\| \rvs_i \right\|_2 }} \\
+	&\le \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t)  } \cdot \left\| \rvs_i \right\|_2  }} \\
+	&\le \frac{2}{n} \cdot \sum\limits_{i=1}^{n}{ \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i }.
 \end{split}
 \end{equation*}
-$\rvw_r(t)$ will be closed to $\rvw_r(0)$,
+After $t$ updates, the distance between $\rvw_r(t)$ and $\rvw_r(0)$ is also upper bounded,
 \begin{equation*}
 \begin{split}
-	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d\ell}{d \rvw_r(s)} \right\|_2} \\
-	&\le \eta \cdot 2 \cdot \sum\limits_{s=0}^{t-1}{ \rvpi_{i}(t)^\top \rvtilder_i } \\
-	&\le \eta \cdot 2 \cdot t .
+	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d \rvpi_i\left( \rmW(s) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(s)} \right\|_2} \\
+	&\le \frac{2\eta}{n} \cdot \sum\limits_{s=0}^{t-1}{ \sum\limits_{i=1}^{n}{ \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i } } \\
+	&\le 2 \eta t .
 \end{split}
 \end{equation*}
 Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^\top \rvs_i \right| \le \tau\right) \le  \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$,
@@ -166,11 +181,11 @@ Since $\rvw_r(0)^\top \rvs_i \sim \gN(0, \sigma^2)$, $\pr\left(\left| \rvw_r(0)^
 	&\ge 1 - \frac{\sqrt{2}n\tau}{\sqrt{\pi}\sigma},
 \end{split}
 \end{equation*}
-Condition on the above event happens, let $t \le \frac{\tau}{ \eta \cdot 2}$, $\forall i \in [n]$,
+Condition on the above event happens, let $t \le \frac{\tau}{ 2 \eta }$, $\forall i \in [n]$,
 \begin{equation*}
 \begin{split}
 	\left| \left( \rvw_r(t) - \rvw_r(0) \right)^\top \rvs_i \right| &\le \left\| \rvw_r(t) - \rvw_r(0) \right\|_2 \cdot \left\| \rvs_i \right\|_2 \\
-	&\le \eta \cdot 2 \cdot t \\
+	&\le 2 \eta t \\
 	&\le \tau < \left| \rvw_r(0)^\top \rvs_i \right|,
 \end{split}
 \end{equation*}
@@ -181,6 +196,52 @@ which implies if $\left| \rvw_r(0)^\top \rvs_i \right| > \tau$, $\forall i \in [
 	&= \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\}. \qedhere
 \end{split}
 \end{equation*}
+\end{proof}
+
+\begin{lem}
+Denote $k_*^i \triangleq \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k} \right| \right\}$. Let $\rvo_i$ and $\rvo_i^\prime$ be the logit vector of $\rmW$ and $\rmW^\prime$ at state $\rvs_i$, respectively, i.e.,
+\begin{equation*}
+\begin{split}
+    &o_{i,k} = \sum\limits_{r=1}^{m}{ a_{k,r} \cdot \sigma\left( u_{i,r} \right)} = \sum\limits_{r=1}^{m}{ a_{k,r} \cdot \sigma\left(\rvw_r^\top \rvs_i \right)} \\
+    &o_{i,k}^\prime = \sum\limits_{r=1}^{m}{ a_{k,r} \cdot \sigma\left( u_{i,r}^\prime \right)} = \sum\limits_{r=1}^{m}{ a_{k,r} \cdot \sigma\left({\rvw_r^\prime}^\top \rvs_i \right)},
+\end{split}
+\end{equation*}
+$\forall k \in [h]$. Then $\forall i \in [n]$,
+\begin{equation*}
+\begin{split}
+    \left\| \rvo_i^\prime - \rvo_i \right\|_2^2 \le 4h m \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
+\end{split}
+\end{equation*}
+\end{lem}
+\begin{proof}
+\begin{equation*}
+\begin{split}
+    \left\| \rvo_i^\prime - \rvo_i \right\|_2^2 &\le \sum\limits_{k = 1}^{h}{ \left\| \rvo_i^\prime - \rvo_i \right\|_\infty^2} \\
+    &= h \cdot \left| o_{i,k_*^i}^\prime - o_{i,k_*^i} \right|^2 \\
+    &= h \cdot \left| \sum\limits_{r=1}^{m}{ a_{k_*^i,r} \cdot \left( \sigma\left({\rvw_r^\prime}^\top \rvs_i \right) - \sigma\left(\rvw_r^\top \rvs_i \right) \right)} \right|^2 \\
+    &\le h \cdot \left( \sum\limits_{r=1}^{m}{ \left| a_{k_*^i,r} \right| \cdot \left| \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right|  } \right)^2 \\
+    &\le h \cdot \left( \sum\limits_{r=1}^{m}{ \left| \left({\rvw_r^\prime} - \rvw_r \right)^\top \rvs_i\right|  } \right)^2 \\
+    &\le h \cdot \left( \sum\limits_{r=1}^{m}{ \left\| {\rvw_r^\prime} - \rvw_r \right\|_2  } \right)^2 \\
+    &\le h \cdot \left( \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F \right)^2 \\
+    &\le h m \cdot \left\| \rmW^\prime - \rmW \right\|_F^2. \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
+
+\begin{lem}[Lemma 3 in the paper]
+\label{lem:parameter_smoothness}
+    $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i(t)^\top \hat{\rvtilder}_i}{d \rmW(t)}$, $t \in O\left( \frac{\tau}{\eta}\right)$,
+\begin{equation}
+\label{eq:parameter_smoothness}
+\begin{split}
+\small
+    &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \\
+    &- \eta \cdot \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 8 h m \eta^2 \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
+\end{split}
+\end{equation}
+\end{lem}
+\begin{proof}
+
 \end{proof}
 
 \begin{lem}
@@ -358,22 +419,6 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 	\left| \phi(x) \right| \ge \left| \frac{-\phi(0)}{x_0} \left( x - x_0 \right) \right| = \frac{-\phi(0)}{x_0} \left( x_0 - x \right) \ge \frac{\rho\tau}{8}. \qedhere
 \end{equation*}
 \end{proof}
-
-
-\begin{lem}
-Denote $k_*^i \triangleq \argmax\limits_{k \in [h]}\left\{ \left| o_{i,k}^\prime - o_{i,k} \right| \right\}$, $\forall i \in [n]$,
-\begin{equation*}
-\begin{split}
-    \left\| \rvo^\prime - \rvo \right\|_2^2 &\le \sum\limits_{k = 1}^{h}{ \left\| \rvo^\prime - \rvo \right\|_\infty^2} \\
-    &= h \cdot \left| o_{i,k_*^i}^\prime - o_{i,k_*^i} \right|^2 \\
-    &\le 4 h \left| o_{i,k_*^i}^\prime - o_{i,k_*^i} \right|^2 \\
-    &= 4 h \cdot \left| \sum\limits_{r=1}^{m}{a_{k_*^i,r} \left( \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right) } \right|^2 \\
-    &\le 4 h \cdot \sum\limits_{r=1}^{m}{ \left| a_{k_*^i,r} \right| \cdot \left| \sigma\left({\rvw_r^\prime}^\top \rvs_i\right) - \sigma\left({\rvw_r}^\top \rvs_i\right) \right|^2 } \\
-    &\le 4h \cdot \sum\limits_{r=1}^{m}{ \left\| \rvw_r^\prime - \rvw_r \right\|_2^2 } \\
-    &\le 4h m \cdot \left\| \rmW^\prime - \rmW \right\|_F^2
-\end{split}
-\end{equation*}
-\end{lem}
 
 \section{Policy Gradient}
 
