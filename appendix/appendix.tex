@@ -23,6 +23,7 @@
 \def\rvone{{\mathbf{1}}}
 \def\rvzero{{\mathbf{0}}}
 \def\rvtilder{{\tilde{\mathbf{r}}}}
+\def\rvhat{{\hat{\mathbf{r}}}}
 
 \def\rvp{{\mathbf{p}}}
 
@@ -256,6 +257,7 @@ $\forall k \in [h]$. Then $\forall i \in [n]$,
 \end{equation*}
 \end{lem}
 \begin{proof}
+By the definition of the logit, the $1$-Lipschitzness of ReLU, and the Root-Mean Square-Arithmetic Mean inequality,
 \begin{equation*}
 \begin{split}
     \left\| \rvo_i^\prime - \rvo_i \right\|_2^2 &\le \sum\limits_{k = 1}^{h}{ \left\| \rvo_i^\prime - \rvo_i \right\|_\infty^2} \\
@@ -296,18 +298,18 @@ $\forall k \in [h]$. Then $\forall i \in [n]$,
 
 \begin{lem}[Lemma 5 in the paper]
 \label{lem:gradient_lower_bound}
-	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\rvpi_i(t)^\top \rvtilder_i\right\}$, $k^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ r_{i^*(t),k} \right\} = \r_{i^*(t)}^{\max}$, i.e., the optimal arm of state $i^*(t)$. If $\pi_{i^*(t), k^*(t)}(t) > c > 0$, where $c$ is a constant, then with probability $\Omega\left( \frac{\delta}{n} \right)$,
+	Denote $i^*(t) \triangleq \argmax\limits_{i \in [n]}\left\{\rvpi_i\left( \rmW(t)\right)^\top \hat{\rvtilder}_i\right\}$, $\hat{k}_i^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{i^*(t),k} \right\}$, i.e., the optimal action at state $\rvs_{i^*(t)}$ using the estimated reward $\rvhat_i$. If $\pi\left(\rmW(t)\right)_{i^*(t), \hat{k}_i^*(t)} > c_t > 0$, then with probability $\Omega\left( \frac{\delta}{n} \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \left( \rvpi_{i^*(t)}(t)^\top \rvtilder_i \right) \ge \Omega\left( \frac{c\delta}{n^2} \right) \cdot \ell(\rvpi(t)).
+	\left\| \frac{d\tilde{\ell}}{d \rvw_r(t)} \right\|_2 \ge \Omega\left( \frac{\delta}{n^2} \right) \cdot c_t \cdot \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_{i}.
 \end{split}
 \end{equation*}
 \end{lem}
 \begin{proof}
-	 For conciseness, we denote $i^*(t)$ as $i^*$, and $k^*(t)$ as $k^*$. Rewrite $\frac{d\tilde{\ell}}{d \rvw_r(t)} = \sum\limits_{k^
+	 For conciseness, we denote $i^*(t)$ as $i^*$, and $\hat{k}_i^*(t)$ as $k^*$. Rewrite $\frac{d\tilde{\ell}}{d \rvw_r(t)} = \sum\limits_{k^
 	\prime=1}^{h}{ a_{k^\prime,r} \cdot \rvp_{k^\prime, r} }$, where $\rvp_{k^\prime, r} \in \sR^d$ is defined as, 
 \begin{equation*}
-	\rvp_{k^\prime, r} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^\prime,k,i}(t) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
+	\rvp_{k^\prime, r} \triangleq \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^\prime,k,i}(t) \cdot \sI\left\{ \rvw_r(0)^\top \rvs_i > 0 \right\} \cdot \rvs_i \right] } }.
 \end{equation*}
 By the randomness of $a_{k^\prime,r}$,
 \begin{equation}
@@ -329,15 +331,15 @@ where $\rvw_r^\prime(0) \perp \rvw_r^{\prime\prime}(0)$. Define $h_{k^*,r}$ as f
 \begin{equation*}
 \begin{split}
 	h_{k^*,r} &\triangleq \rvw_r(0)^\top \rvp_{k^*, r} \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }.
+	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }.
 \end{split}
 \end{equation*}
 And decompose $h_{k^*,r}$ into two parts, i.e., $i^*$ and $[n] \setminus \left\{ i^* \right\}$,
 \begin{equation}
 \label{eq:decompose_h}
 \begin{split}
-	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i^* ) \right] } \\
-	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }.
+	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i^* ) \right] } \\
+	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot \sigma( \rvw_r(0)^\top \rvs_i ) \right] } }.
 \end{split}
 \end{equation}
 Consider the following events,
@@ -376,25 +378,25 @@ since $\left| \rvw_r^{\prime\prime}(0)^\top \rvs_{i} \right| = \left| \rvw_r(0)^
 \begin{equation}
 \label{eq:h_alpha}
 \begin{split}
-	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma(x) \right] } \\
-	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( x \cdot \rvs_{i^*}^\top \rvs_{i} + \rvw_r^\prime(0)^\top \rvs_i ) \cdot \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\}  \right] } }.
+	h_{k^*,r} &= \frac{1}{n} \cdot \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \cdot \sigma(x) \right] } \\
+	&+ \frac{1}{n} \cdot \sum\limits_{i \not= i^*}{\sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i,k} \cdot \pi_{i,k}(t) \cdot v_{k^*,k,i}(t) \cdot ( x \cdot \rvs_{i^*}^\top \rvs_{i} + \rvw_r^\prime(0)^\top \rvs_i ) \cdot \sI\left\{ \rvw_r^\prime(0)^\top \rvs_i > 0 \right\}  \right] } }.
 \end{split}
 \end{equation}
 Note the first part of $h_{k^*,r}$ is a convex function of $x$, and the second part is linear. For the first term in \cref{eq:h_alpha}, we have,
 \begin{equation*}
 \begin{split}
-	\sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } &= \underbrace{\tilde{r}_{i^*,k^*} \cdot \pi_{i^*,k^*}(t) \cdot v_{k^*,k^*,i^*}(t)}_{\tilde{r}_{i^*,k^*} = \r_{i^*}^{\max} -  r_{i^*,k^*} = 0} + \sum\limits_{k\not=k^*}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \\
-	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k\not=k^*}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
-	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
-	&= - \pi_{i^*,k^*}(t) \cdot \rvpi_{i^*}(t)^\top \rvtilder_{i^*}.
+	\sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } &= \underbrace{\hat{\tilde{r}}_{i^*,k^*} \cdot \pi_{i^*,k^*}(t) \cdot v_{k^*,k^*,i^*}(t)}_{\hat{\tilde{r}}_{i^*,k^*} = \hat{r}_{i^*,k^*} -  \hat{r}_{i^*,k^*} = 0} + \sum\limits_{k\not=k^*}{ \left[ \hat{\tilde{r}}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \\
+	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k\not=k^*}{ \left[ \hat{\tilde{r}}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
+	&= - \pi_{i^*,k^*}(t) \cdot \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i^*,k} \cdot \pi_{i^*,k}(t) \right] } \\
+	&= - \pi_{i^*,k^*}(t) \cdot \rvpi_{i^*}\left(\rmW(t)\right)^\top \rvtilder_{i^*}.
 \end{split}
 \end{equation*}
-By assumption, if $\pi_{i^*,k^*}(t) > c > 0$, then ,
+By assumption, if $\pi_{i^*,k^*}(t) > c_t > 0$, then ,
 \begin{equation*}
 \begin{split}
-	\left| \partial{h_{k^*,r}}_{\max}{(0)} - \partial{h_{k^*,r}}_{\min}{(0)} \right| &= \frac{1}{n} \cdot \left| \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \right| \\
-	&= \frac{1}{n} \cdot \pi_{i^*,k^*}(t) \cdot \rvpi_{i^*}(t)^\top \rvtilder_{i^*} \\
-	&\ge \frac{c}{n} \cdot \ell(\rvpi(t)).
+	\left| \partial{h_{k^*,r}}_{\max}{(0)} - \partial{h_{k^*,r}}_{\min}{(0)} \right| &= \frac{1}{n} \cdot \left| \sum\limits_{k=1}^{h}{ \left[ \hat{\tilde{r}}_{i^*,k} \cdot \pi_{i^*,k}(t) \cdot v_{k^*,k,i^*}(t) \right] } \right| \\
+	&= \frac{1}{n} \cdot \pi_{i^*,k^*}(t) \cdot \rvpi_{i^*}\left(\rmW(t)\right)^\top \rvtilder_{i^*} \\
+	&\ge \frac{c_t}{n} \cdot \rvpi_{i^*}\left(\rmW(t)\right)^\top \rvtilder_{i^*}.
 \end{split}
 \end{equation*}
 where $\partial{h_{k^*,r}}_{\max}{(0)} = \max\left\{ \partial{h_{k^*,r}}{(0)} \right\}$, $\partial{h_{k^*,r}}_{\min}{(0)} = \min\left\{ \partial{h_{k^*,r}}{(0)} \right\}$ are the maximum and minimum of $\partial{h_{k^*,r}}{(0)}$, i.e., the subdifferential of $h_{k^*,r}$ at $0$. Therefore, by \cref{lem:non_smooth_convex},
@@ -536,6 +538,13 @@ First note that, $\forall k \in [h]$,
 \end{equation}
 where $\rva_{\cdot, r} \in \sR^h$ refers to $\rva_{\cdot, r} \triangleq \left( a_{1,r}, a_{2,r}, \dots, a_{h,r} \right)^\top$. It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
 
+\subsection{Other}
 
+\begin{lem}[Chernoff]
+    Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{ X_i  }$. Denote $\mu \triangleq \sE\left[ X \right]$. $\forall \alpha \in [0,1]$,
+\begin{equation*}
+    \pr\left\{ X \le (1 - \alpha) \mu \right\} \le \exp\left\{ - \frac{\alpha^2 \mu}{2} \right\}.
+\end{equation*}
+\end{lem}
 
 \end{document}
