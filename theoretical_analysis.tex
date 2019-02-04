@@ -8,20 +8,22 @@ We first present the main results in the bandit settings, as shown in \cref{thm:
 
 \begin{thm}
 \label{thm:main_result}
-    Given a two layer NN policy $\rvpi_i$, with number of parameters $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta = \frac{c^2 \delta^2}{16 n^4 h m}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{32n^8h}{ c^4 \delta^4} \cdot \log{T} + 2 \cdot T^{\frac{2}{3} + \beta }$, $\forall \beta > 0$.
+    Given a two layer NN policy $\rvpi_i$, with number of parameters $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta = \frac{c^2 \delta^2}{16 n^4 h m}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } \le  \frac{32n^8h}{ c^4 \delta^4} \log{T} + 2 \left( \log{\left(\frac{h}{6}\right)}\right)^{\frac{1}{3}} T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}} + 2 T^{\frac{2}{3}}$.
 \end{thm}
 \begin{proof}
 According to \cref{alg:policy_gradient_uniform_exploration}, $T$ rounds are divided into two parts, where the uniform policy and $\rvpi_i\left( \rmW(t) \right)$ are used to sample and take actions, respectively. Therefore the regret consists of two corresponding parts, i.e., $\sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] } =$
 \begin{equation*}
 \begin{split}
-     &\sum\limits_{t=0}^{T^{\frac{2}{3} + \beta}}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ \tilde{r}_{i, A_t} \right] }} + \sum\limits_{t=T^{\frac{2}{3} + \beta} + 1}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \\
-     &\le \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta}}{ 1 } + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i } \\
-     &\qquad + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \left( \rvtilder_i -  \hat{\rvtilder}_i \right) }  \\
+     &\sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ \tilde{r}_{i, A_t} \right] }} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \rvtilder_i } \\
+     &\le \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ 1 } + 1 + \sum\limits_{t=T^{\frac{2}{3} + \beta} + 1}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i } \\
+     &\qquad + \sum\limits_{t=T^{\frac{2}{3} + \beta} + 1}^{T-1}{ \rvpi_i\left( \rmW(t) \right)^\top \left( \rvtilder_i -  \hat{\rvtilder}_i \right) }  \\
      &\le T^{\frac{2}{3} + \beta } + 1 + \frac{2n^4}{\eta m c^2 \delta^2} \cdot \sum\limits_{t=1}^{T-1}{ \frac{1}{t} } +  \sum\limits_{t=0}^{T-1}{ \left\| \hat{\rvtilder}_i - \rvtilder_i \right\|_\infty } \\
-     &\le 2 T^{\frac{2}{3} + \beta } + \frac{32n^8h}{ c^4 \delta^4}\log{T} -O\left(1 \right) + 2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\},
+     &\le 2 T^{\frac{2}{3} + \beta } + \frac{32n^8h}{ c^4 \delta^4}\log{T} + 2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\},
 \end{split}
 \end{equation*}
-where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$, and the second inequality is according to \cref{thm:surrogate_expected_loss_convergence}. The third inequality is by \cref{thm:loss_estimation_hoeffding} and H{\"o}lder's inequality. Since $2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \in o(1)$, $\forall \beta > 0$, we obtain the expected regret upper bound.
+where the first equation is by \cref{eq:vanilla_policy_gradient_expected_regret}, and the first inequality is by $\rvtilder_i \in \left[ 0, 1\right]^h$. The second inequality is according to \cref{thm:surrogate_expected_loss_convergence} and H{\"o}lder's inequality. The third inequality is by \cref{thm:loss_estimation_hoeffding}.
+
+Finally, let $\beta = \left( \log{\left(\frac{h}{6}\right) + \log{\log{T}} } \right)/\left(3 \log{T}\right)$, we have $2 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} = 2 T^{\frac{2}{3}}$, and $T^{\frac{2}{3} + \beta} = T^{\frac{2}{3}}\left( \log{\left(\frac{h}{6}\right)}\right)^{\frac{1}{3}} \left(\log{T}\right)^{\frac{1}{3}}$.
 \end{proof}
 
 \cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the NN policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the NN policy.  While in the second playing-learning phase, since the loss estimation is good, the NN policy will keep reducing its surrogate expected loss, which is highly related to its true expected loss, which is identical with the expected regret of this phase.
