@@ -547,4 +547,26 @@ where $\rva_{\cdot, r} \in \sR^h$ refers to $\rva_{\cdot, r} \triangleq \left( a
 \end{equation*}
 \end{lem}
 
+\begin{lem}
+    Suppose $\left| f_t\left(\rvx\right) - f_{t-1}\left(\rvx\right) \right| \le \frac{a}{\sqrt{t}}$, $\forall \rvx$, $\forall t > 0$. And $f_t$ is $b$-smooth, $\forall t > 0$, i.e., $\forall \rvx, \ \rvx^\prime$,
+\begin{equation*}
+\begin{split}
+    f_t\left(\rvx^\prime\right) \le f_t\left(\rvx\right) + \left\langle \nabla f_t\left(\rvx^\prime\right) , \rvx^\prime - \rvx \right\rangle +  \frac{b}{2} \left\| \rvx^\prime - \rvx \right\|_2^2.
+\end{split}
+\end{equation*}
+And $\left\| \nabla f_t\left(\rvx\right) \right\|_2 \ge f_t\left(\rvx\right) - f_t\left(\rvx_*\right)$, $\forall \rvx$, $\forall t > 0$.
+\end{lem}
+\begin{proof}
+Let $\eta = \frac{1}{b}$. Denote $\delta_t \triangleq f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right)$, $\forall t > 0$.
+\begin{equation*}
+\begin{split}
+    \delta_t &= f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left(\rvx_t\right) - f_{t-1}\left(\rvx_{t-1}\right) + f_{t-1}\left(\rvx_{t-1}\right) - f_{t-1}\left( \rvx_* \right) + f_{t-1}\left( \rvx_* \right) -  f_t\left( \rvx_* \right) \\
+    &\le \frac{a}{\sqrt{t}} + \left\langle \nabla f_{t-1}\left(\rvx_{t-1}\right),  \rvx_t - \rvx_{t-1} \right\rangle + \frac{b}{2}\left\| \rvx_t - \rvx_{t-1} \right\|_2^2 + \delta_{t-1} + \frac{a}{\sqrt{t}} \\
+    &= \frac{2a}{\sqrt{t}} - \eta \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \frac{b \eta^2}{2} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right)  \right\|_2^2 + \delta_{t-1} \\
+    &= \frac{2a}{\sqrt{t}} - \frac{1}{2b} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \delta_{t-1} \\
+    &\le \delta_{t-1} - \frac{1}{2b} \cdot \delta_{t-1}^2 + \frac{2a}{\sqrt{t}}
+\end{split}
+\end{equation*}
+\end{proof}
+
 \end{document}
