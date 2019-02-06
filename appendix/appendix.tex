@@ -546,17 +546,24 @@ where $\rva_{\cdot, r} \in \sR^h$ refers to $\rva_{\cdot, r} \triangleq \left( a
 \end{equation*}
 \end{lem}
 
+\subsection{Online Update}
+
 \begin{lem}
-    Suppose $\left| f_t\left(\rvx\right) - f_{t-1}\left(\rvx\right) \right| \le \frac{a}{\sqrt{t}}$, $\forall \rvx$, $\forall t > 0$. And $f_t$ is $b$-smooth, $\forall t > 0$, i.e., $\forall \rvx, \ \rvx^\prime$,
+    Suppose $\left| f_t\left(\rvx\right) \right| \le 1$, and $\left| f_t\left(\rvx\right) - f_{t-1}\left(\rvx\right) \right| \le \frac{a}{\sqrt{t}}$, $\forall \rvx$, $\forall t > 0$. And $f_t$ is $b$-smooth, $\forall t > 0$, i.e., $\forall \rvx, \ \rvx^\prime$,
 \begin{equation*}
 \begin{split}
     f_t\left(\rvx^\prime\right) \le f_t\left(\rvx\right) + \left\langle \nabla f_t\left(\rvx^\prime\right) , \rvx^\prime - \rvx \right\rangle +  \frac{b}{2} \left\| \rvx^\prime - \rvx \right\|_2^2.
 \end{split}
 \end{equation*}
-And $\left\| \nabla f_t\left(\rvx\right) \right\|_2 \ge f_t\left(\rvx\right) - f_t\left(\rvx_*\right)$, $\forall \rvx$, $\forall t > 0$.
+And $\left\| \nabla f_t\left(\rvx\right) \right\|_2 \ge f_t\left(\rvx\right) - f_t\left(\rvx_*\right)$, $\forall \rvx$, $\forall t > 0$. Then the regret of the  online gradient descent satisfies,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right) \right]} \le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}.
+\end{split}
+\end{equation*}
 \end{lem}
 \begin{proof}
-Let $\eta = \frac{1}{b}$. Denote $\delta_t \triangleq f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right)$, $\forall t > 0$.
+$\rvx_{t} = \rvx_{t-1} - \eta \cdot \nabla f_{t-1}\left(\rvx_{t-1}\right)$, where $\eta = \frac{1}{b}$. Denote $\delta_t \triangleq f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right)$.
 \begin{equation*}
 \begin{split}
     \delta_t &= f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left(\rvx_t\right) - f_{t-1}\left(\rvx_{t-1}\right) + f_{t-1}\left(\rvx_{t-1}\right) - f_{t-1}\left( \rvx_* \right) + f_{t-1}\left( \rvx_* \right) -  f_t\left( \rvx_* \right) \\
@@ -585,7 +592,7 @@ the regret is upper bounded by,
 \begin{split}
     \sum\limits_{t=1}^{T}{ \delta_{t-1}} &\le \sqrt{ T \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} } \\
     &\le \sqrt{ T \cdot 2b \cdot \left( 6 + a \sqrt{T} \right) } \\
-    &\le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}
+    &\le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
