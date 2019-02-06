@@ -65,9 +65,7 @@
 
 \begin{document}
 
-\maketitle
-
-\section{Regret Semi-Smoothness}
+%\maketitle
 
 \begin{lem}
     Given weights $\rmW \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$, and $\rmW^\prime \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$. Denote $\rvpi_i\left( \rmW \right)$ and $\rvpi_i\left( \rmW^\prime \right)$ as the neural network policies parameterized by $\rmW$ and $\rmW^\prime$, respectively. $\forall i \in [n]$,
@@ -138,17 +136,6 @@ Combine the above with the following,
 \end{split}
 \end{equation*}
 \end{proof}
-
-
-
-\subsection{Other}
-
-\begin{lem}[Chernoff]
-    Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{ X_i  }$. Denote $\mu \triangleq \sE\left[ X \right]$. $\forall \alpha \in [0,1]$,
-\begin{equation*}
-    \pr\left\{ X \le (1 - \alpha) \mu \right\} \le \exp\left\{ - \frac{\alpha^2 \mu}{2} \right\}.
-\end{equation*}
-\end{lem}
 
 \begin{equation*}
 \begin{split}
