@@ -235,7 +235,7 @@ Combining the two above results,
     &= - \eta \cdot \trace \left\{ \hat{\rvtilder}_i^\top \left[\Delta\left( \rvpi_i\left( \rmW(t) \right) \right) - \rvpi_i\left( \rmW(t) \right) \rvpi_i\left( \rmW(t) \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right] \rvs_i \right\} \\
     &= - \eta \cdot \trace \left\{ \rvs_i \hat{\rvtilder}_i^\top \left[\Delta\left( \rvpi_i\left( \rmW(t) \right) \right) - \rvpi_i\left( \rmW(t) \right) \rvpi_i\left( \rmW(t) \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right]  \right\} \\
     &= - \eta \left\langle \rmD(t) \rmA^\top \left[\Delta\left( \rvpi_i\left( \rmW(t) \right) \right) - \rvpi_i\left( \rmW(t) \right) \rvpi_i\left( \rmW(t) \right)^\top \right] \hat{\rvtilder}_i \rvs_i^\top, \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\rangle \\
-    &= - \eta \cdot \left\| \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
+    &= - \eta \cdot \left\| \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -279,8 +279,7 @@ By the definition of the logit, the $1$-Lipschitzness of ReLU, and the Root-Mean
 \label{eq:parameter_smoothness}
 \begin{split}
 \small
-    &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \\
-    &- \eta \cdot \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 2 h m \eta^2 \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
+    &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i - \left( \eta - 2 h m \eta^2 \right) \cdot \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
 \end{split}
 \end{equation}
 \end{lem}
@@ -291,7 +290,7 @@ By the definition of the logit, the $1$-Lipschitzness of ReLU, and the Root-Mean
     &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i - \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i = \rvpi_i\left( \rvo_i(t+1) \right)^\top \hat{\rvtilder}_i - \rvpi_i\left( \rvo_i(t) \right)^\top \hat{\rvtilder}_i \\
     &\le \left\langle \frac{d \rvpi_i\left( \rvo_i(t) \right)^\top \rvtilder_i}{d \rvo_i(t)}, \rvo_i(t+1) - \rvo_i(t) \right\rangle + 2 \left\| \rvo_i(t+1) - \rvo_i(t)  \right\|_2^2 \\
     &\le - \eta \cdot \left\| \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 2 h m \left\| \rmW(t+1) - \rmW(t) \right\|_F^2 \\
-    &= - \eta \cdot \left\| \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 2 h m \eta^2 \left\| \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
+    &= - \eta \cdot \left\| \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 2 h m \eta^2 \left\| \frac{d \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -564,7 +563,29 @@ Let $\eta = \frac{1}{b}$. Denote $\delta_t \triangleq f_t\left(\rvx_t\right) - f
     &\le \frac{a}{\sqrt{t}} + \left\langle \nabla f_{t-1}\left(\rvx_{t-1}\right),  \rvx_t - \rvx_{t-1} \right\rangle + \frac{b}{2}\left\| \rvx_t - \rvx_{t-1} \right\|_2^2 + \delta_{t-1} + \frac{a}{\sqrt{t}} \\
     &= \frac{2a}{\sqrt{t}} - \eta \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \frac{b \eta^2}{2} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right)  \right\|_2^2 + \delta_{t-1} \\
     &= \frac{2a}{\sqrt{t}} - \frac{1}{2b} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \delta_{t-1} \\
-    &\le \delta_{t-1} - \frac{1}{2b} \cdot \delta_{t-1}^2 + \frac{2a}{\sqrt{t}}
+    &\le \delta_{t-1} - \frac{1}{2b} \cdot \delta_{t-1}^2 + \frac{2a}{\sqrt{t}}.
+\end{split}
+\end{equation*}
+Rearranging and summing up from $1$ to $T$,
+\begin{equation*}
+\begin{split}
+    \frac{1}{2b} \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} &\le \sum\limits_{t=1}^{T}{\left[ \delta_{t-1} - \delta_{t} + f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left( \rvx_* \right) -  f_t\left( \rvx_* \right) \right] } \\
+    &= \delta_0 - \delta_{T} + f_0\left( \rvx_* \right) - f_{T}\left( \rvx_* \right) + \sum\limits_{t=1}^{T}{ \left[ f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) \right] } \\
+    &\le 6 + a \sqrt{T}.
+\end{split}
+\end{equation*}
+By the the Root-Mean Square-Arithmetic Mean inequality,
+\begin{equation*}
+\begin{split}
+    \frac{\sum\limits_{t=1}^{T}{ \delta_{t-1}}}{T} \le \sqrt{\frac{\sum\limits_{t=1}^{T}{ \delta_{t-1}^2}}{T}},
+\end{split}
+\end{equation*}
+the regret is upper bounded by,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T}{ \delta_{t-1}} &\le \sqrt{ T \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} } \\
+    &\le \sqrt{ T \cdot 2b \cdot \left( 6 + a \sqrt{T} \right) } \\
+    &\le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}
 \end{split}
 \end{equation*}
 \end{proof}
