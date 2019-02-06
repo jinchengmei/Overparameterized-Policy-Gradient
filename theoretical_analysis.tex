@@ -163,20 +163,9 @@ where $\rvw_r(t)$ is the $r$th row vector of $\rmW(t)$.
 \begin{split}
 \small
     &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \\
-    &- \eta \cdot \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 8 h m \eta^2 \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
+    &\qquad - \left( \eta - 2 h m \eta^2 \right) \cdot \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
 \end{split}
 \end{equation}
-\end{lem}
-
-To use \cref{lem:parameter_smoothness} we need upper bound the last term in \cref{eq:parameter_smoothness} by the policy surrogate expected loss.
-\begin{lem}
-\label{lem:gradient_upper_bound}
-$\forall r \in [m]$, $\forall t \ge 0$,
-\begin{equation*}
-\begin{split}
-	\left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} \right\|_2 \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i.
-\end{split}
-\end{equation*}
 \end{lem}
 
 Now by the key insight of the recent progresses of the overparameterized NN optimization theory, with constants probability, the pseudo gradient norm is lower bounded by the objective \citep{li2018learning}. However, unlike the supervised learning, RL has exploration issue, as shown in \cref{subsec:exploration_in_policy_learning}. Our result contains an exploration related term, which is consistent with \cref{eq:logit_derivative_lower_bound}, making guarantees for exploring the optimal action necessary during learning.
