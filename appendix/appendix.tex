@@ -764,10 +764,10 @@ According to \cref{eq:last_two_terms_upper_bound} and \cref{eq:empirical_estimat
     &\sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \left( \rvr_i - \hat{\rvr}_i(t) \right) } + \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \left( \hat{\rvr}_i(t) - \rvr_i \right) } \\
     &\qquad \le 2 \left\| \rvr_i - \hat{\rvr}_i(0) \right\|_\infty + 2 \sum\limits_{t=1}^{T-1}{ \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty } \\
     &\qquad \le 2 + \frac{4}{T} + 4 \sqrt{T \log{T}} \\
-    &\qquad \le 5 \sqrt{T \log{T}}
+    &\qquad \le 5 \sqrt{T \log{T}}.
 \end{split}
 \end{equation}
-Comibing \cref{eq:cumulative_expected_loss_decomposition}, \cref{eq:dynamic_regret_upper_bound}, and \cref{eq:last_two_terms_sublinear},
+Combining \cref{eq:cumulative_expected_loss_decomposition}, \cref{eq:dynamic_regret_upper_bound}, and \cref{eq:last_two_terms_sublinear},
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } &\le \frac{5 n^2 \sqrt{h}}{\delta c}\sqrt{T \log{T}} + 5 \sqrt{T \log{T}} \\
