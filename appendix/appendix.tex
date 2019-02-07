@@ -626,7 +626,7 @@ Suppose $\rvr_i \in \left[ 0, 1\right]^h$ is the true mean loss vector at state 
     The expected regret of \cref{alg:policy_gradient_online_pull_all_arms} satisfies,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ r_{i, A_t} \right] } - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } \le .
+    \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ r_{i, A_t} \right] } - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } \le \frac{10 \sqrt{h}}{c}\sqrt{T \log{T}}.
 \end{split}
 \end{equation*}
 \end{thm}
@@ -671,7 +671,7 @@ Firstly, $\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t
     &\qquad = \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( \frac{1}{t} \sum\limits_{s=0}^{t-1}{R_{i,k}(s)} - \frac{1}{t-1} \sum\limits_{s=0}^{t-2}{R_{i,k}(s)} \right) } \\
     &\qquad = \frac{1}{t} \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right)} \\
     &\qquad \le \left| \frac{1}{t} \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right)} \right| \\
-    &\qquad \le \frac{1}{t} \cdot \left\| \rvpi_{i}\left(\rmW(t)\right) \right\|_1 \cdot \max\limits_{k \in [h]}{\left\{ R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right\}} \\
+    &\qquad \le \frac{1}{t} \cdot \left\| \rvpi_{i}\left(\rmW(t)\right) \right\|_1 \cdot \max\limits_{k \in [h]}{\left\{ \left| R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right| \right\}} \\
     &\qquad \le \frac{1}{t}.
 \end{split}
 \end{equation}
@@ -711,11 +711,11 @@ Rearranging and summing up from $t = 1$ to $T$,
 \begin{equation*}
 \begin{split}
     &\sum\limits_{t=1}^{T}{ \omega_{t-1}^2 } \le \frac{8 h n^4}{\delta^2 c^2} \sum\limits_{t=1}^{T}{\left[ \omega_{t-1} - \omega_t + \frac{2}{t} \right]} = \frac{8 h n^4}{\delta^2 c^2} \left[ \omega_0 - \omega_T + \sum\limits_{t=1}^{T}{\frac{2}{t}} \right] \\
-    &\le \frac{8 h n^4}{\delta^2 c^2} \left( \omega_0 - \omega_T + 2 + 2 \log{T} \right) \\
-    &\le \frac{8 h n^4}{\delta^2 c^2} \left( \omega_0 + 2 + 2 \log{T} \right) \\
-    &= \frac{8 h n^4}{\delta^2 c^2} \left( \rvpi_i\left(\rmW(0)\right)^\top \hat{\rvr}_i(0) - {\rvpi_i^*(0)}^\top \hat{\rvr}_i(0) + 2 + 2 \log{T} \right) \\
-    &= \frac{16 h n^4}{\delta^2 c^2} \left( 1 + \log{T} \right) \qquad \left( \hat{\rvr}_i(0) = \rvzero \right) \\
-    &\le \frac{25 h n^4}{\delta^2 c^2} \cdot \log{T}.
+    &\qquad \le \frac{8 h n^4}{\delta^2 c^2} \left( \omega_0 - \omega_T + 2 + 2 \log{T} \right) \\
+    &\qquad \le \frac{8 h n^4}{\delta^2 c^2} \left( \omega_0 + 2 + 2 \log{T} \right) \\
+    &\qquad = \frac{8 h n^4}{\delta^2 c^2} \left( \rvpi_i\left(\rmW(0)\right)^\top \hat{\rvr}_i(0) - {\rvpi_i^*(0)}^\top \hat{\rvr}_i(0) + 2 + 2 \log{T} \right) \\
+    &\qquad = \frac{16 h n^4}{\delta^2 c^2} \left( 1 + \log{T} \right) \qquad \left( \hat{\rvr}_i(0) = \rvzero \right) \\
+    &\qquad \le \frac{25 h n^4}{\delta^2 c^2} \cdot \log{T}.
 \end{split}
 \end{equation*}
 By the the Root-Mean Square-Arithmetic Mean inequality,
@@ -726,6 +726,54 @@ By the the Root-Mean Square-Arithmetic Mean inequality,
     &\le \frac{5 n^2 \sqrt{h}}{\delta c}\sqrt{T \log{T}}.
 \end{split}
 \end{equation}
+Finally, the last two terms in \cref{eq:cumulative_expected_loss_decomposition} is upper bounded by ,
+\begin{equation}
+\label{eq:last_two_terms_upper_bound}
+\begin{split}
+    &\sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \left( \rvr_i - \hat{\rvr}_i(t) \right) } + \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \left( \hat{\rvr}_i(t) - \rvr_i \right) } \\
+    &\qquad \le \sum\limits_{t=0}^{T-1}{ \left\| \rvpi_i\left(\rmW(t)\right)\right\|_1 \cdot \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty } + \sum\limits_{t=0}^{T-1}{ \left\| {\rvpi_i^*} \right\|_1 \cdot \left\| \hat{\rvr}_i(t) - \rvr_i \right\|_\infty } \\
+    &\qquad = 2 \sum\limits_{t=0}^{T-1}{ \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty }.
+\end{split}
+\end{equation}
+Denote $\hat{k}_i(t) \triangleq \argmax\limits_{k \in [h]}{ \left\{ \left| r_{i,k} - \hat{r}_{i,k}(t) \right| \right\}}$.
+\begin{equation*}
+\begin{split}
+    \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty &= \left| r_{i, \hat{k}_i(t)} - \hat{r}_{i,\hat{k}_i(t)}(t) \right| \\
+    &= \left| r_{i, \hat{k}_i(t)} - \frac{1}{t} \sum\limits_{s=0}^{t-1}{R_{i, \hat{k}_i(t)}(s)} \right|.
+\end{split}
+\end{equation*}
+By Hoeffding's inequality, $\forall t > 0$,
+\begin{equation*}
+\begin{split}
+    \probability{\left\{ \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty > \frac{\sqrt{\log{T}}}{\sqrt{t}} \right\}} \le 2 \exp{\left\{ - 2 t \cdot \frac{\log{T}}{t}\right\}} = \frac{2}{T^2}.
+\end{split}
+\end{equation*}
+Therefore $\left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty$ is upper bounded by,
+\begin{equation}
+\label{eq:empirical_estimation_upper_bound}
+\begin{split}
+    &\left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty \\
+    & \le \probability{\left\{ \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty > \frac{\sqrt{\log{T}}}{\sqrt{t}} \right\}} \cdot 1 + \probability{\left\{ \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty \le \frac{\sqrt{\log{T}}}{\sqrt{t}} \right\}} \cdot \frac{\sqrt{\log{T}}}{\sqrt{t}} \\
+    &\le \frac{2}{T^2} + \frac{\sqrt{\log{T}}}{\sqrt{t}}.
+\end{split}
+\end{equation}
+According to \cref{eq:last_two_terms_upper_bound} and \cref{eq:empirical_estimation_upper_bound},
+\begin{equation}
+\label{eq:last_two_terms_sublinear}
+\begin{split}
+    &\sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \left( \rvr_i - \hat{\rvr}_i(t) \right) } + \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \left( \hat{\rvr}_i(t) - \rvr_i \right) } \\
+    &\qquad \le 2 \left\| \rvr_i - \hat{\rvr}_i(0) \right\|_\infty + 2 \sum\limits_{t=1}^{T-1}{ \left\| \rvr_i - \hat{\rvr}_i(t) \right\|_\infty } \\
+    &\qquad \le 2 + \frac{4}{T} + 4 \sqrt{T \log{T}} \\
+    &\qquad \le 5 \sqrt{T \log{T}}
+\end{split}
+\end{equation}
+Comibing \cref{eq:cumulative_expected_loss_decomposition}, \cref{eq:dynamic_regret_upper_bound}, and \cref{eq:last_two_terms_sublinear},
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } &\le \frac{5 n^2 \sqrt{h}}{\delta c}\sqrt{T \log{T}} + 5 \sqrt{T \log{T}} \\
+    &\le \frac{10 n^2 \sqrt{h}}{\delta c}\sqrt{T \log{T}}. \qedhere
+\end{split}
+\end{equation*}
 \end{proof}
 
 \end{document}
