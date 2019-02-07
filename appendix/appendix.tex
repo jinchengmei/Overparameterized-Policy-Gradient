@@ -638,7 +638,8 @@ Suppose $\rvr_i \in \left[ 0, 1\right]^h$ is the true mean loss vector at state 
 \end{split}
 \end{equation*}
     Decompose the cumulative expected loss as follows,
-\begin{equation*}
+\begin{equation}
+\label{eq:cumulative_expected_loss_decomposition}
 \begin{split}
     &\sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } \\
     &= \sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t)} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \hat{\rvr}_i(t)} \\
@@ -647,9 +648,10 @@ Suppose $\rvr_i \in \left[ 0, 1\right]^h$ is the true mean loss vector at state 
     &\qquad + \sum\limits_{t=0}^{T-1}{ \left( {\rvpi_i^*(t)} - {\rvpi_i^*} \right)^\top \hat{\rvr}_i(t) } \\
     &\qquad + \sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \left( \rvr_i - \hat{\rvr}_i(t) \right) } + \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \left( \hat{\rvr}_i(t) - \rvr_i \right) },
 \end{split}
-\end{equation*}
+\end{equation}
 where ${\rvpi_i^*(t)} \triangleq \argmin\limits_{\rvpi \in \Delta^{h-1}}{ \left\{ \rvpi^\top \hat{\rvr}_i(t) \right\} }$ is the optimal policy using $\hat{\rvr}_i(t)$ as the loss. Denote $\omega_t \triangleq \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t)$.
-\begin{equation*}
+\begin{equation}
+\label{eq:dynamic_regret_decomposition}
 \begin{split}
     \omega_t &= \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) \\
     &\quad + \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) - \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) \\
@@ -657,9 +659,10 @@ where ${\rvpi_i^*(t)} \triangleq \argmin\limits_{\rvpi \in \Delta^{h-1}}{ \left\
     &\quad + {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t-1) - {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) \\
     &\quad + {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t).
 \end{split}
-\end{equation*}
+\end{equation}
 Firstly, $\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1)$ can be upper bounded as,
-\begin{equation*}
+\begin{equation}
+\label{eq:first_term_upper_bound}
 \begin{split}
     &\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) \\
     &\qquad = \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( \hat{r}_{i,k}(t) - \hat{r}_{i,k}(t-1) \right) } \\
@@ -669,9 +672,10 @@ Firstly, $\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t
     &\qquad \le \frac{1}{t} \cdot \left\| \rvpi_{i}\left(\rmW(t)\right) \right\|_1 \cdot \max\limits_{k \in [h]}{\left\{ R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right\}} \\
     &\qquad \le \frac{1}{t}.
 \end{split}
-\end{equation*}
+\end{equation}
 Next, by \cref{lem:parameter_smoothness}, \cref{lem:gradient_lower_bound}, and let $\eta = \frac{1}{4 h m}$,
-\begin{equation*}
+\begin{equation}
+\label{eq:second_term_upper_bound}
 \begin{split}
     &\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) - \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) \\
     &\qquad \le - \left( \eta - 2 h m \eta^2 \right) \cdot \left\| \frac{d \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) }{d \rmW(t-1)} \right\|_F^2 \\
@@ -679,6 +683,35 @@ Next, by \cref{lem:parameter_smoothness}, \cref{lem:gradient_lower_bound}, and l
     &\qquad \le - \frac{\delta^2 c^2}{8 h n^4} \left( \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) - {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t-1) \right)^2 \\
     &\qquad = - \frac{\delta^2 c^2}{8 h n^4} \cdot \omega_{t-1}^2.
 \end{split}    
+\end{equation}
+Using similar arguments as \cref{eq:first_term_upper_bound},
+\begin{equation}
+\label{eq:fourth_term_upper_bound}
+\begin{split}
+    {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t-1) - {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) \le \frac{1}{t}.
+\end{split}
+\end{equation}
+Plugging \cref{eq:first_term_upper_bound}, \cref{eq:second_term_upper_bound}, and \cref{eq:fourth_term_upper_bound} into \cref{eq:dynamic_regret_decomposition},
+\begin{equation*}
+\begin{split}
+    \omega_t &\le \frac{1}{t} - \frac{\delta^2 c^2}{8 h n^4} \cdot \omega_{t-1}^2 + \omega_{t-1} + \frac{1}{t} + {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t) \\
+    &= - \frac{\delta^2 c^2}{8 h n^4} \cdot \omega_{t-1}^2 + \omega_{t-1} + \frac{2}{t} + {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t).
+\end{split}
+\end{equation*}
+Rearranging and summing up from $t = 1$ to $T$,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T}{ \omega_{t-1}^2 } &\le \frac{8 h n^4}{\delta^2 c^2} \sum\limits_{t=1}^{T}{\left[ \omega_{t-1} - \omega_t + \frac{2}{t} + {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t) \right]} \\
+    &= \frac{8 h n^4}{\delta^2 c^2} \left[ \omega_0 - \omega_T + \sum\limits_{t=1}^{T}{\frac{2}{t}} + \sum\limits_{t=1}^{T}{\left( {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t) \right)} \right] \\
+    &\le \frac{8 h n^4}{\delta^2 c^2} \left( 5 + \log{T} + T^a \right).
+\end{split}
+\end{equation*}
+By the the Root-Mean Square-Arithmetic Mean inequality,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ \omega_t } &\le \sqrt{ T \cdot \sum\limits_{t=0}^{T-1}{ \omega_{t}^2 } } \\
+    &\le \frac{4 n^2 \sqrt{h}}{\delta c}\sqrt{T\cdot\left( \log{T} + T^a \right)}
+\end{split}
 \end{equation*}
 \end{proof}
 
