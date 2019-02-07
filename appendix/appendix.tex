@@ -4,12 +4,15 @@
 \usepackage{amsmath} %maths
 \usepackage{amsthm}
 \usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{subfigure}
+\usepackage{algorithm,algorithmic}
 \usepackage[utf8]{inputenc} %useful to type directly diacritic characters
 \usepackage[capitalize]{cleveref}
 \crefname{prop}{Proposition}{Propositions}
 \crefname{thm}{Theorem}{Theorems}
 \crefname{lem}{Lemma}{Lemmas}
-
+\crefname{algorithm}{Algorithm}{Algorithms}
 
 \def\rva{{\mathbf{a}}}
 \def\rvo{{\mathbf{o}}}
@@ -62,6 +65,7 @@
 \date{}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\probability}{Pr}
 \DeclareMathOperator*{\expectation}{\sE}
 \DeclareMathOperator*{\trace}{Tr}
@@ -267,7 +271,7 @@ By the definition of the logit, the $1$-Lipschitzness of ReLU, and the Root-Mean
     &\le h \cdot \left( \sum\limits_{r=1}^{m}{ \left| \left({\rvw_r^\prime} - \rvw_r \right)^\top \rvs_i\right|  } \right)^2 \\
     &\le h \cdot \left( \sum\limits_{r=1}^{m}{ \left\| {\rvw_r^\prime} - \rvw_r \right\|_2  } \right)^2 \\
     &\le h \cdot \left( \sqrt{m} \cdot \left\| \rmW^\prime - \rmW \right\|_F \right)^2 \\
-    &\le h m \cdot \left\| \rmW^\prime - \rmW \right\|_F^2. \qedhere
+    &= h m \cdot \left\| \rmW^\prime - \rmW \right\|_F^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -279,7 +283,7 @@ By the definition of the logit, the $1$-Lipschitzness of ReLU, and the Root-Mean
 \label{eq:parameter_smoothness}
 \begin{split}
 \small
-    &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i - \left( \eta - 2 h m \eta^2 \right) \cdot \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
+    \rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i \le \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i - \left( \eta - 2 h m \eta^2 \right) \cdot \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2.
 \end{split}
 \end{equation}
 \end{lem}
@@ -594,6 +598,87 @@ the regret is upper bounded by,
     &\le \sqrt{ T \cdot 2b \cdot \left( 6 + a \sqrt{T} \right) } \\
     &\le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}. \qedhere
 \end{split}
+\end{equation*}
+\end{proof}
+
+\subsection{Sublinear Regret, Online Update, Pull all Arms}
+
+Suppose $\rvr_i \in \left[ 0, 1\right]^h$ is the true mean loss vector at state $\rvs_i$. Define $\rvpi_i^* \triangleq \argmin\limits_{\rvpi \in \Delta^{h-1}}{ \left\{ \rvpi^\top \rvr_i \right\} }$ as the optimal policy at state $\rvs_i$. Consider the following online gradient descent method, where at each time step $t$, the agent can take every action and observe all the rewards.
+
+\begin{algorithm}[h]
+   \caption{NN Policy Gradient, Online Update, Pull all Arms}
+\label{alg:policy_gradient_online_pull_all_arms}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\beta > 0$.
+   \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $\rva_k \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$.
+   \STATE Initialize $\hat{\rvr}_{i}(0) \gets \rvzero$, $n_{i} \gets 0$.
+   \FOR{$t=0$ {\bfseries to} $T-1$}
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvr}_i(t)}{d \rmW(t)}$.
+   \STATE Take action $k$. Observe reward $R_{i,k}(t) \in \sR$, $\forall k \in [h]$.
+   \STATE $n_i \gets n_i + 1$.
+   \STATE $\hat{r}_{i, k}(t+1) \gets \left( 1 - \frac{1}{n_i} \right) \cdot \hat{r}_{i,k}(t) + \frac{1}{n_i} \cdot R_{i,k}(t)$, $\forall k \in [h]$.
+   \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{thm}
+\label{thm:sublinear_online_update_pull_all_arms}
+    The expected regret of \cref{alg:policy_gradient_online_pull_all_arms} satisfies,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ r_{i, A_t} \right] } - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } \le .
+\end{split}
+\end{equation*}
+\end{thm}
+\begin{proof}
+    If the agent uses $\rvpi_{i}\left(\rmW(t)\right)$ as the action selection strategy at time step $t$, then the expected regret is the cumulative expected loss of $\rvpi_{i}\left(\rmW(t)\right)$, i.e.,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ r_{i, A_t} \right] } - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } = \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i }.
+\end{split}
+\end{equation*}
+    Decompose the cumulative expected loss as follows,
+\begin{equation*}
+\begin{split}
+    &\sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } \\
+    &= \sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t)} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \hat{\rvr}_i(t)} \\
+    &\qquad + \sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \left( \rvr_i - \hat{\rvr}_i(t) \right) } + \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \left( \hat{\rvr}_i(t) - \rvr_i \right) } \\
+    &= \sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t)} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t)} \\
+    &\qquad + \sum\limits_{t=0}^{T-1}{ \left( {\rvpi_i^*(t)} - {\rvpi_i^*} \right)^\top \hat{\rvr}_i(t) } \\
+    &\qquad + \sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \left( \rvr_i - \hat{\rvr}_i(t) \right) } + \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \left( \hat{\rvr}_i(t) - \rvr_i \right) },
+\end{split}
+\end{equation*}
+where ${\rvpi_i^*(t)} \triangleq \argmin\limits_{\rvpi \in \Delta^{h-1}}{ \left\{ \rvpi^\top \hat{\rvr}_i(t) \right\} }$ is the optimal policy using $\hat{\rvr}_i(t)$ as the loss. Denote $\omega_t \triangleq \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t)$.
+\begin{equation*}
+\begin{split}
+    \omega_t &= \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) \\
+    &\quad + \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) - \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) \\
+    &\quad + \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) - {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t-1) \quad \left( = \omega_{t-1} \right) \\
+    &\quad + {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t-1) - {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) \\
+    &\quad + {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t).
+\end{split}
+\end{equation*}
+Firstly, $\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1)$ can be upper bounded as,
+\begin{equation*}
+\begin{split}
+    &\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) \\
+    &\qquad = \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( \hat{r}_{i,k}(t) - \hat{r}_{i,k}(t-1) \right) } \\
+    &\qquad = \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( \frac{1}{t} \sum\limits_{s=0}^{t-1}{R_{i,k}(s)} - \frac{1}{t-1} \sum\limits_{s=0}^{t-2}{R_{i,k}(s)} \right) } \\
+    &\qquad = \frac{1}{t} \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right)} \\
+    &\qquad \le \left| \frac{1}{t} \sum\limits_{k=1}^{h}{ \pi_{i,k}\left(\rmW(t)\right) \left( R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right)} \right| \\
+    &\qquad \le \frac{1}{t} \cdot \left\| \rvpi_{i}\left(\rmW(t)\right) \right\|_1 \cdot \max\limits_{k \in [h]}{\left\{ R_{i,k}(t-1) - \hat{r}_{i,k}(t-1) \right\}} \\
+    &\qquad \le \frac{1}{t}.
+\end{split}
+\end{equation*}
+Next, by \cref{lem:parameter_smoothness}, \cref{lem:gradient_lower_bound}, and let $\eta = \frac{1}{4 h m}$,
+\begin{equation*}
+\begin{split}
+    &\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t-1) - \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) \\
+    &\qquad \le - \left( \eta - 2 h m \eta^2 \right) \cdot \left\| \frac{d \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) }{d \rmW(t-1)} \right\|_F^2 \\
+    &\qquad = - \frac{1}{8 h m} \cdot \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) }{d \rvw_r(t-1)} \right\|_2^2 } \\
+    &\qquad \le - \frac{\delta^2 c^2}{8 h n^4} \left( \rvpi_i\left(\rmW(t-1)\right)^\top \hat{\rvr}_i(t-1) - {\rvpi_i^*(t-1)}^\top \hat{\rvr}_i(t-1) \right)^2 \\
+    &\qquad = - \frac{\delta^2 c^2}{8 h n^4} \cdot \omega_{t-1}^2.
+\end{split}    
 \end{equation*}
 \end{proof}
 
