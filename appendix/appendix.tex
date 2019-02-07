@@ -631,13 +631,13 @@ Suppose $\rvr_i \in \left[ 0, 1\right]^h$ is the true mean loss vector at state 
 \end{equation*}
 \end{thm}
 \begin{proof}
-    If the agent uses $\rvpi_{i}\left(\rmW(t)\right)$ as the action selection strategy at time step $t$, then the expected regret is the cumulative expected loss of $\rvpi_{i}\left(\rmW(t)\right)$, i.e.,
+    If the agent uses $\rvpi_{i}\left(\rmW(t)\right)$ as the strategy at step $t$, then the expected regret can be expressed by the cumulative expected loss of $\rvpi_{i}\left(\rmW(t)\right)$, i.e.,
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ r_{i, A_t} \right] } - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } = \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i }.
 \end{split}
 \end{equation*}
-    Decompose the cumulative expected loss as follows,
+    Denote ${\rvpi_i^*(t)} \triangleq \argmin\limits_{\rvpi \in \Delta^{h-1}}{ \left\{ \rvpi^\top \hat{\rvr}_i(t) \right\} }$. Decompose the expected regret as follows,
 \begin{equation}
 \label{eq:cumulative_expected_loss_decomposition}
 \begin{split}
@@ -651,7 +651,7 @@ Suppose $\rvr_i \in \left[ 0, 1\right]^h$ is the true mean loss vector at state 
     &\qquad + \sum\limits_{t=0}^{T-1}{ \rvpi_i\left(\rmW(t)\right)^\top \left( \rvr_i - \hat{\rvr}_i(t) \right) } + \sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \left( \hat{\rvr}_i(t) - \rvr_i \right) }.
 \end{split}
 \end{equation}
-where ${\rvpi_i^*(t)} \triangleq \argmin\limits_{\rvpi \in \Delta^{h-1}}{ \left\{ \rvpi^\top \hat{\rvr}_i(t) \right\} }$ is the optimal policy using $\hat{\rvr}_i(t)$ as the loss. Denote $\omega_t \triangleq \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t)$.
+Denote $\omega_t \triangleq \rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - {\rvpi_i^*(t)}^\top \hat{\rvr}_i(t)$ as the dynamic regret at step $t$.
 \begin{equation}
 \label{eq:dynamic_regret_decomposition}
 \begin{split}
@@ -675,7 +675,7 @@ Firstly, $\rvpi_i\left(\rmW(t)\right)^\top \hat{\rvr}_i(t) - \rvpi_i\left(\rmW(t
     &\qquad \le \frac{1}{t}.
 \end{split}
 \end{equation}
-Next, by \cref{lem:parameter_smoothness}, \cref{lem:gradient_lower_bound}, and let $\eta = \frac{1}{4 h m}$,
+Next, by \cref{lem:parameter_smoothness}, \cref{lem:gradient_lower_bound}, and let $\eta = \frac{1}{4 h m}$ (parameter smoothness + gradient lower bound),
 \begin{equation}
 \label{eq:second_term_upper_bound}
 \begin{split}
