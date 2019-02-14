@@ -12,7 +12,7 @@ We first present the main results in the bandit settings, as shown in \cref{thm:
 \begin{equation*}
 \begin{split}
     &\sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{i, A_t} \right] } \\
-    &\le \frac{8 h}{c} \cdot T^{\frac{2}{3}} + 3 \log{h} \cdot T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}
+    &\le \frac{8 h}{c} \cdot T^{\frac{2}{3}} + 3 \log{h} \cdot T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}.
 \end{split}
 \end{equation*}
 \end{thm}
@@ -91,7 +91,7 @@ Using similar arguments,
 \end{equation*}
 Plugging the above upper bounds into \cref{eq:dynamic_regret_decomposition},
 \begin{equation*}
-    \omega_t \le \omega_{t-1} - \frac{\delta^2 c^2}{8 h n^4} \cdot \omega_{t-1}^2 + \frac{2h}{T^{\frac{2}{3} + \beta}}
+    \omega_t \le \omega_{t-1} - \frac{\delta^2 c^2}{8 h n^4} \cdot \omega_{t-1}^2 + \frac{2h}{T^{\frac{2}{3} + \beta}}.
 \end{equation*}
 Rearranging and summing up from $T^{\frac{2}{3} + \beta} + 1$ to $T$,
 \begin{equation*}
