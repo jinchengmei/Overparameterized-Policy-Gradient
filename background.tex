@@ -62,22 +62,22 @@ Our proposed algorithm adds explicit uniform exploration to the vanilla policy g
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\beta > 0$.
    \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $\rva_k \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$.
-   \STATE Initialize $\hat{r}_{i,k} = 0$, $n_{i,k} = 0$, $\forall k \in [h]$.
+   \STATE Initialize $\hat{r}_{i,k}\left(0\right) = 0$, $n_{i,k}\left(0\right) = 0$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \IF{$t < T^{\frac{2}{3} + \beta}$}
    \STATE (Exploring Phase)
-   \STATE Uniformly randomly sample action $A_{t} \in [h]$.
-   \STATE Take action $A_{t}$.  Observe reward $R_{i, A_{t}}$.
-   \STATE $n_{A_{t}} \leftarrow n_{A_{t}} + 1$.
-   \STATE $\hat{r}_{i,A_{t}} \leftarrow \left( 1 - \frac{1}{n_{A_{t}}} \right) \cdot \hat{r}_{i,A_{t}} + \frac{1}{n_{A_{t}}} \cdot R_{i, A_{t}}$, 
    \STATE $\rmW(t+1) \leftarrow \rmW(t)$.
+   \STATE Uniformly randomly sample action $A_{t} \in [h]$.
    \ELSE
    \STATE (Playing-Learning Phase)
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) + \eta \cdot \frac{d \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvr}_i \left(t\right)}{d \rmW(t)}$.
    \STATE Sample action $A_{t} \sim \rvpi_{i}\left(\rmW(t)\right)\left(\cdot \middle| \rvs_i \right)$.
-   \STATE Take action $A_{t}$. Observe reward $R_{i, A_{t}}$.
-   \STATE $\hat{\rvtilder}_i \triangleq \max\limits_{k \in [h]}{\left\{ \hat{r}_{i, k} \right\}} \cdot \rvone - \rvhat_i$.
-   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)}$.
    \ENDIF
+   \STATE Take action $A_{t}$. Observe reward $R_{i, A_{t}}\left(t\right)$.
+   \STATE $n_{i, A_{t}}\left(t+1\right) \gets n_{i, A_{t}}\left(t\right) + 1$.
+   \STATE $\hat{r}_{i,A_{t}}\left(t+1\right) \gets \frac{n_{i, A_{t}}\left(t\right) \cdot \hat{r}_{i,A_{t}}\left(t\right) + R_{i, A_{t}}\left(t\right) }{n_{i, A_{t}}\left(t+1\right)}$.
+   \STATE $n_{i, k}\left(t+1\right) \gets n_{i, k}\left(t\right)$, $\forall k \not= A_t$.
+   \STATE $\hat{r}_{i,k}\left(t+1\right) \gets \hat{r}_{i,k}\left(t\right)$, $\forall k \not= A_t$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
