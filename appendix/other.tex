@@ -137,10 +137,39 @@ Combine the above with the following,
 \end{equation*}
 \end{proof}
 
+\begin{thm}
+\label{thm:surrogate_expected_loss_convergence}
+    Suppose $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta = \frac{c_t^2 \delta^2}{16 n^4 h m}$, During the playing-learning phase, $\forall t \ge T^{\frac{2}{3} + \beta}$, denote $t^\prime \triangleq t - T^{\frac{2}{3} + \beta} \ge 0$. After $t^\prime = \frac{2n^4}{\eta m c^2 \delta^2 \varepsilon}$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \le \varepsilon$, $\forall \varepsilon > 0$.
+\end{thm}
+\begin{proof}
+    By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)}$, $\forall t \in O\left( \frac{\sigma}{\eta n} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)}$, by \cref{lem:parameter_smoothness},
 \begin{equation*}
 \begin{split}
+    &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i - \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \\
+    &\le - \eta \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 8 h m \eta^2 \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 \\
+    &= - \eta \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\qquad + 8 h m \eta^2 \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} \right\|_2^2 } \\
+    &\le - \left( \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \right)^2 \cdot \left[ \frac{\eta m c_t^2 \delta^2}{n^4} - 8 \eta^2 h m^2 \right] \\
+    &= - \left( \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \right)^2 \cdot \left( \frac{\eta m c_t^2 \delta^2}{2n^4} \right).
 \end{split}
 \end{equation*}
+Divided by $\left( \rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i\right) \cdot \left( \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \right)$,
+\begin{equation*}
+\begin{split}
+    &\frac{1}{\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i} - \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i} \ge \\
+    &\frac{\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i} \cdot \left( \frac{\eta m c_t^2 \delta^2}{2n^4} \right) \ge \frac{\eta m c_t^2 \delta^2}{2n^4}.
+\end{split}
+\end{equation*}
+Denote $c \triangleq \min\limits_{t \ge 0}{\left\{ c_t \right\}} > 0$ because $\rvpi_i\left( \rmW(t) \right)$ is a softmax policy.
+Sum up the inequality from $0$ to $t$,
+\begin{equation*}
+\begin{split}
+    \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i} \ge \frac{\eta m c^2 \delta^2}{2n^4} \cdot t.
+\end{split}
+\end{equation*}
+Therefore, after $t =  \frac{2n^4}{\eta m c^2 \delta^2 \varepsilon}$ policy gradient updates, $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \le \varepsilon$. And the $t$th policy gradient update in the play-learning phase corresponds to $t + T^{\frac{2}{3} + \beta}$ in \cref{alg:policy_gradient_uniform_exploration}. Finally, make sure that all the update iterations terminate within $\frac{\tau}{\eta}$, i.e.,
+Let $\frac{2n^4}{\eta m c^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta} = \frac{1}{n \eta \sqrt{m}}$, we obtain the results.
+\end{proof}
 
 
 \end{document}

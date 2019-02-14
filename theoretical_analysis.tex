@@ -44,7 +44,63 @@ Denote $\rvpi_i^*\left(t\right) \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1
     &\quad + 4 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 2 T^{\frac{2}{3} + \beta},
 \end{split}
 \end{equation}
-by the definition of $\rvpi_i^*\left(t\right)$, H{\"o}lder's inequality, and \cref{thm:loss_estimation_hoeffding}. Denote $\omega_t \triangleq \left( {\rvpi_i^*\left(t\right)} - \rvpi_i\left( \rmW(t) \right) \right)^\top \hat{\rvr}_i\left(t\right)$.
+by the definition of $\rvpi_i^*\left(t\right)$, H{\"o}lder's inequality, and \cref{thm:loss_estimation_hoeffding}. 
+Combining \cref{eq:total_regret_decomposition}, \cref{eq:playing_learning_phase_regret_decomposition}, and \cref{thm:dynamic_regret_sublinear},
+\begin{equation*}
+\begin{split}
+    &\sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{i, A_t} \right] } \\
+    &\le  4 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 3 T^{\frac{2}{3} + \beta} + \frac{4 h n^2}{\delta c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}
+\end{split}
+\end{equation*}
+Finally, let $\beta = \left( \log{\left(\frac{h}{6}\right) + \log{\log{T}} } \right)/\left(3 \log{T}\right)$, we have $T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} = T^{\frac{2}{3}}$, and $T^{\frac{2}{3} + \beta} = \left( \log{\left(\frac{h}{6}\right)}\right)^{\frac{1}{3}} T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}$.
+\end{proof}
+
+\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the NN policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the NN policy.  While in the second playing-learning phase, since the loss estimation is good, the NN policy will keep reducing its dynamic expected loss, which is highly related with its true expected loss, i.e., the expected regret of the playing-learning phase.
+
+\subsection{Exploring Phase}
+\label{subsec:exploring_phase}
+
+The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides us good estimations of the true mean loss/reward as follows.
+\begin{thm}
+\label{thm:loss_estimation_hoeffding}
+    In \cref{alg:policy_gradient_uniform_exploration}, $\forall t \ge T^{\frac{2}{3} + \beta}$,
+\begin{equation*}
+    \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + T^{\beta - \frac{1}{3}}.
+\end{equation*}
+\end{thm}
+\begin{proof}
+    At step $t \ge T^{\frac{2}{3} + \beta}$, the $k$th action is sampled $n_{i, k}\left(t\right) \ge \frac{T^{\frac{2}{3} + \beta} }{h}$ times because of the exploring phase, $\forall k \in [h]$. By Hoeffding's inequality, $\forall k \in [h]$,
+\begin{equation}
+\label{eq:loss_estimation_hoeffding}
+\begin{split}
+    &\pr\left\{ \left| \hat{r}_{i, k}\left(t\right) - r_{i,k} \right| > T^{\beta - \frac{1}{3}} \right\} \le 2 \exp\left\{ - 2 n_{i, k}\left(t\right) \cdot T^{2\beta - \frac{2}{3}} \right\} \\
+    &\le 2 \exp\left\{ -  \frac{2 T^{\frac{2}{3} + \beta}}{h} \cdot T^{2\beta - \frac{2}{3}} \right\} = 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
+\end{split}
+\end{equation}
+Therefore,
+\begin{equation*}
+\begin{split}
+    &\left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \cdot 1 + 1 \cdot T^{\beta - \frac{1}{3}},
+\end{split}
+\end{equation*}
+where the last inequality is by \cref{eq:loss_estimation_hoeffding}, $\left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 1$, and $\pr\left\{ \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le T^{\beta - \frac{1}{3}} \right\} \le 1$. 
+\end{proof}
+
+\subsection{Playing-Learning Phase}
+\label{subsec:playing_learning_phase}
+
+The good estimation of the true mean loss $\hat{\rvr}_i\left(t\right)$ obtained at the end of the exploring phase will be used to train the NN policy $\rvpi_i\left( \rmW(t) \right)$. However, the recently proposed optimization theory of overparameterized NNs is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the main result, i.e., the cumulative dynamic expected loss of $\rvpi_i\left( \rmW(t) \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
+\begin{thm}
+\label{thm:dynamic_regret_sublinear}
+    Denote $\rvpi_i^*\left(t\right) \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}_i\left(t\right)\right\}}$. The dynamic regret in the playing-learning phase satisfies,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{ \left(  {\rvpi_i^*\left(t\right)} - \rvpi_i\left( \rmW(t) \right) \right)^\top \hat{\rvr}_i\left(t\right) } \le \frac{4 h n^2}{\delta c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
+\end{split}
+\end{equation*}
+\end{thm}
+\begin{proof}
+    Denote $\omega_t \triangleq \left( {\rvpi_i^*\left(t\right)} - \rvpi_i\left( \rmW(t) \right) \right)^\top \hat{\rvr}_i\left(t\right)$.
 \begin{equation}
 \label{eq:dynamic_regret_decomposition}
 \begin{split}
@@ -104,90 +160,14 @@ By the Root-Mean Square-Arithmetic Mean inequality,
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{\omega_{t}} &\le \sqrt{\left(T  - T^{\frac{2}{3}+ \beta} \right) \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\omega_{t-1}^2}} \\
-    &\le \frac{4 h n^2}{\delta c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
+    &\le \frac{4 h n^2}{\delta c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}. \qedhere
 \end{split}
-\end{equation*}
-Combining the above with \cref{eq:total_regret_decomposition} and \cref{eq:playing_learning_phase_regret_decomposition},
-\begin{equation*}
-\begin{split}
-    &\sum\limits_{t=0}^{T-1}{ {\rvpi_i^*}^\top \rvr_i } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{i, A_t} \right] } \\
-    &\le  4 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 3 T^{\frac{2}{3} + \beta} + \frac{4 h n^2}{\delta c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}
-\end{split}
-\end{equation*}
-Finally, let $\beta = \left( \log{\left(\frac{h}{6}\right) + \log{\log{T}} } \right)/\left(3 \log{T}\right)$, we have $T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} = T^{\frac{2}{3}}$, and $T^{\frac{2}{3} + \beta} = \left( \log{\left(\frac{h}{6}\right)}\right)^{\frac{1}{3}} T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}$.
+\end{equation*}    
 \end{proof}
 
-\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the NN policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the NN policy.  While in the second playing-learning phase, since the loss estimation is good, the NN policy will keep reducing its surrogate expected loss, which is highly related to its true expected loss, which is identical with the expected regret of this phase.
 
-\subsection{Exploring Phase}
-\label{subsec:exploring_phase}
 
-The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides us good estimations of the true mean loss/reward as follows.
-\begin{thm}
-\label{thm:loss_estimation_hoeffding}
-    In \cref{alg:policy_gradient_uniform_exploration}, $\forall t \ge T^{\frac{2}{3} + \beta}$,
-\begin{equation*}
-    \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + T^{\beta - \frac{1}{3}}.
-\end{equation*}
-\end{thm}
-\begin{proof}
-    At step $t \ge T^{\frac{2}{3} + \beta}$, the $k$th action is sampled $n_{i, k}\left(t\right) \ge \frac{T^{\frac{2}{3} + \beta} }{h}$ times because of the exploring phase, $\forall k \in [h]$. By Hoeffding's inequality, $\forall k \in [h]$,
-\begin{equation}
-\label{eq:loss_estimation_hoeffding}
-\begin{split}
-    &\pr\left\{ \left| \hat{r}_{i, k}\left(t\right) - r_{i,k} \right| > T^{\beta - \frac{1}{3}} \right\} \le 2 \exp\left\{ - 2 n_{i, k}\left(t\right) \cdot T^{2\beta - \frac{2}{3}} \right\} \\
-    &\le 2 \exp\left\{ -  \frac{2 T^{\frac{2}{3} + \beta}}{h} \cdot T^{2\beta - \frac{2}{3}} \right\} = 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
-\end{split}
-\end{equation}
-Therefore,
-\begin{equation*}
-\begin{split}
-    &\left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \cdot 1 + 1 \cdot T^{\beta - \frac{1}{3}},
-\end{split}
-\end{equation*}
-where the last inequality is by \cref{eq:loss_estimation_hoeffding}, $\left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 1$, and $\pr\left\{ \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le T^{\beta - \frac{1}{3}} \right\} \le 1$. 
-\end{proof}
-
-\subsection{Playing-Learning Phase}
-\label{subsec:playing_learning_phase}
-
-The good estimation of the true mean loss $\hat{\rvr}_i\left(t\right)$ obtained at the end of the exploring phase will be used to train the NN policy $\rvpi_i\left( \rmW(t) \right)$. We carefully combine the overparameterized NN optimization theory for supervized learning \citep{li2018learning,allen2018convergenceB} with the optimal exploration conditions in RL (explained later on in \cref{subsec:exploration_in_policy_learning}), and show that the dynamic ``surrogate" expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvr}_i\left(t\right)$ converges at rate $O\left(\frac{1}{t} \right)$. We first prove the main result, then show some intuitions with lemmas, the proofs of which can be found in the appendix.
-
-\begin{thm}
-\label{thm:surrogate_expected_loss_convergence}
-    Suppose $m \in \Theta\left( \frac{n^{10}}{c^4 \delta^4 \varepsilon^2} \right)$, $\eta = \frac{c_t^2 \delta^2}{16 n^4 h m}$, During the playing-learning phase, $\forall t \ge T^{\frac{2}{3} + \beta}$, denote $t^\prime \triangleq t - T^{\frac{2}{3} + \beta} \ge 0$. After $t^\prime = \frac{2n^4}{\eta m c^2 \delta^2 \varepsilon}$ iterations, $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \le \varepsilon$, $\forall \varepsilon > 0$.
-\end{thm}
-\begin{proof}
-    By \cref{lem:gradient_coupling}, let $\tau = \frac{\sigma}{n}$, there are $\Omega\left( m \right)$ of $\rvw_r(t)$ such that $\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)}$, $\forall t \in O\left( \frac{\sigma}{\eta n} \right)$. Let $\rmW(t+1) = \rmW(t) - \eta \cdot \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)}$, by \cref{lem:parameter_smoothness},
-\begin{equation*}
-\begin{split}
-    &\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i - \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \\
-    &\le - \eta \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 + 8 h m \eta^2 \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rmW(t)} \right\|_F^2 \\
-    &= - \eta \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} \right\|_2^2 } \\
-    &\qquad + 8 h m \eta^2 \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{d \rvw_r(t)} \right\|_2^2 } \\
-    &\le - \left( \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \right)^2 \cdot \left[ \frac{\eta m c_t^2 \delta^2}{n^4} - 8 \eta^2 h m^2 \right] \\
-    &= - \left( \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \right)^2 \cdot \left( \frac{\eta m c_t^2 \delta^2}{2n^4} \right).
-\end{split}
-\end{equation*}
-Divided by $\left( \rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i\right) \cdot \left( \rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \right)$,
-\begin{equation*}
-\begin{split}
-    &\frac{1}{\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i} - \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i} \ge \\
-    &\frac{\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i}{\rvpi_i\left( \rmW(t+1) \right)^\top \hat{\rvtilder}_i} \cdot \left( \frac{\eta m c_t^2 \delta^2}{2n^4} \right) \ge \frac{\eta m c_t^2 \delta^2}{2n^4}.
-\end{split}
-\end{equation*}
-Denote $c \triangleq \min\limits_{t \ge 0}{\left\{ c_t \right\}} > 0$ because $\rvpi_i\left( \rmW(t) \right)$ is a softmax policy.
-Sum up the inequality from $0$ to $t$,
-\begin{equation*}
-\begin{split}
-    \frac{1}{\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i} \ge \frac{\eta m c^2 \delta^2}{2n^4} \cdot t.
-\end{split}
-\end{equation*}
-Therefore, after $t =  \frac{2n^4}{\eta m c^2 \delta^2 \varepsilon}$ policy gradient updates, $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i \le \varepsilon$. And the $t$th policy gradient update in the play-learning phase corresponds to $t + T^{\frac{2}{3} + \beta}$ in \cref{alg:policy_gradient_uniform_exploration}. Finally, make sure that all the update iterations terminate within $\frac{\tau}{\eta}$, i.e.,
-Let $\frac{2n^4}{\eta m c^2 \delta^2 \varepsilon} \le \frac{\sigma}{n \eta} = \frac{1}{n \eta \sqrt{m}}$, we obtain the results.
-\end{proof}
-
-\cref{thm:surrogate_expected_loss_convergence} relies on two arguments. First, the surrogate expected loss is smooth in the logit space, and small policy gradient updates preserve the signs of ReLU outputs, therefore highly correlates the logit derivative and the policy gradient. Second, by the overparameterization theory, gradient norm is lower bounded by expected loss around initialization, which means there is no bad local minima near the randomly initialized NN policy $\rvpi_i\left( \rmW(0) \right)$.
+\cref{thm:dynamic_regret_sublinear} relies on two arguments. First, the dynamic expected loss is smooth in the logit space, and small policy gradient updates preserve the signs of ReLU outputs, therefore highly correlates the logit derivative and the policy gradient. Second, by the overparameterization theory, gradient norm is lower bounded by expected loss around initialization, which means there is no bad local minima near the randomly initialized NN policy $\rvpi_i\left( \rmW(0) \right)$.
 
 \begin{lem}
 \label{lem:logit_smoothness}
@@ -271,7 +251,7 @@ Now by the key insight of the recent progresses of the overparameterized NN opti
 \end{equation*}
 \end{lem}
 
-\cref{lem:gradient_lower_bound} generalizes the overparameterized NN optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy surrogate expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_{i}$ is large, with enough exploration of the suggorate optimal action ($\pi\left(\rmW(t)\right)_{i, \hat{k}_i^*} > c_t > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:surrogate_expected_loss_convergence}.
+\cref{lem:gradient_lower_bound} generalizes the overparameterized NN optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy surrogate expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_{i}$ is large, with enough exploration of the suggorate optimal action ($\pi\left(\rmW(t)\right)_{i, \hat{k}_i^*} > c_t > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
 
 \subsection{Exploration in Policy Learning}
 \label{subsec:exploration_in_policy_learning}
