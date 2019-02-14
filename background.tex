@@ -9,7 +9,7 @@
 In the standard stochastic bandit setting $n = 1$. At each time step $t$, the agent takes an action $A_t \in [h]$ according to some strategies, and then it observes a random reward $R_{i, A_t} \in \sR$, and the mean value of $R_{i, A_t}$ is $r_{i, A_t}$. The agent then uses the reward to improve its action selection strategies. After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation}
 \label{eq:expected_regret}
-    r_{i,k_i^*} \cdot T - \sE \left[ \sum\limits_{t=0}^{T-1}{  r_{i, A_t}  } \right] = \sum\limits_{t=0}^{T-1}{ \sE \left[ \tilde{r}_{i, A_t} \right] },
+    \sum\limits_{t=0}^{T-1}{{\rvpi_i^*}^\top \rvr_i} - \sE \left[ \sum\limits_{t=0}^{T-1}{  r_{i, A_t}  } \right] = \sum\limits_{t=0}^{T-1}{{\rvpi_i^*}^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{i, A_t} \right] },
 \end{equation}
 where the expectation is taken over the randomness of action selection, if the agent is using some stochastic strategies.
 
@@ -44,10 +44,11 @@ During interacting with the environment, the agent can use any strategies to sel
 \begin{equation}
 \label{eq:vanilla_policy_gradient_expected_regret}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ \tilde{r}_{i, A_t} \right] } = \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvtilder_i},
+    &\sum\limits_{t=0}^{T-1}{{\rvpi_i^*}^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi_i\left(\rmW(t)\right)} \left[ r_{i, A_t} \right] } \\
+    &= \sum\limits_{t=0}^{T-1}{{\rvpi_i^*}^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i},
 \end{split}
 \end{equation}
-according to \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i\left(\rmW(t)\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi_i\left(\rmW(t)\right)^\top \rvtilder_i$. Doing policy gradient updates with respect to the NN weights $\rmW(t)$ will arguably decrease the expected loss, thus reduce the expected regret. 
+according to \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i\left(\rmW(t)\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi_i\left(\rmW(t)\right)^\top \rvr_i$. Doing policy gradient updates with respect to the NN weights $\rmW(t)$ will arguably decrease the expected loss, thus reduce the expected regret. 
 
 However, the above mentioned method, called as vanilla policy gradient, often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Unfortunately, without any other techniques, the vanilla policy gradient method cannot avoid this issue. Actually, as our analysis shown later on, the convergence rate of the policy expected loss relies on non-zero probability of exploring the optimal arms, which is consistent with intuition. For this reason, we need mix the vanilla policy gradient method with explicit exploration.
 
@@ -83,12 +84,3 @@ Our proposed algorithm adds explicit uniform exploration to the vanilla policy g
 \end{algorithm}
 
 Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $\rva_k \sim \gU\left\{-1, +1\right\}$, $\rva_k$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained NNs \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
-
-Also note that in \cref{alg:policy_gradient_uniform_exploration}, we write gradient descent over the loss objective  $\rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i$ for analysis. However, policy gradient update is doing gradient ascent over the reward objective $\rvpi_{i}\left(\rmW(t)\right)^\top \rvhat_i$. Actually,
-\begin{equation*}
-\begin{split}
-    \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvtilder}_i}{d \rmW(t)} &= \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \left( \max\limits_{k \in [h]}{\left\{ \hat{r}_{i, k} \right\}} \cdot \rvone - \rvhat_i \right)}{d \rmW(t)} \\
-    &= - \frac{d\rvpi_{i}\left(\rmW(t)\right)^\top \rvhat_i}{d \rmW(t)}.
-\end{split}
-\end{equation*}
-Thus in practice, we do not need to know $\max\limits_{k \in [h]}{\left\{ \hat{r}_{i, k} \right\}}$ and calculate $\hat{\rvtilder}_i$. They are defined for our analysis purpose.

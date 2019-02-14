@@ -151,7 +151,7 @@ where the last inequality is by \cref{eq:loss_estimation_hoeffding}, $\left\| \h
 \subsection{Playing-Learning Phase}
 \label{subsec:playing_learning_phase}
 
-The good estimation of the true mean loss $\hat{\rvtilder}_i$ obtained at the end of the exploring phase will be used to train the NN policy $\rvpi_i\left( \rmW(t) \right)$. We carefully combine the overparameterized NN optimization theory for supervized learning \citep{li2018learning,allen2018convergenceB} with the optimal exploration conditions in RL (explained later on in \cref{subsec:exploration_in_policy_learning}), and show that the ``surrogate" expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvtilder}_i$ converges at rate $O\left(\frac{1}{t} \right)$. We first prove the main result, then show some intuitions with lemmas, the proofs of which can be found in the appendix.
+The good estimation of the true mean loss $\hat{\rvr}_i\left(t\right)$ obtained at the end of the exploring phase will be used to train the NN policy $\rvpi_i\left( \rmW(t) \right)$. We carefully combine the overparameterized NN optimization theory for supervized learning \citep{li2018learning,allen2018convergenceB} with the optimal exploration conditions in RL (explained later on in \cref{subsec:exploration_in_policy_learning}), and show that the dynamic ``surrogate" expected loss $\rvpi_i\left( \rmW(t) \right)^\top \hat{\rvr}_i\left(t\right)$ converges at rate $O\left(\frac{1}{t} \right)$. We first prove the main result, then show some intuitions with lemmas, the proofs of which can be found in the appendix.
 
 \begin{thm}
 \label{thm:surrogate_expected_loss_convergence}
