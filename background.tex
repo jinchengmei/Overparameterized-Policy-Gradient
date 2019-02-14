@@ -62,8 +62,8 @@ Our proposed algorithm adds explicit uniform exploration to the vanilla policy g
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\beta > 0$.
-   \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $\rva_k \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$.
-   \STATE Initialize $\hat{r}_{i,k}\left(0\right) = 0$, $n_{i,k}\left(0\right) = 0$, $\forall k \in [h]$.
+   \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+   \STATE Initialize $\hat{r}_{i,k}\left(0\right) \gets 0$, $n_{i,k}\left(0\right) \gets 0$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \IF{$t < T^{\frac{2}{3} + \beta}$}
    \STATE (Exploring Phase)
@@ -83,4 +83,4 @@ Our proposed algorithm adds explicit uniform exploration to the vanilla policy g
 \end{algorithmic}
 \end{algorithm}
 
-Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $\rva_k \sim \gU\left\{-1, +1\right\}$, $\rva_k$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained NNs \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
+Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $a_{k,r} \sim \gU\left\{-1, +1\right\}$, $a_{k,r}$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained NNs \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
