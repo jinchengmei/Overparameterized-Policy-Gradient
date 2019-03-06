@@ -74,7 +74,7 @@
    \caption{Logit Learning with Uniform Exploration}
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
-   \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\beta > 0$.
+   \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\tau > 0$.
    \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
    \STATE Initialize $\hat{r}_{i,k}\left(0\right) \gets 0$, $n_{i,k}\left(0\right) \gets 0$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
@@ -119,5 +119,27 @@ Therefore,
 \end{equation*}
 by $\left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \le 1$ and $\probability{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty <  \frac{\Delta}{5} \right\} } \le 1$.
 \end{proof}
+
+\begin{algorithm}[h]
+   \caption{Logit Learning with $\epsilon$-Greedy Exploration}
+\label{alg:policy_gradient_uniform_exploration}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\tau > 0$.
+   \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+   \STATE Initialize $\hat{r}_{i,k}\left(0\right) \gets 0$, $n_{i,k}\left(0\right) \gets 0$, $\forall k \in [h]$.
+   \FOR{$t=0$ {\bfseries to} $T-1$}
+   \STATE $\epsilon_t \gets \frac{\log{t}}{t}$.
+   \STATE $\rvpi_i\left(t\right) \gets \frac{ \exp\left\{ \frac{ \rvo\left( \rmW\left(t\right)\right) }{\tau} \right\} }{\rvone^\top \exp\left\{ \frac{ \rvo\left( \rmW\left(t\right)\right) }{\tau} \right\} } $.
+   \STATE $\tilde{\rvpi}_i\left(t\right) \gets \left( 1 - \epsilon_t \right) \cdot  \rvpi_i\left(t\right) + \epsilon_t \cdot \gU{\left[ h \right]}$.
+   \STATE Sample action $A_{t} \sim \tilde{\rvpi}_{i}\left(t\right)\left(\cdot \middle| \rvs_i \right)$.
+   \STATE Take action $A_{t}$. Observe reward $R_{i, A_{t}}\left(n_{i, A_{t}}\left(t\right) \right)$.
+   \STATE $n_{i, A_{t}}\left(t+1\right) \gets n_{i, A_{t}}\left(t\right) + 1$.
+   \STATE $\hat{r}_{i,A_{t}}\left(t+1\right) \gets \frac{n_{i, A_{t}}\left(t\right) \cdot \hat{r}_{i,A_{t}}\left(t\right) + R_{i, A_{t}}\left(n_{i, A_{t}}\left(t\right)\right) }{n_{i, A_{t}}\left(t+1\right)}$.
+   \STATE $n_{i, k}\left(t+1\right) \gets n_{i, k}\left(t\right)$, $\forall k \not= A_t$.
+   \STATE $\hat{r}_{i,k}\left(t+1\right) \gets \hat{r}_{i,k}\left(t\right)$, $\forall k \not= A_t$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
+   \ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
 \end{document}
