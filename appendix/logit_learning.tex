@@ -95,7 +95,7 @@
    \STATE $n_{i, A_{t}}\left(t+1\right) \gets n_{i, A_{t}}\left(t\right) + 1$.
    \STATE $n_{i, k}\left(t+1\right) \gets n_{i, k}\left(t\right)$, $\forall k \not= A_t$.
    \STATE $\hat{r}_{i,k}\left(t+1\right) \gets \hat{r}_{i,k}\left(t\right)$, $\forall k \in \left[ h \right]$.
-   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
    \ENDIF
    \ENDFOR
 \end{algorithmic}
@@ -108,16 +108,16 @@
     After the exploring phase, each arm is pulled at least $\frac{25 \log{T}}{2 \Delta^2}$ times. By Hoeffding's inequality, $\forall t \ge \frac{25 h \log{T}}{2 \Delta^2}$,
 \begin{equation*}
 \begin{split}
-    \probability{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \ge  \frac{\Delta}{5} \right\} } \le 2 \exp\left\{ - 2 \cdot \frac{25 \log{T}}{2 \Delta^2} \cdot  \left( \frac{\Delta}{5} \right)^2 \right\} = \frac{2}{T}.
+    \probability{\left\{ \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \ge  \frac{\Delta}{5} \right\} } \le 2 \exp\left\{ - 2 \cdot \frac{25 \log{T}}{2 \Delta^2} \cdot  \left( \frac{\Delta}{5} \right)^2 \right\} = \frac{2}{T}.
 \end{split}
 \end{equation*}
 Therefore,
 \begin{equation*}
 \begin{split}
-    \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \le \probability{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \ge  \frac{\Delta}{5} \right\} } \cdot 1 + 1 \cdot \frac{\Delta}{5} \le \frac{2}{T} + \frac{\Delta}{5},
+    \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le \probability{\left\{ \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \ge  \frac{\Delta}{5} \right\} } \cdot 1 + 1 \cdot \frac{\Delta}{5} \le \frac{2}{T} + \frac{\Delta}{5},
 \end{split}
 \end{equation*}
-by $\left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \le 1$ and $\probability{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty <  \frac{\Delta}{5} \right\} } \le 1$.
+by $\left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 1$ and $\probability{\left\{ \left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty <  \frac{\Delta}{5} \right\} } \le 1$.
 \end{proof}
 
 \begin{algorithm}[h]
@@ -137,9 +137,25 @@ by $\left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \le 1$ and $\probabi
    \STATE $\hat{r}_{i,A_{t}}\left(t+1\right) \gets \frac{n_{i, A_{t}}\left(t\right) \cdot \hat{r}_{i,A_{t}}\left(t\right) + R_{i, A_{t}}\left(n_{i, A_{t}}\left(t\right)\right) }{n_{i, A_{t}}\left(t+1\right)}$.
    \STATE $n_{i, k}\left(t+1\right) \gets n_{i, k}\left(t\right)$, $\forall k \not= A_t$.
    \STATE $\hat{r}_{i,k}\left(t+1\right) \gets \hat{r}_{i,k}\left(t\right)$, $\forall k \not= A_t$.
-   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
+
+\begin{thm}
+
+\end{thm}
+\begin{proof}
+$\forall \log{t} \ge \frac{10}{\Delta \left(\sqrt{4 - 3a} - \sqrt{a} \right)} $, if $\left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 \le \left( \frac{\Delta}{5} \right)^2$,
+\begin{equation*}
+\begin{split}
+    &\left\| \rvo\left( \rmW\left(t+1\right)\right) - \hat{\rvr}_i\left(t+1\right) \right\|_2^2 \\
+    &= \left\| \rvo\left( \rmW\left(t+1\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 + \left\| \hat{\rvr}_i\left(t\right) - \hat{\rvr}_i\left(t+1\right) \right\|_2^2 + 2 \left( \rvo\left( \rmW\left(t+1\right)\right) - \hat{\rvr}_i\left(t\right) \right)^\top \left( \hat{\rvr}_i\left(t\right) - \hat{\rvr}_i\left(t+1\right) \right) \\
+    &\le a \cdot \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 + \frac{1}{\left(\log{t}\right)^2} + \frac{2 \sqrt{a}}{\log{t}} \cdot \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2 \\
+    &\le \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 \\
+    &\le \left( \frac{\Delta}{5} \right)^2.
+\end{split}
+\end{equation*}
+\end{proof}
 
 \end{document}
