@@ -1,0 +1,38 @@
+\section{INTRODUCTION}
+\label{sec:introduction}
+
+Deep Reinforcement Learning (DRL) has recently achieved great successes, including games \citep{silver2016masteringA,silver2017masteringB,moravvcik2017deepstack,mnih2015human}, robotics \citep{lillicrap2015continuous,levine2016end}, just name a few. However, comparing with its brilliant achievements, the theoretical understanding of the mechanism behind DRL methods is not enough to explain its practical performance. 
+
+DRL combines techniques in Deep Learning (DL) and Reinforcement Learning (RL) fields, to understand DRL, we need findings from both the DL and the RL sides.
+
+On the RL side, it is well studied that under the bandit settings, and the tabular cases of the Markov decision process (MDP) setting, a number of algorithms enjoy favorable theoretical guarantees \citep{bubeck2012regret,sutton2018reinforcement}. In particular, either the optimal policies can be learned asymptotically, or within finite time, sublinear regret can be obtained. However, once it goes beyond the tabular cases, the theoretical results become much weaker. For example, Gradient Temporal Difference (GTD) with (non-)linear function approximations can only converge to the fixed points of projected Bellman operators \citep{sutton2009fast,sutton2009convergent,bhatnagar2009convergent}. While the performance of the fixed point policies can be arbitrarily bad without any further assumptions on the function approximations.
+
+On the DL side, the empirical achievements are also much more advanced than the  theoretical results \citep{goodfellow2016deep,zhang2016understanding}. However, there are still continuous progresses in the expressiveness \citep{cybenko1989approximation,raghu2017expressive}, optimization \citep{kawaguchi2016deep,li2017convergence,li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and generalization \cite{neyshabur2017exploring,allen2018learning} aspects of the DL theory. In particular, very recently, it has been discovered that, in the supervised learning (regression and classification) settings, zero training loss can be achieved using gradient descent (GD) and stochastic gradient descent (SGD) methods, given that the number of parameters in hidden layer is quite large, i.e., overparameterization \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}. With some additional structured data distribution assumptions, the convergent training loss can be generalized to the testing loss, making the neural network have provable generalization abilities \citep{li2018learning,allen2018learning}.
+
+However, the DL theory is developed in supervised learning, which makes it difficult to be applied to the RL settings, due to the significant differences between RL and supervised learning: (a) unlike the supervised learning, there is no true label provided when learning RL agents; (b) the agent interacts with the environment and collects experience during learning, which makes the exploration matter.
+
+In this paper, using the recent progresses in overparameterized neural network optimization theory, we take one step forward to theoretically understanding DRL. In particular, we make the following contributions.
+\begin{itemize}
+    \item We prove that in the stochastic bandit setting, with enough exploration, the widely-used policy gradient method, with policy overparameterized by a two layer neural network (NN), achieves $O\left( T^{\frac{2}{3} } \left(\log{T}\right)^{\frac{1}{3}}\right)$ regret. This result can be generalized to the many state dependent stochastic bandit settings, and the episodic MDP settings.
+\end{itemize}
+
+We would like to point that the above results can be generalized to policy parameterized by multi-layered NNs. Assuming a two layer NN policy is just for simplicity and conciseness. Our results can be combined with recently discovered properties of multi-layered NN   \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}.
+
+To our knowledge, our finding is the first convergent analysis for popular RL methods (policy gradient here) with non-linear NN function approximations, which provides theoretical support for DRL methods. Our results are just the beginning of understanding many other DRL methods (such as DQN \cite{mnih2015human}, A3C \citep{mnih2016asynchronous}, and PCL \citep{nachum2017bridging}), with more practical NN function approximations (e.g., less overparameterized), using many other policy optimization techniques (like relative entropy policy search \citep{peters2010relative}).
+
+The rest of the paper is organized as follows. Notations are in \cref{subsec:notations}. \cref{sec:background} introduces the backgrounds, including the settings \cref{subsec:settings}, NN policy structure \cref{subsec:nn_policy}, and the proposed algorithm \cref{subsec:policy_gradient_with_uniform_exploration}. \cref{sec:theoretical_analysis} presents our theoretical analysis. \cref{sec:general_settings} briefly shows the results in several more general settings. \cref{sec:future_work} discusses some open problems and future work. \cref{sec:conclusions} comes to our conclusions. The proofs of technical lemmas are deferred to the appendix due to the space limit.
+
+\subsection{Notations}
+\label{subsec:notations}
+
+Bold letters refer to vectors, and non-bold letters refer to scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $n$ is the total number of states, while $m$ is the total number of nodes in each hidden layer. $h$ is the total number of actions can be taken at each state. $\rvone$ means all-one vector, and $\rmI$ refers to identity matrix, whose dimensions depend on the contexts.
+
+Denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. $\rvs_i \in \sR^d$, $i \in [n]$ refers to the feature vector of the $i$th state. $\rvw_r \in \sR^d$, $r \in [m]$ is a weight vector in the first hidden layer. $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right] \in \sR^{d \times m}$ is the weight matrix of the first hidden layer. $u_{i,r} \triangleq \rvw_r^\top \rvs_i$ is the $r$th node value of the first hidden layer. $\rva_k \in \sR^m$, $k \in [h]$ is a weight vector in the second hidden layer. $\rmA^\top \triangleq \left[ \rva_1, \rva_2, \dots, \rva_h \right] \in \sR^{m \times h}$ is the weight matrix of the second hidden layer. $o_{i,k} \triangleq \sum\limits_{r=1}^{m}{a_{k,r} \cdot \sigma\left( u_{i,r} \right)}$ is the logit of the $k$th action for state $\rvs_i$, where $\sigma(\cdot) \triangleq \max\left\{ \cdot, 0 \right\}$ is the ReLU activation function. $\pi_{i,k} \triangleq f\left( o_{i,k} \right) \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}}$ is the probability of choosing action $k$ at state $\rvs_i$, where $f(\cdot)$ is the softmax function. $\rvr_i \in \sR^h$ is the true mean reward vector at state $\rvs_i$. $\rvpi_i^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \rvr_i \right\}}$ is the optimal policy at state $\rvs_i$. Given stochastic policies $\rvpi \triangleq \left[ \rvpi_1, \rvpi_2, \dots, \rvpi_n \right] \in \sR^{h \times n}$, the expected (mean) loss is defined as,
+\begin{equation}
+\label{eq:expected_loss}
+\begin{split}
+    \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( {\rvpi_i^*}^\top \rvr_i - \rvpi_i^\top \rvr_i \right) }.
+\end{split}
+\end{equation}
+
+Without loss of generality, we assume $\rvr_i \in \left[ 0, 1 \right]^h$, and $\rvr_i$ is the mean vector of some random reward vectors,  $\forall i \in [n]$.
