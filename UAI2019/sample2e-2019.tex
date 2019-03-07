@@ -8,6 +8,14 @@
 % Set the typeface to Times Roman
 \usepackage{times}
 
+\usepackage{algorithm,algorithmic}
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs} % for professional tables
+
 \usepackage{natbib}
 
 \usepackage{amssymb} %maths
@@ -103,41 +111,8 @@
 
 \input{introduction.tex}
 
-\section{GENERAL FORMATTING INSTRUCTIONS}
+\input{background.tex}
 
-Papers are in 2 columns with the overall line width of 6.75~inches
-(41~picas).  Each column is 3.25~inches wide (19.5~picas).  The space
-between the columns is .25~inches wide (1.5~picas).  The left margin
-is 1~inch (6~picas).  Use 10~point type with a vertical spacing of
-11~points.  Times Roman is the preferred typeface throughout.
-
-Paper title is 16~point, caps/lc, bold, centered between 2~horizontal
-rules.  Top rule is 4~points thick and bottom rule is 1~point thick.
-Allow 1/4~inch space above and below title to rules.
-
-Reviewing is double-blind, so do not include author names, affiliations, or any
-other identifying information in the original submission.  If you include urls
-to supplementary material, make sure the urls also do not disclose your identity.
-
-After a paper is accepted, for the camera-ready submission, Authors' names are
-centered, initial caps.  The lead author's name is to be listed first
-(left-most), and the Co-authors' names (if different address) are set to
-follow.  If only one co-author, center both the author and co-author,
-side-by-side.
-
-One-half line space between paragraphs, with no indent.
-
-\section{FIRST LEVEL HEADINGS}
-
-First level headings are all caps, flush left, bold and in point size
-12. One line space before the first level heading and 1/2~line space
-after the first level heading.
-
-\subsection{SECOND LEVEL HEADING}
-
-Second level headings must be flush left, all caps, bold and in point
-size 10. One line space before the second level heading and 1/2~line
-space after the second level heading.
 
 \subsubsection{Third Level Heading}
 
@@ -214,13 +189,6 @@ Soma             &Cell body (contains cell nucleus) \\
 \end{tabular}
 \end{center}
 \end{table}
-
-\newpage
-
-\subsubsection*{Acknowledgements}
-
-Use unnumbered third level headings for the acknowledgements title.
-All acknowledgements go at the end of the paper.
 
 {\small
 \bibliographystyle{plain}
