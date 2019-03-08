@@ -51,9 +51,7 @@ The episodic MDP setting recovers the bandit setting as a special case. The envi
 
 The structures of the two layer value and policy neural network with ReLU activation are shown in \cref{fig:nn_value} and \cref{fig:nn_policy}, respectively. The policy neural network differs the value neural network with one additional softmax transform layer, in order to output probability distributions. 
 
-takes the feature vector of each state $\rvs_i \in \sR^d$ as its input. Then it calculates the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is then calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. Finally, the policy output probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right) = f\left( \rmA \sigma\left( \rmW \rvs_i \right) \right)$. 
-
-
+Both the value and the policy neural networks take the state feature  $\rvs_i \in \sR^d$ as the input. Then the networks calculate the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is then calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. The value neural network outputs the logit vector $\rvo_i$. While the policy neural network output probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right) = f\left( \rmA \sigma\left( \rmW \rvs_i \right) \right)$. 
 
 \begin{figure}[t]
 \vskip 0.2in
@@ -65,11 +63,11 @@ takes the feature vector of each state $\rvs_i \in \sR^d$ as its input. Then it 
 \vskip -0.2in
 \end{figure}
 
-The above neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{m \times d}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss of the NN policy can be calculated according to \cref{eq:expected_loss}.
+The policy neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{m \times d}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss of the policy neural network can be calculated according to \cref{eq:expected_loss}.
+
+We would like to point that our algorithms work for general value functions and policies parameterized by multi-layered neural networks \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}. Using two layer neural networks here is just for simplicity and conciseness.
 
 uai2019================
-
-We would like to point that the above results can be generalized to policy parameterized by multi-layered NNs. Assuming a two layer NN policy is just for simplicity and conciseness. Our results can be combined with recently discovered properties of multi-layered NN   \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}.
 
 \subsection{VANILLA POLICY GRADIENT}
 \label{subsec:vanilla_policy_gradient}
