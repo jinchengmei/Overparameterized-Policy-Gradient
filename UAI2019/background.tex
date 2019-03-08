@@ -6,6 +6,10 @@
 
 \subsubsection{Stochastic Bandit Setting}
 
+uai2019================
+
+We would like to point that the above results can be generalized to policy parameterized by multi-layered NNs. Assuming a two layer NN policy is just for simplicity and conciseness. Our results can be combined with recently discovered properties of multi-layered NN   \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}.
+
 In the standard stochastic bandit setting $n = 1$. At each time step $t$, the agent takes an action $A_t \in [h]$ according to some strategies, and then it observes a random reward $R_{i, A_t} \in \sR$, and the mean value of $R_{i, A_t}$ is $r_{i, A_t}$. The agent then uses the reward to improve its action selection strategies. After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation}
 \label{eq:expected_regret}
