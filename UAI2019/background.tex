@@ -85,7 +85,8 @@ Our first proposed algorithm is Logit Learning with $\epsilon$-Greedy Exploratio
    \STATE $\tilde{\Delta}_{i,k}\left(0\right) \gets \max\limits_{k^\prime}\left\{ o_{i,k^\prime}\left(0\right) \right\} - o_{i,k}\left(0\right)$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \STATE $\xi_t \gets \frac{\log{t}}{t \hat{\Delta}_{i,k}^2\left(0\right)}$, $\epsilon_t \gets \min\left\{ \frac{1}{2 h}, \xi_t \right\}$.
-   \STATE $\rvpi_i\left(t\right) \gets \frac{ \exp\left\{ \frac{ \rvo\left( \rmW\left(t\right)\right) }{\tau} \right\} }{\rvone^\top \exp\left\{ \frac{ \rvo\left( \rmW\left(t\right)\right) }{\tau} \right\} } $.
+   \STATE $\pi_{i, k}\left(t\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{i, k^\prime}\left(t\right)\right\}$.
+   \STATE $\pi_{i, k}\left(t\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{i, k^\prime}\left(t\right)\right\}$.
    \STATE $\tilde{\rvpi}_i\left(t\right) \gets \left( 1 - \epsilon_t \right) \cdot  \rvpi_i\left(t\right) + \epsilon_t \cdot \gU{\left[ h \right]}$.
    \STATE Sample action $A_{t} \sim \tilde{\rvpi}_{i}\left(t\right)\left(\cdot \middle| \rvs_i \right)$.
    \STATE Take action $A_{t}$. Observe reward $R_{i, A_{t}}\left(n_{i, A_{t}}\left(t\right) \right)$.
@@ -93,17 +94,15 @@ Our first proposed algorithm is Logit Learning with $\epsilon$-Greedy Exploratio
    \STATE $\hat{r}_{i,A_{t}}\left(t+1\right) \gets \frac{n_{i, A_{t}}\left(t\right) \cdot \hat{r}_{i,A_{t}}\left(t\right) + R_{i, A_{t}}\left(n_{i, A_{t}}\left(t\right)\right) }{n_{i, A_{t}}\left(t+1\right)}$.
    \STATE $n_{i, k}\left(t+1\right) \gets n_{i, k}\left(t\right)$, $\forall k \not= A_t$.
    \STATE $\hat{r}_{i,k}\left(t+1\right) \gets \hat{r}_{i,k}\left(t\right)$, $\forall k \not= A_t$.
-   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo_i\left( \rmW\left(t\right)\right) - \hat{\rvr}_i\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
 
-uai2019================
-
-\subsection{VANILLA POLICY GRADIENT}
+\subsection{POLICY GRADIENT}
 \label{subsec:vanilla_policy_gradient}
 
-During interacting with the environment, the agent can use any strategies to select actions. In particular, if at each time step $t$, the agent's action selection strategy is the NN policy $\rvpi_i\left(\rmW(t)\right)$, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi_i\left(\rmW(t)\right)$, i.e., 
+Our second proposed algorithm is based on the widely used policy gradient method. Consider at each step $t$, the agent is using $\rvpi_i\left(\rmW(t)\right)$ as shown in \cref{fig:nn_policy} as its action selection strategy, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi_i\left(\rmW(t)\right)$, i.e., 
 \begin{equation}
 \label{eq:vanilla_policy_gradient_expected_regret}
 \begin{split}
@@ -111,17 +110,12 @@ During interacting with the environment, the agent can use any strategies to sel
     &= \sum\limits_{t=0}^{T-1}{{\rvpi_i^*}^\top \rvr_i} - \sum\limits_{t=0}^{T-1}{\rvpi_i\left(\rmW(t)\right)^\top \rvr_i},
 \end{split}
 \end{equation}
-according to \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i\left(\rmW(t)\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi_i\left(\rmW(t)\right)^\top \rvr_i$. Doing policy gradient updates with respect to the NN weights $\rmW(t)$ will arguably decrease the expected loss, thus reduce the expected regret. 
+by \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current NN policy $\rvpi_i\left(\rmW(t)\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi_i\left(\rmW(t)\right)^\top \rvr_i$. Doing policy gradient updates with respect to the NN weights $\rmW(t)$ will arguably decrease the expected loss, thus reduce the expected regret. 
 
-However, the above mentioned method, called as vanilla policy gradient, often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Unfortunately, without any other techniques, the vanilla policy gradient method cannot avoid this issue. Actually, as our analysis shown later on, the convergence rate of the policy expected loss relies on non-zero probability of exploring the optimal arms, which is consistent with intuition. For this reason, we need mix the vanilla policy gradient method with explicit exploration.
-
-\subsection{POLICY GRADIENT WITH UNIFORM EXPLORATION}
-\label{subsec:policy_gradient_with_uniform_exploration}
-
-Our proposed algorithm adds explicit uniform exploration to the vanilla policy gradient method, as shown in \cref{alg:policy_gradient_uniform_exploration}. After the random initialization, at each time step $t$, one of the two cases happens. If $t < T^{\frac{2}{3} + \beta}$, then agent gets into a purely ``exploring phase", without learning the policy NN, while just collecting empirically estimated rewards. If $t \ge T^{\frac{2}{3} + \beta}$, then the agent starts ``playing and learning". The agent samples and takes actions according to the current NN policy $\rvpi_{i}\left(\rmW(t)\right)$. In the meanwhile, the agent learn the NN policy by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
+Unfortunately, the vanilla policy gradient often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Therefore, we propose a two stage algorithm combining policy gradient with uniform exploration as shown in \cref{alg:policy_gradient_uniform_exploration}. After the random initialization, at each step $t$, one of the two cases happens. If $t < T^{\frac{2}{3} + \beta}$, then agent gets into a purely ``exploring phase", without learning the policy neural network, while just collecting empirically estimated rewards. If $t \ge T^{\frac{2}{3} + \beta}$, then the agent starts ``playing and learning". The agent samples and takes actions according to the current neural network policy $\rvpi_{i}\left(\rmW(t)\right)$. In the meanwhile, the agent learns the policy neural network by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
 
 \begin{algorithm}[t]
-   \caption{NN Policy Gradient with Uniform Exploration}
+   \caption{Policy Gradient with Uniform Exploration}
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\beta > 0$.
@@ -130,12 +124,12 @@ Our proposed algorithm adds explicit uniform exploration to the vanilla policy g
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \IF{$t < T^{\frac{2}{3} + \beta}$}
    \STATE (Exploring Phase)
-   \STATE $\rmW(t+1) \leftarrow \rmW(t)$.
    \STATE Uniformly randomly sample action $A_{t} \in [h]$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t)$.
    \ELSE
    \STATE (Playing-Learning Phase)
-   \STATE $\rmW(t+1) \leftarrow \rmW(t) + \eta \cdot \frac{d \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvr}_i \left(t\right)}{d \rmW(t)}$.
    \STATE Sample action $A_{t} \sim \rvpi_{i}\left(\rmW(t)\right)\left(\cdot \middle| \rvs_i \right)$.
+   \STATE $\rmW(t+1) \leftarrow \rmW(t) + \eta \cdot \frac{d \rvpi_{i}\left(\rmW(t)\right)^\top \hat{\rvr}_i \left(t\right)}{d \rmW(t)}$.
    \ENDIF
    \STATE Take action $A_{t}$. Observe reward $R_{i, A_{t}}\left(n_{i, A_{t}}\left(t\right) \right)$.
    \STATE $n_{i, A_{t}}\left(t+1\right) \gets n_{i, A_{t}}\left(t\right) + 1$.
@@ -146,6 +140,4 @@ Our proposed algorithm adds explicit uniform exploration to the vanilla policy g
 \end{algorithmic}
 \end{algorithm}
 
-Note in \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $a_{k,r} \sim \gU\left\{-1, +1\right\}$, $a_{k,r}$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained NNs \citep{hoffer2018fix}. Other initialization like $\rva_k \sim \gN(0, \rmI)$ also works.
-
-
+Note in \cref{alg:logit_learning_eps_greedy_exploration} and \cref{alg:policy_gradient_uniform_exploration}, after the random initialization $a_{k,r} \sim \gU\left\{-1, +1\right\}$, $a_{k,r}$ is fixed, which is common in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and empirically verified that has no impact on the performance of trained neural networks \citep{hoffer2018fix}. Some other initializations like $\rva_k \sim \gN(0, \rmI)$ also work.
