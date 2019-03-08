@@ -47,7 +47,7 @@ The episodic MDP setting recovers the bandit setting as a special case. The envi
 \end{figure}
 
 \subsection{NEURAL NETWORK VALUE FUNCTION APPROXIMATION AND POLICY}
-\label{subsec:nn_policy}
+\label{subsec:nn_value_policy}
 
 The structures of the two layer value and policy neural network with ReLU activation are shown in \cref{fig:nn_value} and \cref{fig:nn_policy}, respectively. The policy neural network differs the value neural network with one additional softmax transform layer, in order to output probability distributions. 
 
@@ -100,7 +100,7 @@ Our first proposed algorithm is Logit Learning with $\epsilon$-Greedy Exploratio
 \end{algorithm}
 
 \subsection{POLICY GRADIENT}
-\label{subsec:vanilla_policy_gradient}
+\label{subsec:policy_gradient}
 
 Our second proposed algorithm is based on the widely used policy gradient method. Consider at each step $t$, the agent is using $\rvpi_i\left(\rmW(t)\right)$ as shown in \cref{fig:nn_policy} as its action selection strategy, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi_i\left(\rmW(t)\right)$, i.e., 
 \begin{equation}
