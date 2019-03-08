@@ -9,14 +9,14 @@ In the DL field, the well known situation is that the theoretical understanding 
 
 However, the recent progresses of the DL theory was developed under the supervised learning settings, which makes it not directly applicable in the RL settings, due to the significant differences between the RL and the supervised learning: (a) when learning RL agents, there is no true label provided by the environment, so the learning objective itself needs to be estimated from the collected data, which makes the RL problems more difficult than optimization problems in the supervised learning; (b) the interaction between the  agent and the environment will also incur losses during learning, which makes the principled ways of exploration matter.
 
+In this paper, based on the recent work in the optimization theory of over-parameterized neural networks, we take one step forward to theoretically understanding the DRL methods. In particular, our contributions are as follows.
 
+\begin{itemize}
+    \item We propose two algorithms which can achieve optimal finite time regret under the stochastic bandit setting. The algorithms learn value related objectives using the gradient descent, with value functions parameterized by neural networks. The results can be generalized to the many state dependent stochastic bandit settings, and the episodic MDP settings.
+    \item We prove that the widely used policy gradient methods also enjoys sublinear finite time regret under the stochastic bandit setting.
+\end{itemize}
 
 uai2019================
-
-In this paper, using the recent progresses in overparameterized neural network optimization theory, we take one step forward to theoretically understanding DRL. In particular, we make the following contributions.
-\begin{itemize}
-    \item We prove that in the stochastic bandit setting, with enough exploration, the widely-used policy gradient method, with policy overparameterized by a two layer neural network (NN), achieves $O\left( T^{\frac{2}{3} } \left(\log{T}\right)^{\frac{1}{3}}\right)$ regret. This result can be generalized to the many state dependent stochastic bandit settings, and the episodic MDP settings.
-\end{itemize}
 
 We would like to point that the above results can be generalized to policy parameterized by multi-layered NNs. Assuming a two layer NN policy is just for simplicity and conciseness. Our results can be combined with recently discovered properties of multi-layered NN   \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}.
 
