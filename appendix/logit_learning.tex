@@ -122,7 +122,7 @@ by $\left\| \hat{\rvr}_i\left(t\right) - \rvr_i \right\|_\infty \le 1$ and $\pro
 
 \begin{algorithm}[h]
    \caption{Logit Learning with $\epsilon$-Greedy Exploration}
-\label{alg:policy_gradient_uniform_exploration}
+\label{alg:logit_learning_eps_greedy_exploration}
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs_i$, learning rate $\eta > 0$, $\tau > 0$.
    \STATE Initialize $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. \STATE Initialize $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
