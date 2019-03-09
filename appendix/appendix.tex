@@ -60,7 +60,7 @@
 \def\gU{{\mathcal{U}}}
 
 
-\title{Appendix}
+\title{Appendix of ``On Optimal Stochastic Bandit Algorithms and Provable Policy Gradient Methods with Neural Networks''}
 \author{}
 \date{}
 
@@ -77,10 +77,17 @@
 
 \section{Proofs}
 
+Given the true mean reward $\rvr \in \left[ 0, 1 \right]^h$, define $\rvtilder \triangleq \max\limits_{k^\prime \in [h]}\left\{ r_{k^\prime } \right\} \cdot \rvone - \rvr$. Note that,
+\begin{equation*}
+\begin{split}
+    \rvpi^\top \rvtilder = \max\limits_{k^\prime \in [h]}\left\{ r_{k^\prime }\right\} - 
+\end{split}
+\end{equation*}
+
 \begin{lem}
     Let $\rvo \in \sR^h$ be any logit vector, and $\rvpi_i(\rvo)$ be the softmax policy of $\rvo$ at state $\rvs_i$. Denote $\gH\left( \rvpi_i \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi_i \left(\rvo \right) \right) - \rvpi_i \left(\rvo \right) \rvpi_i \left(\rvo \right)^\top$.
 \begin{equation*}
-    \left\| \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \right\|_2 \le 4.
+    \left\| \frac{d \gH\left( \rvpi_i \left(\rvo \right) \right) \rvtilder_i}{d \rvo } \right\|_2 \le 2.
 \end{equation*}
 \end{lem}
 \begin{proof}
