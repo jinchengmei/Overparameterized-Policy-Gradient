@@ -116,87 +116,11 @@
 
 \input{theoretical_analysis.tex}
 
-\subsection{LOGIT LEARNING}
-\label{subsec:theoretical_analyses_logit_learning}
+\input{general_settings.tex}
 
-We first present the main results as shown in \cref{thm:logit_learning_main_result}, and then discuss the detailed proof ideas and intuitions.
+\input{future_work.tex}
 
-\begin{thm}
-\label{thm:logit_learning_main_result}
-    Given policy neural networks as shown in \cref{fig:nn_policy}, with number of parameters $m \in \Theta\left( \frac{1}{c^4 \varepsilon^2} \right)$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
-\begin{equation*}
-\small
-\begin{split}
-    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \log{h} \cdot T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}.
-\end{split}
-\end{equation*}
-\end{thm}
-\begin{proof}
-    
-\end{proof}
-
-\subsection{CITATIONS, FIGURES, REFERENCES}
-
-
-\subsubsection{Citations in Text}
-
-Citations within the text should include the author's last name and
-year, e.g., (Cheesman, 1985). Reference style should follow the style
-that you are used to using, as long as the citation style is
-consistent.
-
-For the original submission, take care not to reveal the authors' identity through
-the manner in which one's own previous work is cited.  For example, writing
-``In (Bovik, 1970), we studied the problem of AI'' would be inappropriate, as
-it reveals the author's identity.  Instead, write ``(Bovik, 1970) studied the
-problem of AI.''
-
-\subsubsection{Footnotes}
-
-Indicate footnotes with a number\footnote{Sample of the first
-footnote} in the text. Use 8 point type for footnotes.  Place the
-footnotes at the bottom of the page on which they appear.  Precede the
-footnote with a 0.5 point horizontal rule 1~inch (6~picas)
-long.\footnote{Sample of the second footnote}
-
-\subsubsection{Figures}
-
-All artwork must be centered, neat, clean, and legible. Figure number
-and caption always appear below the figure.  Leave 2 line spaces
-between the figure and the caption. The figure caption is initial caps
-and each figure numbered consecutively.
-
-Make sure that the figure caption does not get separated from the
-figure. Leave extra white space at the bottom of the page rather than
-splitting the figure and figure caption.
-\begin{figure}[h]
-\vspace{1in}
-\caption{Sample Figure Caption}
-\end{figure}
-
-\subsubsection{Tables}
-
-All tables must be centered, neat, clean, and legible. Table number
-and title always appear above the table.  See
-Table~\ref{sample-table}.
-
-One line space before the table title, one line space after the table
-title, and one line space after the table. The table title must be
-initial caps and each table numbered consecutively.
-
-\begin{table}[h]
-\caption{Sample Table Title}
-\label{sample-table}
-\begin{center}
-\begin{tabular}{ll}
-\multicolumn{1}{c}{\bf PART}  &\multicolumn{1}{c}{\bf DESCRIPTION} \\
-\hline \\
-Dendrite         &Input terminal \\
-Axon             &Output terminal \\
-Soma             &Cell body (contains cell nucleus) \\
-\end{tabular}
-\end{center}
-\end{table}
+\input{conclusions.tex}
 
 {\small
 \bibliographystyle{plain}

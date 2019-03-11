@@ -216,7 +216,7 @@ The true policy gradient is,
     \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)} \triangleq  \rmD(t) \rmA^\top \rmH\left( \rvpi\left(\rmW(t)\right) \right) \hat{\rvr}\left(t\right) \rvs^\top.
 \end{split}
 \end{equation*}
-where $\rmD_{r,r}(t) \triangleq \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\forall \tau > 0$, with probability at least $1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, $\forall t \le \frac{\tau}{ 2 \eta }$, $\forall r \in [m]$,
+where $\rmD_{r,r}(t) \triangleq \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\forall \tau > 0$, $\forall r \in [m]$, with probability at least $1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation*}
 	\frac{d\tilde{\ell}(t)}{d \rvw_r(t)} = \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr}\left(t\right)}{d \rvw_r(t)},
 \end{equation*}
@@ -291,4 +291,23 @@ $\forall t \ge 0$,
     \pi\left( \rmW(t+1)\right)_{i,\hat{k}_i^*} \ge \pi\left( \rmW(t)\right)_{i,\hat{k}_i^*} \in \Omega(1).
 \end{equation*}
 \end{lem}
-By \cref{lem:optimal_probability_increse_parameter_space}, we can safely replace the $c$ and $c_t$ values in the main result \cref{thm:main_result} and all the other intermediate lemmas and theorems, without incurring any additional regret dependent on $T$.
+By \cref{lem:optimal_probability_increse_parameter_space}, we can safely replace the $c$ and $c_t$ values in the main result \cref{thm:policy_gradient_main_result} and all the other intermediate lemmas and theorems, without incurring any additional regret dependent on $T$.
+
+\subsection{LOGIT LEARNING}
+\label{subsec:theoretical_analyses_logit_learning}
+
+We first present the main results as shown in \cref{thm:logit_learning_main_result}, and then discuss the detailed proof ideas and intuitions.
+
+\begin{thm}
+\label{thm:logit_learning_main_result}
+    Given value neural networks as shown in \cref{fig:nn_value}, with number of parameters $m \in \Theta\left( \frac{1}{c^4 \varepsilon^2} \right)$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
+\begin{equation*}
+\small
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \log{h} \cdot T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}.
+\end{split}
+\end{equation*}
+\end{thm}
+\begin{proof}
+    Since $c$    
+\end{proof}
