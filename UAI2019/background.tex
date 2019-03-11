@@ -81,7 +81,7 @@ Consider at each step $t$, the agent is using $\rvpi\left(\rmW(t)\right)$ as sho
 \begin{equation}
 \label{eq:vanilla_policy_gradient_expected_regret}
 \begin{split}
-    &\sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi\left(\rmW(t)\right)} \left[ r_{A_t} \right] } \\
+    R_T &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi\left(\rmW(t)\right)} \left[ r_{A_t} \right] } \\
     &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{\rvpi\left(\rmW(t)\right)^\top \rvr},
 \end{split}
 \end{equation}

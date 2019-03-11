@@ -116,19 +116,6 @@
 
 \input{theoretical_analysis.tex}
 
-\subsubsection{Third Level Heading}
-
-Third level headings must be flush left, initial caps, bold, and in
-point size 10.  One line space before the third level heading and
-1/2~line space after the third level heading.
-
-\vskip .5pc
-Fourth Level Heading
-
-Fourth level headings must be flush left and initial caps.
-One line space before the fourth level heading and 1/2~line space
-after the fourth level heading.
-
 \subsection{LOGIT LEARNING}
 \label{subsec:theoretical_analyses_logit_learning}
 
@@ -136,7 +123,13 @@ We first present the main results as shown in \cref{thm:logit_learning_main_resu
 
 \begin{thm}
 \label{thm:logit_learning_main_result}
-    Given two layer value neural networks, with number of parameters the expected regret of Algorithm 2 satisfies,
+    Given policy neural networks as shown in \cref{fig:nn_policy}, with number of parameters $m \in \Theta\left( \frac{1}{c^4 \varepsilon^2} \right)$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
+\begin{equation*}
+\small
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \log{h} \cdot T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}.
+\end{split}
+\end{equation*}
 \end{thm}
 \begin{proof}
     
