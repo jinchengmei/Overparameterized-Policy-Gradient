@@ -161,14 +161,12 @@ Denote $\rvo_{\xi} = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
 	Define the pseudo policy gradient at step $t$ as,
 \begin{equation*}
 \begin{split}
-\small
 	\frac{d \tilde{\ell}(t)}{d \rmW(t)} \triangleq \tilde{\rmD} \rmA^\top \left[ \Delta\left( \rvpi\left(\rmW(t)\right) \right) - \rvpi\left(\rmW(t)\right) \rvpi\left(\rmW(t)\right)^\top \right] \hat{\rvr}\left(t\right) \rvs^\top,
 \end{split}
 \end{equation*}
 where $\tilde{\rmD} \in \sR^{h \times h}$ is a diagonal matrix, and $\tilde{\rmD}_{r,r} \triangleq \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. The true policy gradient is,
 \begin{equation*}
 \begin{split}
-\small
     \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)} \triangleq  \rmD(t) \rmA^\top \left[ \Delta\left( \rvpi\left(\rmW(t)\right) \right) - \rvpi\left(\rmW(t)\right) \rvpi\left(\rmW(t)\right)^\top \right] \hat{\rvr}\left(t\right) \rvs^\top.
 \end{split}
 \end{equation*}
@@ -303,7 +301,6 @@ By the definition of the logit, and the $1$-Lipschitzness of ReLU,
 \begin{equation*}
 \label{eq:parameter_smoothness}
 \begin{split}
-\small
     \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) \le \rvpi\left( \rmW(t+1) \right)^\top \hat{\rvr}\left(t\right) - \left( \eta - h m \eta^2 \right) \cdot \left\| \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)} \right\|_F^2.
 \end{split}
 \end{equation*}
@@ -324,7 +321,7 @@ By the definition of the logit, and the $1$-Lipschitzness of ReLU,
 
 \begin{lem}[Lemma 5 in the paper]
 \label{lem:gradient_lower_bound}
-	Denote $\hat{k}^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{k}\left(t\right) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}\left(t\right)$. If $\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c_t > 0$, then with probability $\frac{1}{16} \cdot \left( 1 - \frac{1}{e^2} \right) \in \Omega\left( 1 \right)$,
+	Denote $\hat{k}^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{k}\left(t\right) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}\left(t\right)$. If $\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c_t > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d\tilde{\ell}\left(t\right)}{d \rvw_r(t)} \right\|_2 \ge c_t \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) \right) .
@@ -384,25 +381,25 @@ where $\partial{h_{\hat{k}^*,r}}_{\max}{(0)} = \max\left\{ \partial{h_{\hat{k}^*
 \begin{equation}
 \label{eq:h_regret_lower_bound}
 \begin{split}
-	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ h_{\hat{k}^*,r} \ge \frac{c_t\tau}{8} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right) \right\} > \frac{1}{8}.
+	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ \left|  h_{\hat{k}^*,r} \right| \ge \frac{c_t\tau}{8} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right) \right\} > \frac{1}{8}.
 \end{split}
 \end{equation}
-Finally, $h_{\hat{k}^*,r} \sim \gN\left( 0, \left\| \rvp_{\hat{k}^*, r} \right\|_2^2 \cdot \sigma^2 \right)$, with probability at least $1 - \frac{1}{e^2}$,
+Finally, $h_{\hat{k}^*,r} \sim \gN\left( 0, \left\| \rvp_{\hat{k}^*, r} \right\|_2^2 \cdot \sigma^2 \right)$, with probability at least $\frac{3}{4}$,
 \begin{equation}
 \label{eq:p_h_lower_bound}
 \begin{split}
-	h_{\hat{k}^*,r} < 2 \cdot \left\| \rvp_{\hat{k}^*, r} \right\|_2 \cdot \sigma.
+	\left| h_{\hat{k}^*,r} \right| < \sqrt{2 \log{8}} \cdot \left\| \rvp_{\hat{k}^*, r} \right\|_2 \cdot \sigma.
 \end{split}
 \end{equation}
 Combining \cref{eq:gradient_p_lowerbound}, \cref{eq:h_regret_lower_bound} and \cref{eq:p_h_lower_bound}, we have,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d\tilde{\ell}\left(t\right)}{d \rvw_r(t)} \right\|_2 &\ge \left\| \rvp_{\hat{k}^*, r}\right\|_2 \\
-	&> \frac{h_{\hat{k}^*,r}}{2\sigma} \\
-	&\ge \frac{c_t\tau}{16\sigma} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right),
+	&> \frac{\left| h_{\hat{k}^*,r} \right|}{\sqrt{2 \log{8}} \sigma} \\
+	&\ge \frac{c_t\tau}{8 \sqrt{2 \log{8}} \sigma} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right),
 \end{split}
 \end{equation*}
-with probability at least $\frac{1}{2}  \cdot \frac{1}{8} \cdot \left( 1 - \frac{1}{e^2} \right) $. Taking $\tau = 16 \sigma$ completes the proof.
+with probability at least $\frac{1}{2}  \cdot \frac{1}{8} \cdot \frac{3}{4} $. Taking $\tau = 8 \sqrt{2 \log{8}} \sigma$ completes the proof.
 \end{proof}
 
 \begin{lem}
