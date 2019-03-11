@@ -187,7 +187,7 @@ While the $r$th row of the true policy gradient is,
 \begin{equation*}
 	\frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rvw_r(t)} = \sum\limits_{k=1}^{h}{ \left[\hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] }.
 \end{equation*}
-The true policy gradient norm is upper bounded by the surrogate expected loss,
+The true policy gradient norm is upper bounded by the empirically expected reward,
 \begin{equation*}
 \begin{split}
 	\left\| \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rvw_r(t)} \right\|_2 &\le \sum\limits_{k=1}^{h}{ \left|\hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \right| \cdot \left\| \rvs \right\|_2 } \\
@@ -299,7 +299,7 @@ By the definition of the logit, and the $1$-Lipschitzness of ReLU,
 
 \begin{lem}[Lemma 3 in the paper]
 \label{lem:parameter_smoothness}
-    $\rmW(t+1) = \rmW(t) + \eta \cdot \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)}$, $\forall t \le \frac{\tau}{ 2 \eta }$,
+    $\rmW(t+1) = \rmW(t) + \eta \cdot \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)}$. $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation*}
 \label{eq:parameter_smoothness}
 \begin{split}
@@ -442,6 +442,28 @@ If $\phi(0) < 0$, then $\phi(x_0) = 0$ for some $x_0 > 0$. If $x_0 < \frac{\tau}
 If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - \frac{\rho\tau}{4}$, $\forall x \in \left[0, x_0 - \frac{\tau}{4} \right]$,
 \begin{equation*}
 	\left| \phi(x) \right| \ge \left| \frac{-\phi(0)}{x_0} \left( x - x_0 \right) \right| = \frac{-\phi(0)}{x_0} \left( x_0 - x \right) \ge \frac{\rho\tau}{8}. \qedhere
+\end{equation*}
+\end{proof}
+
+\begin{lem}
+$\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$, where $\eta = \frac{1}{h m}$. $\forall t < \frac{\tau}{2 \eta}$,
+\begin{equation*}
+\begin{split}
+    \frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2.
+\end{split}
+\end{equation*}
+\end{lem}
+\begin{proof}
+According to \cref{lem:logit_upper_bound_parameter},
+\begin{equation*}
+\begin{split}
+    &\frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 - \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 \\
+    &\quad = \left\langle \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right), \rvo\left( \rmW\left(t+1\right) \right) - \rvo\left( \rmW\left(t\right) \right) \right\rangle + \frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \rvo\left( \rmW\left(t\right) \right) \right\|_2^2 \\
+    &\quad \le \left\langle \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right), - \eta \cdot \rmA \rmD(t) \left[ \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)} \right] \rvs \right\rangle + \frac{h m \eta^2}{2} \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}  \right\|_F^2 \\
+    &\quad = - \left( \eta - \frac{h m \eta^2}{2} \right) \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}  \right\|_F^2 \\
+    &\quad = - \frac{1}{2 h m} \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}  \right\|_F^2 \\
+    &\quad \le - \frac{1}{2 h m} \cdot \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2. \qedhere
+\end{split}
 \end{equation*}
 \end{proof}
 
