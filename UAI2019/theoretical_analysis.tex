@@ -13,7 +13,7 @@ We first present the main results as shown in \cref{thm:policy_gradient_main_res
 
 \begin{thm}
 \label{thm:policy_gradient_main_result}
-    Given policy neural networks as shown in \cref{fig:nn_policy}, with number of parameters $m \in \Theta\left( \frac{1}{c^4 \varepsilon^2} \right)$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
+    Given policy neural networks as shown in \cref{fig:nn_policy}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
 \begin{equation*}
 \small
 \begin{split}
@@ -94,7 +94,7 @@ since $\pr\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \le T^
 The good estimation of the true mean loss $\hat{\rvr}\left(t\right)$ obtained at the end of the exploring phase will be used to train the neural network policy $\rvpi\left( \rmW(t) \right)$. However, the recently proposed optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsubsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW(t) \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
 \begin{thm}
 \label{thm:dynamic_regret_sublinear}
-    Denote $\rvpi^*\left(t\right) \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}\left(t\right)\right\}}$. The dynamic regret in the playing-learning phase satisfies,
+    Denote $\rvpi^*\left(t\right) \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}\left(t\right)\right\}}$. If $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, then the dynamic regret in the playing-learning phase satisfies,
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{ \left(  {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right) } \le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
@@ -159,9 +159,10 @@ By the Root-Mean Square-Arithmetic Mean inequality,
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{\delta_{t}} &\le \sqrt{\left(T  - T^{\frac{2}{3}+ \beta} \right) \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2}} \\
-    &\le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}. \qedhere
+    &\le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
 \end{split}
-\end{equation*}    
+\end{equation*}
+Let $\tau = \sigma$ in \cref{lem:gradient_coupling}. Let $\sigma = \frac{1}{\sqrt{m}}$ and $T \le \frac{\tau}{2 \eta}$ such that \cref{lem:gradient_coupling} can be used during all the playing-learning phase, we have $m \ge \frac{T^2}{h^2}$.
 \end{proof}
 
 
