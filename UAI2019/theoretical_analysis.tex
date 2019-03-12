@@ -28,7 +28,7 @@ According to \cref{alg:policy_gradient_uniform_exploration}, the uniform policy 
 \label{eq:total_regret_decomposition}
 \begin{split}
     R_T &\triangleq \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{ A_t} \right] } \\
-    &= \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \left[ {\rvpi^*}^\top \rvr \right]} - \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ r_{A_t} \right] }} \\
+    &= \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ {\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ r_{A_t} \right] }} \\
     &\quad + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr }  - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr } \\
     &\le T^{\frac{2}{3} + \beta} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr }.
 \end{split}
@@ -309,5 +309,25 @@ We first present the main results as shown in \cref{thm:logit_learning_main_resu
 \end{equation*}
 \end{thm}
 \begin{proof}
-    Since $c$    
+    Since $\xi_t = \frac{\log{t}}{t \hat{\Delta}^2\left(t\right)} \ge \frac{\log{t}}{t}$, $\forall t > t_1$, each arm has been pulled at least $\log{t}$ times. Therefore $\forall t > t_2$,
+\begin{equation*}
+\begin{split}
+    \pr{\left\{ \hat{\Delta} \ge \frac{3}{2} \Delta \right\}} \le 
+\end{split}
+\end{equation*}
+So with probability at least $1 - $, $\xi_t \ge \frac{4 \log{t}}{t \Delta^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\log{t}}{\Delta^2}$ times. By Hoeffding's inequality,
+\begin{equation*}
+\begin{split}
+    \pr{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \le \frac{\Delta}{5} \right\}},
+\end{split}
+\end{equation*}
+with probability at least $\frac{2}{t^2}$.
+\begin{equation*}
+\begin{split}
+    &\frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2^2 \\
+    &\quad = \frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
+    &\quad + \left( \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right) \right)^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right) \\
+    &\quad + \frac{1}{2} \left\| \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right\|_2^2
+\end{split}
+\end{equation*}
 \end{proof}

@@ -135,7 +135,7 @@ Our first proposed algorithm is Logit Learning with $\epsilon$-Greedy Exploratio
 		\STATE $\hat{\Delta}_{k}\left(0\right) \gets \min\left\{ 1,  \max\limits_{k^\prime}\left\{ \hat{r}_{k^\prime}\left(0\right) \right\}  - \hat{r}_{k}\left(0\right)\right\} $, $\forall k \in [h]$.
 		\STATE $\tilde{\Delta}_{k}\left(0\right) \gets \min\left\{ 1, \max\limits_{k^\prime}\left\{ o_{k^\prime}\left(0\right) \right\} - o_{k}\left(0\right) \right\}$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\xi_t \gets \frac{\log{t}}{t \hat{\Delta}_{k}^2\left(t\right)}$, $\epsilon_t \gets \min\left\{ \frac{1}{2 h}, \xi_t \right\}$.
+		\STATE $\xi_t \gets \frac{\log{t}}{t \hat{\Delta}^2\left(t\right)}$, $\epsilon_t \gets \min\left\{ \frac{1}{2 h}, \xi_t \right\}$.
 		\STATE $\pi_{k}\left(t\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
 		\STATE $\pi_{k}\left(t\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
 		\STATE $\tilde{\rvpi}\left(t\right) \gets \left( 1 - \epsilon_t \right) \cdot  \rvpi\left(t\right) + \epsilon_t \cdot \gU{\left[ h \right]}$.
