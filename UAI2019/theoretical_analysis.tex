@@ -318,16 +318,27 @@ We first present the main results as shown in \cref{thm:logit_learning_main_resu
 So with probability at least $1 - $, $\xi_t \ge \frac{4 \log{t}}{t \Delta^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\log{t}}{\Delta^2}$ times. By Hoeffding's inequality,
 \begin{equation*}
 \begin{split}
-    \pr{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \le \frac{\Delta}{5} \right\}},
+    \pr{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
 \end{split}
 \end{equation*}
-with probability at least $\frac{2}{t^2}$.
 \begin{equation*}
 \begin{split}
     &\frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2^2 \\
     &\quad = \frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
-    &\quad + \left( \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right) \right)^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right) \\
-    &\quad + \frac{1}{2} \left\| \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right\|_2^2
+    &\qquad + \left( \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right) \right)^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right) \\
+    &\qquad + \frac{1}{2} \left\| \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right\|_2^2 \\
+    &\quad \le \left( 1 - \frac{1}{2 h m } \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
+    &\qquad + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\log{t}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \\
+    &\qquad + \frac{\Delta^4 h}{2 \left( \log{t} \right)^2 }
+\end{split}
+\end{equation*}
+If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \le \frac{\Delta}{5}$, $\forall \log{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
+\begin{equation*}
+\begin{split}
+    &\left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 \\
+    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\log{t}} \\
+    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\log{t}} \\
+    &\quad \le \frac{\Delta}{5}.
 \end{split}
 \end{equation*}
 \end{proof}
