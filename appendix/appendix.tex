@@ -29,7 +29,6 @@
 \def\rvo{{\mathbf{o}}}
 \def\rvone{{\mathbf{1}}}
 \def\rvzero{{\mathbf{0}}}
-\def\rvtilder{{\tilde{\mathbf{r}}}}
 \def\rvhat{{\hat{\mathbf{r}}}}
 
 \def\rvp{{\mathbf{p}}}
@@ -83,20 +82,6 @@
 \appendix
 
 \section{Proofs}
-
-\if0
-
-\begin{defi}
-\label{defi:r_tilde}
-Given the true mean reward vector $\rvr \in \left[ 0, 1 \right]^h$, we define $\rvtilder \triangleq \max\limits_{k^\prime \in [h]}\left\{ r_{k^\prime } \right\} \cdot \rvone - \rvr$. Note that,
-\begin{equation*}
-\begin{split}
-    \rvpi^\top \rvtilder = \max\limits_{k^\prime \in [h]}\left\{ r_{k^\prime }\right\} - \rvpi^\top \rvr.
-\end{split}
-\end{equation*}
-\end{defi}
-
-\fi
 
 \begin{lem}
     Let $\rvo \in \sR^h$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$ at state $\rvs$. Denote $\gH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{h \times h}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. $\forall \rvr \in \left[ 0, 1\right]^h$,
@@ -321,10 +306,10 @@ By the definition of the logit, and the $1$-Lipschitzness of ReLU,
 
 \begin{lem}[Lemma 5 in the paper]
 \label{lem:gradient_lower_bound}
-	Denote $\hat{k}^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{k}\left(t\right) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}\left(t\right)$. If $\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c_t > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
+	Denote $\hat{k}^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{k}\left(t\right) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}\left(t\right)$. If $\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}\left(t\right)}{d \rvw_r(t)} \right\|_2 \ge c_t \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) \right) .
+	\left\| \frac{d\tilde{\ell}\left(t\right)}{d \rvw_r(t)} \right\|_2 \ge c \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) \right) .
 \end{split}
 \end{equation*}
 \end{lem}
@@ -369,19 +354,19 @@ Denote $x \triangleq \rvw_r(0)^\top \rvs \sim \gN(0, \sigma^2)$. Note that $h_{\
 	&\quad = \pi_{\hat{k}^*}(t) \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right).
 \end{split}
 \end{equation*}
-By assumption, if $\pi_{\hat{k}^*}(t) > c_t > 0$, then ,
+By assumption, if $\pi_{\hat{k}^*}(t) > c > 0$, then ,
 \begin{equation*}
 \begin{split}
 	\left| \partial{h_{\hat{k}^*,r}}_{\max}{(0)} - \partial{h_{\hat{k}^*,r}}_{\min}{(0)} \right| &= \left| \sum\limits_{k=1}^{h}{ \left[  \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \cdot v_{\hat{k}^*,k}(t) \right] } \right| \\
 	&= \pi_{\hat{k}^*}(t) \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right) \\
-	&\ge c_t \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right).
+	&\ge c \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right).
 \end{split}
 \end{equation*}
 where $\partial{h_{\hat{k}^*,r}}_{\max}{(0)} = \max\left\{ \partial{h_{\hat{k}^*,r}}{(0)} \right\}$, $\partial{h_{\hat{k}^*,r}}_{\min}{(0)} = \min\left\{ \partial{h_{\hat{k}^*,r}}{(0)} \right\}$ are the maximum and minimum of $\partial{h_{\hat{k}^*,r}}{(0)}$, i.e., the subdifferential of $h_{\hat{k}^*,r}$ at $0$. Now consider \cref{eq:h_auxiliary}, and uniformly randomly generate $x$ in $\left[ -\tau, \tau \right]$, $\forall \tau > 0$, by \cref{lem:non_smooth_convex},
 \begin{equation}
 \label{eq:h_regret_lower_bound}
 \begin{split}
-	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ \left|  h_{\hat{k}^*,r} \right| \ge \frac{c_t\tau}{8} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right) \right\} > \frac{1}{8}.
+	\probability\limits_{x \sim  \gU[-\tau, \tau]}\left\{ \left|  h_{\hat{k}^*,r} \right| \ge \frac{c\tau}{8} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right) \right\} > \frac{1}{8}.
 \end{split}
 \end{equation}
 Finally, $h_{\hat{k}^*,r} \sim \gN\left( 0, \left\| \rvp_{\hat{k}^*, r} \right\|_2^2 \cdot \sigma^2 \right)$, with probability at least $\frac{3}{4}$,
@@ -396,7 +381,7 @@ Combining \cref{eq:gradient_p_lowerbound}, \cref{eq:h_regret_lower_bound} and \c
 \begin{split}
 	\left\| \frac{d\tilde{\ell}\left(t\right)}{d \rvw_r(t)} \right\|_2 &\ge \left\| \rvp_{\hat{k}^*, r}\right\|_2 \\
 	&> \frac{\left| h_{\hat{k}^*,r} \right|}{\sqrt{2 \log{8}} \sigma} \\
-	&\ge \frac{c_t\tau}{8 \sqrt{2 \log{8}} \sigma} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right),
+	&\ge \frac{c\tau}{8 \sqrt{2 \log{8}} \sigma} \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)  \right),
 \end{split}
 \end{equation*}
 with probability at least $\frac{1}{2}  \cdot \frac{1}{8} \cdot \frac{3}{4} $. Taking $\tau = 8 \sqrt{2 \log{8}} \sigma$ completes the proof.
@@ -468,66 +453,65 @@ According to \cref{lem:logit_upper_bound_parameter},
 
 \subsection{One Form}
 
-The gradient with respect to $\rvw_r(t)$ is,
+The policy gradient with respect to $\rvw_r(t)$ is,
 \begin{equation}
 \label{eq:gradient_form_one}
 \begin{split}
-	\frac{d\ell}{d \rvw_r(t)} &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}\left[ \tilde{r}_{i,k} \cdot \frac{d \pi_{i,k}(t)}{d \rvw_r(t)} \right] } \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}\left[ \tilde{r}_{i,k} \cdot \frac{d}{d \rvw_r(t)} \left\{ \frac{\exp\left\{ o_{i,k}(t) \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}}} \right\} \right] } \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}\left[ \tilde{r}_{i,k} \cdot \frac{ \exp\left\{ o_{i,k}(t) \right\} \cdot a_{k,r} \cdot \rvs \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right) }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right)^2 } \right] } \\
-	&\qquad - \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}\left[ \tilde{r}_{i,k} \cdot \frac{ \exp\left\{ o_{i,k}(t) \right\} \cdot \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \cdot a_{k^\prime,r} \cdot \rvs \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right)^2 } \right] } \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k,r} \cdot \pi_{i,k^\prime}(t) } - \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r} \cdot \pi_{i,k^\prime}(t) } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] } } \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{i,k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] } } \\
-	&= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \tilde{r}_{i,k} \cdot \pi_{i,k}(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k,i}(t) } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] } },
+	\frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rvw_r(t)} &=  \sum\limits_{k=1}^{h}\left[ \hat{r}_k\left(t\right) \cdot \frac{d \pi_k(t)}{d \rvw_r(t)} \right]  \\
+	&= \sum\limits_{k=1}^{h}\left[ \hat{r}_k\left(t\right) \cdot \frac{d}{d \rvw_r(t)} \left\{ \frac{\exp\left\{ o_k(t) \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}}} \right\} \right] \\
+	&= \sum\limits_{k=1}^{h}\left[ \hat{r}_k\left(t\right) \cdot \frac{ \exp\left\{ o_k(t) \right\} \cdot a_{k,r} \cdot \rvs \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}} \right) }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}} \right)^2 } \right] \\
+	&\quad -\sum\limits_{k=1}^{h}\left[ \hat{r}_k\left(t\right) \cdot \frac{ \exp\left\{ o_k(t) \right\} \cdot \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}} \cdot a_{k^\prime,r} \cdot \rvs \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}} \right)^2 } \right] \\
+	&= \sum\limits_{k=1}^{h}{ \left[ \hat{r}_k\left(t\right) \cdot \pi_k(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k,r} \cdot \pi_{k^\prime}(t) } - \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r} \cdot \pi_{k^\prime}(t) } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] } \\
+	&= \sum\limits_{k=1}^{h}{ \left[ \hat{r}_k\left(t\right) \cdot \pi_k(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] } \\
+	&= \sum\limits_{k=1}^{h}{ \left[ \hat{r}_k\left(t\right) \cdot \pi_k(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k}(t) } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] },
 \end{split}
 \end{equation}
-where $v_{k^\prime,k,i}(t)$ is defined as,
+where $v_{k^\prime,k}(t)$ is defined as,
 \begin{equation*}
-	v_{k^\prime,k,i}(t) = \begin{cases}
-    1 - \pi_{i,k^\prime}(t), & \text{if $k^\prime = k$}, \\
-    - \pi_{i,k^\prime}(t), & \text{otherwise}.
+	v_{k^\prime,k}(t) = \begin{cases}
+    1 - \pi_{k^\prime}(t), & \text{if $k^\prime = k$}, \\
+    - \pi_{k^\prime}(t), & \text{otherwise}.
   \end{cases}
 \end{equation*}
 
-\subsubsection{Another Form}
+\subsection{Another Form}
 
 First note that, $\forall k \in [h]$,
 \begin{equation*}
 \begin{split}
-    \frac{d \rvpi(t)^\top \rvtilder_i}{d o_{i,k}(t)} &= \sum\limits_{k^\prime = 1}^{h}{ \tilde{r}_{i, k^\prime} \cdot \frac{d \pi_{i,k^\prime}(t) }{d o_{i,k}(t)}} \\
-    &= \sum\limits_{k^\prime = 1}^{h}{ \tilde{r}_{i, k^\prime} \cdot \frac{d }{d o_{i,k}(t)}} \left\{ \frac{\exp\left\{ o_{i,k^\prime}(t) \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}}} \right\} \\
-    &= \tilde{r}_{i, k} \cdot \frac{ \exp\left\{ o_{i,k}(t) \right\} \cdot \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right) - \exp\left\{ o_{i,k}(t) \right\} \cdot \exp\left\{ o_{i,k}(t) \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right)^2 } \\
-    &\quad - \sum\limits_{k^\prime \not= k}{ \tilde{r}_{i, k^\prime} \cdot \frac{\exp\left\{ o_{i,k^\prime}(t) \right\} \cdot \exp\left\{ o_{i,k}(t) \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime}(t) \right\}} \right)^2 }} \\
-    &= \tilde{r}_{i, k} \cdot \left( \pi_{i,k}(t) - \pi_{i,k}(t)^2 \right) - \sum\limits_{k^\prime \not= k}{ \tilde{r}_{i, k^\prime} \cdot \pi_{i,k^\prime}(t) \cdot \pi_{i,k}(t) } \\
-    &= \pi_{i,k}(t) \cdot \left( \tilde{r}_{i, k} - \rvpi(t)^\top \rvtilder_i \right).
+    \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d o_k(t)} &= \sum\limits_{k^\prime = 1}^{h}{ \hat{r}_{k^\prime}\left(t\right) \cdot \frac{d \pi_{k^\prime}(t) }{d o_k(t)}} \\
+    &= \sum\limits_{k^\prime = 1}^{h}{ \hat{r}_{k^\prime}\left(t\right) \cdot \frac{d }{d o_k(t)}} \left\{ \frac{\exp\left\{ o_{k^\prime}(t) \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}}} \right\} \\
+    &= \hat{r}_{k}\left(t\right) \cdot \frac{ \exp\left\{ o_k(t) \right\} \cdot \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}} \right) - \exp\left\{ o_k(t) \right\} \cdot \exp\left\{ o_k(t) \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}} \right)^2 } \\
+    &\quad - \sum\limits_{k^\prime \not= k}{ \hat{r}_{k^\prime}\left(t\right) \cdot \frac{\exp\left\{ o_{k^\prime}(t) \right\} \cdot \exp\left\{ o_k(t) \right\} }{ \left( \sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{k^\prime}(t) \right\}} \right)^2 }} \\
+    &= \hat{r}_{k}\left(t\right) \cdot \left( \pi_k(t) - \pi_k(t)^2 \right) - \sum\limits_{k^\prime \not= k}{ \hat{r}_{k^\prime}\left(t\right) \cdot \pi_{k^\prime}(t) \cdot \pi_k(t) } \\
+    &= \pi_k(t) \cdot \left( \hat{r}_{k}\left(t\right) - \rvpi(t)^\top \hat{\rvr}\left(t\right) \right).
 \end{split}
 \end{equation*}
 
-\noindent For the vector derivative, we have,
+\noindent Using the vector derivative notations,
 \begin{equation*}
 \begin{split}
-    \frac{d \rvpi(t)^\top \rvtilder_i}{d \rvo_{i}(t)} &= \left( \Delta\left( \rvpi(t) \right) - \rvpi(t) \rvpi(t)^\top \right) \rvtilder_i .
+    \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rvo(t)} &= \left( \Delta\left( \rvpi(t) \right) - \rvpi(t) \rvpi(t)^\top \right) \hat{\rvr}\left(t\right).
 \end{split}
 \end{equation*}
 
 \noindent Also note that, $\forall r \in [m]$, $\forall k \in [h]$,
 \begin{equation*}
 \begin{split}
-    \frac{d o_{i,k}(t)}{d \rvw_r(t)} &= a_{k,r} \cdot \frac{d u_{i,r}(t)}{d \rvw_r(t)} \\
+    \frac{d o_k(t)}{d \rvw_r(t)} &= a_{k,r} \cdot \frac{d u_{r}(t)}{d \rvw_r(t)} \\
     &= a_{k,r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs.
 \end{split}
 \end{equation*}
 
-\noindent Then the gradient with respect to $\rvw_r(t)$ is,
+\noindent Thus the gradient with respect to $\rvw_r(t)$ is,
 \begin{equation}
 \label{eq:gradient_form_two}
 \begin{split}
-    \frac{d\ell}{d \rvw_r(t)} &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \frac{d \rvpi(t)^\top \rvtilder_i}{d \rvw_r(t)} } \\
-    &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \frac{d \rvpi(t)^\top \rvtilder_i}{d o_{i,k}(t)}\cdot \frac{d o_{i,k}(t)}{d \rvw_r(t)} } } \\
-    &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \sum\limits_{k=1}^{h}{ \left[ \pi_{i,k}(t) \cdot \left( \tilde{r}_{i, k} - \rvpi(t)^\top \rvtilder_i \right) \cdot a_{k,r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs  \right] }  } \\
-    &= \frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left[ \rvtilder_i^\top \left( \Delta\left( \rvpi(t) \right) - \rvpi(t) \rvpi(t)^\top \right) \rva_{\cdot, r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs  \right] },
+    \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rvw_r(t)} &=  \sum\limits_{k=1}^{h}{ \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d o_k(t)} \cdot \frac{d o_k(t)}{d \rvw_r(t)} }  \\
+    &= \sum\limits_{k=1}^{h}{ \left[ \pi_k(t) \cdot \left( \hat{r}_{k}\left(t\right) - \rvpi(t)^\top \hat{\rvr}\left(t\right) \right) \cdot a_{k,r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs  \right] } \\
+    &= \hat{\rvr}^\top \left( \Delta\left( \rvpi(t) \right) - \rvpi(t) \rvpi(t)^\top \right) \rva_{\cdot, r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs,
 \end{split}
 \end{equation}
-where $\rva_{\cdot, r} \in \sR^h$ refers to $\rva_{\cdot, r} \triangleq \left( a_{1,r}, a_{2,r}, \dots, a_{h,r} \right)^\top$. It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
+where $\rva_{\cdot, r} \triangleq \left( a_{1,r}, a_{2,r}, \dots, a_{h,r} \right)^\top \in \sR^h$. It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
 
 \end{document}
