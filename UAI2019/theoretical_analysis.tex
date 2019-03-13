@@ -240,58 +240,58 @@ Now by the key insight of the recent progresses of the over-parameterized neural
 
 \begin{lem}
 \label{lem:gradient_lower_bound}
-	Denote $\hat{k}^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{k}\left(t\right) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}\left(t\right)$. If $\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c_t > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
+	Denote $\hat{k}^*(t) \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{k}\left(t\right) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}\left(t\right)$. If $\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}\left(t\right)}{d \rvw_r(t)} \right\|_2 \ge c_t \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) \right) .
+	\left\| \frac{d\tilde{\ell}\left(t\right)}{d \rvw_r(t)} \right\|_2 \ge c \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) \right) .
 \end{split}
 \end{equation*}
 \end{lem}
 
-\cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\}$, with enough exploration of the suggorate optimal action ($\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c_t > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
+\cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\}$, with enough exploration of the suggorate optimal action ($\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
 
-\subsubsection{Exploration in Policy Learning}
+\subsubsection{Exploration of the Optimal Action}
 \label{subsubsec:exploration_in_policy_learning}
 
-In \cref{subsec:policy_gradient}, it is claimed that the vanilla policy gradient method will suffer the lack of exploration issue. Now we provide some intuitions. Consider the derivative of the true expected loss with respect to the logits,
+In \cref{subsec:policy_gradient}, it is claimed that the vanilla policy gradient will suffer the lack of exploration issue. Consider the logit derivative of the true mean reward,
 \begin{equation}
 \label{eq:logit_derivative}
 \begin{split}
-    \frac{d \rvpi_i\left( \rvo \right)^\top \rvtilder_i}{d \rvo} = \left[ \Delta\left( \rvpi_i \right) - \rvpi_i \rvpi_i^\top \right] \rvtilder_i,
+    \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo} = \left[ \Delta\left( \rvpi \right) - \rvpi \rvpi^\top \right] \rvr,
 \end{split}
 \end{equation}
-where $\Delta\left( \rvpi_i \right)$ is a diagonal matrix with $\Delta\left( \rvpi_i \right)_{k,k} = \pi_{i,k}$, $\forall k \in [h]$. For the $k$th action, the derivative value is $\pi_{i,k} \cdot \left( \tilde{r}_{i,k} - \rvpi_i^\top \rvtilder_i \right)$. Suppose the $k$th action is worth learning, i.e, $\rvpi_i^\top \rvtilder_i - \tilde{r}_{i,k} > 0$ is large, meaning this action will occur loss $\tilde{r}_{i,k}$ much smaller than the expected loss of the current policy, so the agent should increase its action logit. But if $\pi_{i,k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{i,k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{i,k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
+where $\Delta\left( \rvpi \right) \in \sR^{h \times h}$ is a diagonal matrix with $\Delta\left( \rvpi \right)_{k,k} = \pi_{k}$, $\forall k \in [h]$. Suppose the $k$th action is worth learning, i.e, $r_k - \rvpi^\top \rvr > 0$ is large, meaning this action has mean reward $r_k$ much larger than the expected mean reward of the current policy, so the agent should increase its action logit. But if $\pi_{k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
 
-\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{i,k}(t) > c_t > 0$ should hold for each time step $t$, where $c_t$ is a constant (cannot be something like $\frac{1}{t^\alpha}$, $\alpha> 0$). In particular, to learn an optimal policy, $\pi_{i,k_i^*}(t) > c > 0$ should be guaranteed, $\forall t \ge 0$, where $\tilde{r}_{i,k_i^*} = 0$, and $c \triangleq \min\limits_{t \ge 0}{\left\{  c_t \right\}}$.
+\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{k}\left(t\right) > c > 0$ should hold for some constant $c$. In particular, to learn an optimal policy, $\pi_{k^*}(t) > c > 0$ should be guaranteed, $\forall t \ge 0$, where $r_{k^*} = \max\limits_{k \in \left[ h \right]}\left\{ r_k \right\}$.
 
-Consider policy update using the logit derivatives \cref{eq:logit_derivative} with the true loss as the objective. With learning rate $\eta > 0$, for each action $k \in [h]$, the logit increment between two consecutive time steps is,
+Consider policy update using \cref{eq:logit_derivative}. $\forall \eta > 0$, $\forall k \in [h]$,
 \begin{equation*}
 \label{eq:logit_increment_logit_space}
 \begin{split}
 \small
-    o\left( t+1 \right)_{k} - o\left( t \right)_{k} = \eta \cdot \pi\left( \rvo(t)\right)_{i,k} \cdot \left( \rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} \right),
+    o_{k}\left( t+1 \right) - o_{k}\left( t \right) = \eta \cdot \pi_{k}\left( \rvo(t)\right) \cdot \left( r_{k} - \rvpi\left( \rvo(t) \right)^\top \rvr \right),
 \end{split}
 \end{equation*}
-which mean as long as $\pi\left( \rvo(t)\right)_{i,k} > 0$, for any valuable action $k$ with its true action loss smaller than the current policy expected loss, i.e., $\rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} > 0$, at the next time step $t+1$, the policy logit for this action will increase. While for any bad actions with $\rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k} < 0$, their logits will decrease.
+which mean as long as $\pi_{k}\left( \rvo(t)\right) > 0$, for any valuable action $k$ with $r_k -  \rvpi\left( \rvo(t) \right)^\top \rvr > 0$, the action logit will increase. While for any bad actions with $r_k -  \rvpi\left( \rvo(t) \right)^\top \rvr < 0$, their logits will decrease.
 
-Now consider the initialized policy $\rvpi_i\left( \rvo(0) \right)$, which is (very close to) the uniform policy, with $\pi\left( \rvo(0)\right)_{i,k_i^*} \approx \frac{1}{h} \in \Omega(1)$. Also note that $\rvpi_i\left( \rvo(t) \right)^\top \rvtilder_i - \tilde{r}_{i,k_i^*}$ is larger than any other action $k$, which is consistent with intuition because the optimal action is the most valuable for learning. With the same learning rate, the optimal action logit will have the largest positive increment than all the other suboptimal actions. After the softmax transform, the optimal action probability will be larger than its previous value. 
+Now consider the randomly initialized policy $\rvpi\left( \rvo(0) \right)$, which is (very close to) the uniform policy, with $\pi_{k^*}\left( \rvo(0)\right) \approx \frac{1}{h} \in \Omega(1)$. Also note $r_{k^*} - \rvpi\left( \rvo(0) \right)^\top \rvr$ is larger than any other action $k$, because $k^*$ is the the optimal action. Therefore, the optimal action logit will have the largest positive increment than all the other suboptimal actions. After the softmax transform, the optimal action probability will be larger than its previous value. 
 \begin{lem}
 \label{lem:optimal_probability_increse_logit_space}
 $\forall t \ge 0$,
 \begin{equation*}
-    \pi\left( \rvo(t+1)\right)_{i,k_i^*} \ge \pi\left( \rvo(t)\right)_{i,k_i^*} \in \Omega(1).
+    \pi_{k^*}\left( \rvo(t+1)\right) \ge \pi_{k^*}\left( \rvo(t)\right) \in \Omega(1).
 \end{equation*}
 \end{lem}
 
-With this result in mind, \cref{alg:policy_gradient_uniform_exploration} actually does similar things. First, after the exploring phase, it obtains a good estimation $\hat{\rvtilder}_i$ of the true loss $\rvtilder_i$, thus the surrogate expected loss will be closed to the true expected loss. Second, the initialized policy $\rvpi_i\left( \rmW(0) \right)$ is very closed to the uniform policy with $\pi\left( \rmW(0)\right)_{i, \hat{k}_i^*} \approx \frac{1}{h} \in \Omega(1)$. Third, since the policy gradient update is restrained around initialization \cref{lem:gradient_coupling}, the policy gradient updates behave similarly with the logit derivative updates, after each policy gradient update, the optimal action logit will increase more than any other  suboptimal actions, which implies similar results with \cref{lem:optimal_probability_increse_logit_space} as follows,
+\cref{alg:policy_gradient_uniform_exploration} guarantees similar results with \cref{lem:optimal_probability_increse_logit_space}. First, with enough exploration, $\hat{\rvr}\left(t\right)$ is close to $\rvr$, thus $\rvpi\left(t\right)^\top \hat{\rvr}\left(t\right)$ is close to $\rvpi\left(t\right)^\top \rvr$. Second, $\pi_{\hat{k}^*\left(t\right)}\left( \rmW(0)\right) \approx \frac{1}{h} \in \Omega(1)$. Third, since the policy gradient update is around the initialization by \cref{lem:gradient_coupling}, the policy gradient updates behave similarly with the logit derivative updates, which makes the the optimal action logit always large comparing with the suboptimal actions.
 \begin{lem}
 \label{lem:optimal_probability_increse_parameter_space}
-$\forall t \ge 0$,
+$\forall t \ge 0$, \cref{alg:policy_gradient_uniform_exploration} satisfies,
 \begin{equation*}
-    \pi\left( \rmW(t+1)\right)_{i,\hat{k}_i^*} \ge \pi\left( \rmW(t)\right)_{i,\hat{k}_i^*} \in \Omega(1).
+    \pi_{\hat{k}^*\left(t\right)}\left( \rmW(t)\right) \in \Omega(1).
 \end{equation*}
 \end{lem}
-By \cref{lem:optimal_probability_increse_parameter_space}, we can safely replace the $c$ and $c_t$ values in the main result \cref{thm:policy_gradient_main_result} and all the other intermediate lemmas and theorems, without incurring any additional regret dependent on $T$.
+By \cref{lem:optimal_probability_increse_parameter_space}, we can replace the $c$ in \cref{thm:policy_gradient_main_result} without incurring any additional regret dependent on $T$.
 
 \subsection{LOGIT LEARNING}
 \label{subsec:theoretical_analyses_logit_learning}
