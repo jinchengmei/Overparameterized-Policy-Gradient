@@ -130,7 +130,7 @@ Note that according to the definition of $\delta_t$,
 \begin{equation*}
     \left( {\rvpi^*\left(t-1\right)} - \rvpi\left( \rmW(t-1) \right) \right)^\top \hat{\rvr}\left(t-1\right) = \delta_{t-1}.
 \end{equation*}
-By \cref{lem:parameter_smoothness}, $\eta = \frac{1}{2 h m}$, and \cref{lem:gradient_lower_bound},
+By \cref{lem:empirically_expected_reward_parameter_smoothness}, $\eta = \frac{1}{2 h m}$, and \cref{lem:gradient_lower_bound},
 \begin{equation*}
 \begin{split}
     &\left( \rvpi\left( \rmW(t-1) \right) - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t-1\right) \\
@@ -225,13 +225,13 @@ where $\rvw_r(t)$ is the $r$th row vector of $\rmW(t)$.
 
 \cref{lem:gradient_coupling} implies that for bounded numbers of policy gradient updates, the signs of the ReLUs will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}$. Combine \cref{lem:logit_smoothness} with \cref{lem:gradient_coupling}, we have the smoothness property of the surrogate expected loss in the parameter space.
 \begin{lem}
-\label{lem:parameter_smoothness}
+\label{lem:empirically_expected_reward_parameter_smoothness}
     $\rmW(t+1) = \rmW(t) + \eta \cdot \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)}$. $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation}
 \label{eq:parameter_smoothness}
 \begin{split}
-    \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) &\le \rvpi\left( \rmW(t+1) \right)^\top \hat{\rvr}\left(t\right) \\
-    &\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\! - \left( \eta - h m \eta^2 \right) \cdot \left\| \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)} \right\|_F^2.
+    &\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) - \rvpi\left( \rmW(t+1) \right)^\top \hat{\rvr}\left(t\right) \\
+    &\quad \le - \left( \eta - h m \eta^2 \right) \cdot \left\| \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)} \right\|_F^2.
 \end{split}
 \end{equation}
 \end{lem}
@@ -248,7 +248,7 @@ Now by the key insight of the recent progresses of the over-parameterized neural
 \end{equation*}
 \end{lem}
 
-\cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\}$, with enough exploration of the suggorate optimal action ($\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
+\cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\}$, with enough exploration of the suggorate optimal action ($\pi_{\hat{k}^*(t)}\left(\rmW(t)\right) > c > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:empirically_expected_reward_parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
 
 \subsubsection{Exploration of the Optimal Action}
 \label{subsubsec:exploration_in_policy_learning}
@@ -296,7 +296,9 @@ By \cref{lem:optimal_probability_increse_parameter_space}, we can replace the $c
 \subsection{LOGIT LEARNING}
 \label{subsec:theoretical_analyses_logit_learning}
 
-We first present the main results as shown in \cref{thm:logit_learning_main_result}, and then discuss the detailed proof ideas and intuitions.
+It seems difficult to improve \cref{thm:policy_gradient_main_result}, as all the three parts of the regret are almost balanced, i.e., uniform exploration $\left( T^{\frac{2}{3} + \beta} \right)$, estimation error $\left( T^{\frac{2}{3} + \beta} \right)$, and the cumulative expected loss of neural network policies $\left( T^{\frac{2}{3} - \frac{\beta}{2}} \right)$. \cref{alg:policy_gradient_uniform_exploration} learns policies in the primal policy space by maximizing $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$. And it is not necessary that $\rvo\left( \rmW(t)\right)$ is close to $\hat{\rvr}\left(t\right)$, due to the homogeneity invariant property of the softmax. To show the convergence of $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$, it requires every action to be pulled many times, leading to the undesirable results.
+
+We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2$. Although the logit learning is not as practical as the policy gradient, the results are better, as shown in \cref{thm:logit_learning_main_result}.
 
 \begin{thm}
 \label{thm:logit_learning_main_result}
@@ -321,6 +323,7 @@ So with probability at least $1 - $, $\xi_t \ge \frac{4 \log{t}}{t \Delta^2}$, w
     \pr{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
 \end{split}
 \end{equation*}
+According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
 \begin{equation*}
 \begin{split}
     &\frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2^2 \\
@@ -362,7 +365,18 @@ Since $\frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \in \left(0, 1\right)$, after co
     &\left\| \rvo\left( \rmW(t) \right) - \rvr \right\|_\infty \\
     &\quad \le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_\infty + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
     &\quad \le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
-    &\quad \le \frac{2 \Delta}{5}.
+    &\quad \le \frac{2 \Delta}{5}. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
+
+\begin{lem}
+\label{lem:logit_l2_loss_parameter_smoothness}
+$\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
+\begin{equation*}
+\begin{split}
+    &\frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 \\
+    &\quad \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2.
+\end{split}
+\end{equation*}
+\end{lem}

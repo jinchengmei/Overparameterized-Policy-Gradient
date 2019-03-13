@@ -281,7 +281,7 @@ By the definition of the logit, and the $1$-Lipschitzness of ReLU,
 \end{proof}
 
 \begin{lem}[Lemma 3 in the paper]
-\label{lem:parameter_smoothness}
+\label{lem:empirically_expected_reward_parameter_smoothness}
     $\rmW(t+1) = \rmW(t) + \eta \cdot \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)}$. $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation*}
 \label{eq:parameter_smoothness}
@@ -428,7 +428,8 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{proof}
 
 \begin{lem}
-$\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$, where $\eta = \frac{1}{h m}$. $\forall t < \frac{\tau}{2 \eta}$,
+\label{lem:logit_l2_loss_parameter_smoothness}
+$\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
 \begin{equation*}
 \begin{split}
     \frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2.
