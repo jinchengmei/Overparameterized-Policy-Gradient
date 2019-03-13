@@ -277,7 +277,7 @@ which mean as long as $\pi_{k}\left( \rvo(t)\right) > 0$, for any valuable actio
 Now consider the randomly initialized policy $\rvpi\left( \rvo(0) \right)$, which is (very close to) the uniform policy, with $\pi_{k^*}\left( \rvo(0)\right) \approx \frac{1}{h} \in \Omega(1)$. Also note $r_{k^*} - \rvpi\left( \rvo(0) \right)^\top \rvr$ is larger than any other action $k$, because $k^*$ is the the optimal action. Therefore, the optimal action logit will have the largest positive increment than all the other suboptimal actions. After the softmax transform, the optimal action probability will be larger than its previous value. 
 \begin{lem}
 \label{lem:optimal_probability_increse_logit_space}
-$\forall t \ge 0$,
+Policy update using \cref{eq:logit_derivative} satisfies, $\forall t \ge 0$,
 \begin{equation*}
     \pi_{k^*}\left( \rvo(t+1)\right) \ge \pi_{k^*}\left( \rvo(t)\right) \in \Omega(1).
 \end{equation*}
@@ -286,7 +286,7 @@ $\forall t \ge 0$,
 \cref{alg:policy_gradient_uniform_exploration} guarantees similar results with \cref{lem:optimal_probability_increse_logit_space}. First, with enough exploration, $\hat{\rvr}\left(t\right)$ is close to $\rvr$, thus $\rvpi\left(t\right)^\top \hat{\rvr}\left(t\right)$ is close to $\rvpi\left(t\right)^\top \rvr$. Second, $\pi_{\hat{k}^*\left(t\right)}\left( \rmW(0)\right) \approx \frac{1}{h} \in \Omega(1)$. Third, since the policy gradient update is around the initialization by \cref{lem:gradient_coupling}, the policy gradient updates behave similarly with the logit derivative updates, which makes the the optimal action logit always large comparing with the suboptimal actions.
 \begin{lem}
 \label{lem:optimal_probability_increse_parameter_space}
-$\forall t \ge 0$, \cref{alg:policy_gradient_uniform_exploration} satisfies,
+\cref{alg:policy_gradient_uniform_exploration} satisfies, $\forall t \ge 0$,
 \begin{equation*}
     \pi_{\hat{k}^*\left(t\right)}\left( \rmW(t)\right) \in \Omega(1).
 \end{equation*}
