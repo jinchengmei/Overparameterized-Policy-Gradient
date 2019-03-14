@@ -302,7 +302,7 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
 
 \begin{thm}
 \label{thm:logit_learning_main_result}
-    Given value neural networks as shown in \cref{fig:nn_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
+    Given value neural networks as shown in \cref{fig:nn_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$, $\alpha > 3$, $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
 \begin{equation*}
 \small
 \begin{split}
@@ -311,10 +311,11 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
 \end{equation*}
 \end{thm}
 \begin{proof}
-    Since $\xi_t = \frac{\log{t}}{t \hat{\Delta}^2\left(t\right)} \ge \frac{\log{t}}{t}$, $\forall t > t_1$, each arm has been pulled at least $\log{t}$ times. Therefore $\forall t > t_2$,
+    By \citep{seldin2017improved},
+    $\forall t \ge t_1 \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta_k^4 \ln{h}} \right\}}$,
 \begin{equation*}
 \begin{split}
-    \pr{\left\{ \hat{\Delta} \ge \frac{3}{2} \Delta \right\}} \le 
+    \pr{\left\{ \hat{\Delta}_k\left(t\right) \ge \frac{3}{2} \Delta_k \right\}} \le + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}
 \end{split}
 \end{equation*}
 So with probability at least $1 - $, $\xi_t \ge \frac{4 \log{t}}{t \Delta^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\log{t}}{\Delta^2}$ times. By Hoeffding's inequality,

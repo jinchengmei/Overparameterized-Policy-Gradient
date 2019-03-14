@@ -128,7 +128,7 @@ Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Explora
 	\caption{Logit Learning with $\varepsilon$-Greedy Exploration}
 	\label{alg:logit_learning_eps_greedy_exploration}
 	\begin{algorithmic}
-		\STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$.
+		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
 		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$.
 		\STATE $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
 		\STATE $\hat{r}_{k}\left(0\right) \gets 0$, $n_{k}\left(0\right) \gets 0$, $\forall k \in [h]$.
