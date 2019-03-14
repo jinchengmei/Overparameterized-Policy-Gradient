@@ -121,32 +121,36 @@ Unfortunately, the vanilla policy gradient often suffers the ``lack of explorati
 \subsection{LOGIT LEARNING}
 \label{subsec:logit_learning}
 
-Our first proposed algorithm is Logit Learning with $\epsilon$-Greedy Exploration, as shown in \cref{alg:logit_learning_eps_greedy_exploration}. After the random initialization, at each time step $t$, the agent selects the action with the largest logit with probability $1 - \epsilon_t$, and it uniformly randomly select actions with the other probability $\epsilon_t$. After taking action and observing rewards, the agent improves its strategies by minimizing the value loss objective $\frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2$, where $\hat{\rvr}\left(t\right)$ is the empirical mean reward estimated from sampled rewards up to step $t$. In each iteration, the agent only update its value neural network using one gradient descent, therefore the logit learning is in an online fashion.
+Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Exploration, as shown in \cref{alg:logit_learning_eps_greedy_exploration}. After the random initialization, at each time step $t$, the agent selects the action with the largest logit with probability $1 - \varepsilon_t$, and it uniformly randomly select actions with the other probability $\varepsilon_t$. After taking action and observing rewards, the agent improves its strategies by minimizing the value loss objective $\frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2$, where $\hat{\rvr}\left(t\right)$ is the empirical mean reward estimated from sampled rewards up to step $t$. In each iteration, the agent only update its value neural network using one gradient descent, therefore the logit learning is in an online fashion.
 
 
 \begin{algorithm}[t]
-	\caption{Logit Learning with $\epsilon$-Greedy Exploration}
+	\caption{Logit Learning with $\varepsilon$-Greedy Exploration}
 	\label{alg:logit_learning_eps_greedy_exploration}
 	\begin{algorithmic}
 		\STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$.
 		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$.
 		\STATE $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
 		\STATE $\hat{r}_{k}\left(0\right) \gets 0$, $n_{k}\left(0\right) \gets 0$, $\forall k \in [h]$.
-		\STATE $\hat{\Delta}_{k}\left(0\right) \gets \min\left\{ 1,  \max\limits_{k^\prime}\left\{ \hat{r}_{k^\prime}\left(0\right) \right\}  - \hat{r}_{k}\left(0\right)\right\} $, $\forall k \in [h]$.
-		%\STATE $\tilde{\Delta}_{k}\left(0\right) \gets \min\left\{ 1, \max\limits_{k^\prime}\left\{ o_{k^\prime}\left(0\right) \right\} - o_{k}\left(0\right) \right\}$, $\forall k \in [h]$.
+		\STATE $\ucb_k\left(0\right) \gets 1$, $\lcb_k\left(0\right) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\xi_t \gets \frac{\log{t}}{t \hat{\Delta}^2\left(t\right)}$, $\epsilon_t \gets \min\left\{ \frac{1}{2 h}, \xi_t \right\}$.
+		\STATE $\hat{\Delta}_{k}\left(t\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{k^\prime}\left(t\right) \right\}  - \lcb_{k}\left(t\right)\right\} $, $\forall k \in [h]$.
+		\STATE $\xi_k\left(t\right) \gets \frac{\beta \log{t}}{t \hat{\Delta}_k^2\left(t\right)}$, $\forall k \in [h]$.
+		\STATE $\varepsilon_k\left(t\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_k\left(t\right) \right\}$, $\forall k \in [h]$.
 		\STATE $\pi_{k}\left(t\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
 		\STATE $\pi_{k}\left(t\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
-		\STATE $\tilde{\rvpi}\left(t\right) \gets \left( 1 - \epsilon_t \right) \cdot  \rvpi\left(t\right) + \epsilon_t \cdot \gU{\left[ h \right]}$.
+		\STATE $\tilde{\rvpi}_k\left(t\right) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_k\left(t\right)} \right) \cdot  \rvpi\left(t\right) + \varepsilon_k\left(t\right)$, $\forall k \in [h]$.
 		\STATE Sample action $A_{t} \sim \tilde{\rvpi}\left(t\right)\left(\cdot \middle| \rvs \right)$.
 		\STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{ A_{t}}\left(t\right) \right)$.
+		\STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
 		\STATE $n_{A_{t}}\left(t+1\right) \gets n_{ A_{t}}\left(t\right) + 1$.
 		\STATE $\hat{r}_{A_{t}}\left(t+1\right) \gets \frac{n_{ A_{t}}\left(t\right) \cdot \hat{r}_{A_{t}}\left(t\right) + R_{A_{t}}\left(n_{A_{t}}\left(t\right)\right) }{n_{ A_{t}}\left(t+1\right)}$.
 		\STATE $n_{k}\left(t+1\right) \gets n_{ k}\left(t\right)$, $\forall k \not= A_t$.
 		\STATE $\hat{r}_{k}\left(t+1\right) \gets \hat{r}_{k}\left(t\right)$, $\forall k \not= A_t$.
-		\STATE $\hat{\Delta}_{k}\left(t+1\right) \gets \min\left\{ 1,  \max\limits_{k^\prime}\left\{ \hat{r}_{k^\prime}\left(t+1\right) \right\}  - \hat{r}_{k}\left(t+1\right)\right\} $, $\forall k \in [h]$.
-		\STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
+		\STATE $\ucb_{A_t}\left(t+1\right) \gets \min{\left\{ 1, \hat{r}_{A_{t}}\left(t+1\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{A_t}\left(t+1\right)}}\right\}}$.
+		\STATE $\lcb_{A_t}\left(t+1\right) \gets \max{\left\{ 0, \hat{r}_{A_{t}}\left(t+1\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{A_t}\left(t+1\right)}}\right\}}$.
+		\STATE $\ucb_{k}\left(t+1\right) \gets \ucb_{k}\left(t\right)$, $\forall k \not= A_t$.
+		\STATE $\lcb_{k}\left(t+1\right) \gets \lcb_{k}\left(t\right)$, $\forall k \not= A_t$.
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
