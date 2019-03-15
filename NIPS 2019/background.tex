@@ -44,9 +44,9 @@ The policy network differs the value network with one additional softmax transfo
 %Both the value and the policy neural networks take the state feature  $\rvs_i \in \sR^d$ as the input. Then the networks calculate the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is then calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. The value neural network outputs the logit vector $\rvo_i$. While the policy neural network output probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right) = f\left( \rmA \sigma\left( \rmW \rvs_i \right) \right)$. 
 
 \begin{figure}[t]
-	\vskip 0.2in
+	%\vskip 0.2in
 	\begin{center}
-		\centerline{\includegraphics[width=\columnwidth]{nn_policy_value_vertical.pdf}}
+		\centerline{\includegraphics[width=0.7\columnwidth]{nn_policy_value_vertical.pdf}}
 		\caption{Policy neural network and value neural network.}
 		\label{fig:nn_policy_value}
 	\end{center}
