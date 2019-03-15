@@ -98,8 +98,8 @@ The true policy gradient norm is upper bounded by the empirically expected rewar
 After $t$ times of gradient updates, the distance between $\rvw_r(t)$ and $\rvw_r(0)$ is also upper bounded,
 \begin{equation*}
 \begin{split}
-	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d \rvpi\left( \rmW(s) \right)^\top \hat{\rvr}\left(s\right)}{d \rvw_r(s)} \right\|_2} \\
-	&\le 2 \eta \cdot \sum\limits_{s=0}^{t-1}{ \rvpi\left(\rmW(s)\right)^\top \hat{\rvr}\left(s\right) } \\
+	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d \rvpi\left( \rmW_s \right)^\top \hat{\rvr}_s}{d \rvw_r(s)} \right\|_2} \\
+	&\le 2 \eta \cdot \sum\limits_{s=0}^{t-1}{ \rvpi\left(\rmW_s\right)^\top \hat{\rvr}_s } \\
 	&\le 2 \eta t .
 \end{split}
 \end{equation*}
@@ -139,12 +139,11 @@ which implies if $\left| \rvw_r(0)^\top \rvs \right| > \tau$, then,
    Let $\rvr = - \hat{\rvr}_t$ in \cref{lem:logit_smoothness}. By \cref{lem:inner_product_logit_difference_logit_derivative} and \cref{lem:logit_upper_bound_parameter},
 \begin{equation*}
 \begin{split}
-    &\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t - \rvpi\left( \rmW_{t+1} \right)^\top \hat{\rvr}_t \\
-    &\quad = \rvpi\left( \rmW_{t+1} \right)^\top \left[ - \hat{\rvr}_t \right] - \rvpi\left( \rmW_t \right)^\top \left[ - \hat{\rvr}_t \right]  \\
-    &\quad = \rvpi\left( \rvo_{t+1} \right)^\top \left[ - \hat{\rvr}_t \right] - \rvpi\left( \rvo_t \right)^\top \left[ - \hat{\rvr}_t \right] \\
-    &\quad \le \left\langle - \frac{d \rvpi\left( \rvo_t \right)^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle + \left\| \rvo_{t+1} - \rvo_t  \right\|_2^2 \\
-    &\quad \le - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + h m \left\| \rmW_{t+1} - \rmW_t \right\|_F^2 \\
-    &\quad = - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + h m \eta^2 \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2. \qedhere
+    \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t - \rvpi\left( \rmW_{t+1} \right)^\top \hat{\rvr}_t &= \rvpi\left( \rmW_{t+1} \right)^\top \left[ - \hat{\rvr}_t \right] - \rvpi\left( \rmW_t \right)^\top \left[ - \hat{\rvr}_t \right]  \\
+    &= \rvpi\left( \rvo_{t+1} \right)^\top \left[ - \hat{\rvr}_t \right] - \rvpi\left( \rvo_t \right)^\top \left[ - \hat{\rvr}_t \right] \\
+    &\le \left\langle - \frac{d \rvpi\left( \rvo_t \right)^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle + \left\| \rvo_{t+1} - \rvo_t  \right\|_2^2 \\
+    &\le - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + h m \left\| \rmW_{t+1} - \rmW_t \right\|_F^2 \\
+    &= - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + h m \eta^2 \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -177,12 +176,11 @@ Second, the logit difference of policy gradient update is,
 Combining the two above results,
 \begin{equation*}
 \begin{split}
-    &\left\langle - \frac{d \rvpi\left( \rvo_t \right)^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle \\
-    &\quad = - \eta \cdot \hat{\rvr}_t^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right] \rvs \\
-    &\quad = - \eta \cdot \trace \left\{ \hat{\rvr}_t^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right] \rvs \right\} \\
-    &\quad = - \eta \cdot \trace \left\{ \rvs \hat{\rvr}_t^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right]  \right\} \\
-    &\quad = - \eta \left\langle \rmD(t) \rmA^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \hat{\rvr}_t \rvs^\top, \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\rangle \\
-    &\quad = - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2. \qedhere
+    \left\langle - \frac{d \rvpi\left( \rvo_t \right)^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle &= - \eta \cdot \hat{\rvr}_t^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right] \rvs \\
+    &= - \eta \cdot \trace \left\{ \hat{\rvr}_t^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right] \rvs \right\} \\
+    &= - \eta \cdot \trace \left\{ \rvs \hat{\rvr}_t^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \rmA \rmD(t) \left[ \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right]  \right\} \\
+    &= - \eta \left\langle \rmD(t) \rmA^\top \left[\Delta\left( \rvpi\left( \rmW_t \right) \right) - \rvpi\left( \rmW_t \right) \rvpi\left( \rmW_t \right)^\top \right] \hat{\rvr}_t \rvs^\top, \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\rangle \\
+    &= - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -261,11 +259,10 @@ with probability $\frac{1}{2}$. Define $h_{\hat{k}^*,r}$ as follows,
 Denote $x \triangleq \rvw_r(0)^\top \rvs \sim \gN(0, \sigma^2)$. Note that $h_{\hat{k}^*,r}$ is a convex function of $x$. Moreover,
 \begin{equation*}
 \begin{split}
-	&\sum\limits_{k=1}^{h}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \cdot v_{\hat{k}^*,k}(t) \right] } \\
-	&\quad = \hat{r}_{\hat{k}^*}\left(t\right) \cdot \pi_{\hat{k}^*}(t) \cdot v_{\hat{k}^*,\hat{k}^*}(t) + \sum\limits_{k\not=\hat{k}^*}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \cdot v_{\hat{k}^*,k}(t) \right] } \\
-	&\quad = \hat{r}_{\hat{k}^*}\left(t\right) \cdot \pi_{\hat{k}^*}(t) \cdot \left( 1 - \pi_{\hat{k}^*}(t) \right) - \pi_{\hat{k}^*}(t) \cdot \sum\limits_{k\not=\hat{k}^*}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \right] } \\
-	&\quad = \pi_{\hat{k}^*}(t) \cdot \left( \hat{r}_{\hat{k}^*}\left(t\right) - \sum\limits_{k=1}^{h}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \right] } \right) \\
-	&\quad = \pi_{\hat{k}^*}(t) \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t  \right).
+	\sum\limits_{k=1}^{h}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \cdot v_{\hat{k}^*,k}(t) \right] } &= \hat{r}_{\hat{k}^*}\left(t\right) \cdot \pi_{\hat{k}^*}(t) \cdot v_{\hat{k}^*,\hat{k}^*}(t) + \sum\limits_{k\not=\hat{k}^*}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \cdot v_{\hat{k}^*,k}(t) \right] } \\
+	&= \hat{r}_{\hat{k}^*}\left(t\right) \cdot \pi_{\hat{k}^*}(t) \cdot \left( 1 - \pi_{\hat{k}^*}(t) \right) - \pi_{\hat{k}^*}(t) \cdot \sum\limits_{k\not=\hat{k}^*}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \right] } \\
+	&= \pi_{\hat{k}^*}(t) \cdot \left( \hat{r}_{\hat{k}^*}\left(t\right) - \sum\limits_{k=1}^{h}{ \left[ \hat{r}_{k}\left(t\right) \cdot \pi_{k}(t) \right] } \right) \\
+	&= \pi_{\hat{k}^*}(t) \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_k\left(t\right) \right\} - \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t  \right).
 \end{split}
 \end{equation*}
 By assumption, if $\pi_{\hat{k}^*}(t) > c > 0$, then ,
