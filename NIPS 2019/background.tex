@@ -69,7 +69,7 @@ Consider at each step $t$, the agent is using $\rvpi\left(\rmW_t\right)$ as show
 \begin{equation}
 \label{eq:vanilla_policy_gradient_expected_regret}
 \begin{split}
-    R_T &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi\left(\rmW_t\right)} \left[ r\left(A_t\right) \right] } = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{\rvpi\left(\rmW_t\right)^\top \rvr},
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \expectation\limits_{A_t \sim \rvpi\left(\rmW_t\right)} \left[ r\left(A_t\right) \right] \right) } = \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \rvpi\left(\rmW_t\right)^\top \rvr \right) },
 \end{split}
 \end{equation}
 by \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current neural network policy $\rvpi\left(\rmW_t\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi\left(\rmW_t\right)^\top \rvr$. Doing policy gradient updates with respect to the neural network weights $\rmW_t$ will arguably decrease the expected loss, thus reduce the expected regret. 
@@ -81,17 +81,14 @@ Unfortunately, the vanilla policy gradient often suffers the ``lack of explorati
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
-   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$.
-   \STATE $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
    \STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \IF{$t < T^{\frac{2}{3} + \beta}$}
-   \STATE (Exploring Phase)
-   \STATE Uniformly randomly sample action $A_{t} \in [h]$.
+   \STATE (Exploring Phase) Uniformly randomly sample action $A_{t} \in [h]$.
    \STATE $\rmW_{t+1} \leftarrow \rmW_t$.
    \ELSE
-   \STATE (Playing-Learning Phase)
-   \STATE Sample action $A_{t} \sim \rvpi\left(\rmW_t\right)\left(\cdot \middle| \rvs \right)$.
+   \STATE (Playing-Learning Phase) Sample action $A_{t} \sim \rvpi\left(\rmW_t\right)\left(\cdot \middle| \rvs \right)$.
    \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
    \ENDIF
    \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
@@ -100,10 +97,10 @@ Unfortunately, the vanilla policy gradient often suffers the ``lack of explorati
 		n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
 		n_{t}\left(k\right), & \text{otherwise}.
 		\end{cases}
-		\right.$
+		\right. \qquad$ 
    %\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
    %\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
-   \STATE $\hat{r}_{t+1}\left(k\right) \gets \left. 
+   $\hat{r}_{t+1}\left(k\right) \gets \left. 
 		\begin{cases}
 		\frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
 		\hat{r}_{t}\left(k\right), & \text{otherwise}.
@@ -126,10 +123,8 @@ Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Explora
 	\label{alg:logit_learning_eps_greedy_exploration}
 	\begin{algorithmic}
 		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
-		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$.
-		\STATE $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-		\STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
-		\STATE $\ucb_{0}\left(k\right) \gets 1$, $\lcb_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
+		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+		\STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$. $\ucb_{0}\left(k\right) \gets 1$, $\lcb_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
 		\STATE $\hat{\Delta}_{t}\left(k\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}\left(k^\prime\right) \right\}  - \lcb_{t}\left(k\right)\right\} $, $\forall k \in [h]$.
 		\STATE $\xi_t\left(k\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2\left(k\right)}$, $\varepsilon_t\left(k\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t\left(k\right) \right\}$, $\forall k \in [h]$.
@@ -149,10 +144,10 @@ Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Explora
 		    n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
 		    n_{t}\left(k\right), & \text{otherwise}.
 		    \end{cases}
-		    \right.$
+		    \right. \qquad$
 		%\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
 		%\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
-		\STATE $\hat{r}_{t+1}\left(k\right) \gets \left. 
+		$\hat{r}_{t+1}\left(k\right) \gets \left. 
 		    \begin{cases}
 		    \frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
 		    \hat{r}_{t}\left(k\right), & \text{otherwise}.
