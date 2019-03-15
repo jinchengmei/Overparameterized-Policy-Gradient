@@ -134,46 +134,46 @@ Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Explora
 		\STATE $\hat{\Delta}_{t}\left(k\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}\left(k^\prime\right) \right\}  - \lcb_{t}\left(k\right)\right\} $, $\forall k \in [h]$.
 		\STATE $\xi_t\left(k\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2\left(k\right)}$, $\varepsilon_t\left(k\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t\left(k\right) \right\}$, $\forall k \in [h]$.
 		\STATE $\pi_{t}\left(k\right) \gets \left. 
-		\begin{cases}
-		1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}, \\
-		0, & \text{otherwise}.
-		\end{cases}
-		\right.$
+		    \begin{cases}
+		    1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}, \\
+		    0, & \text{otherwise}.
+		    \end{cases}
+		    \right.$
 		%\STATE $\pi_{t}\left(k\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
 		%\STATE $\pi_{t}\left(k\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
 		\STATE $\tilde{\pi}_t\left(k\right) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_t\left(k\right)} \right) \cdot  \pi_t\left(k\right) + \varepsilon_t\left(k\right)$, $\forall k \in [h]$.
 		\STATE Sample action $A_{t} \sim \tilde{\rvpi}_t\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
 		\STATE $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$.
 		\STATE $n_{t+1}\left(k\right) \gets \left. 
-		\begin{cases}
-		n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
-		n_{t}\left(k\right), & \text{otherwise}.
-		\end{cases}
-		\right.$
+		    \begin{cases}
+		    n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
+		    n_{t}\left(k\right), & \text{otherwise}.
+		    \end{cases}
+		    \right.$
 		%\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
 		%\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
 		\STATE $\hat{r}_{t+1}\left(k\right) \gets \left. 
-		\begin{cases}
-		\frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
-		\hat{r}_{t}\left(k\right), & \text{otherwise}.
-		\end{cases}
-		\right.$
+		    \begin{cases}
+		    \frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
+		    \hat{r}_{t}\left(k\right), & \text{otherwise}.
+		    \end{cases}
+		    \right.$
 		%\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
 		%\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
 		\STATE $\ucb_{t+1}\left(k\right) \gets \left. 
-		\begin{cases}
-		\min{\left\{ 1, \hat{r}_{t+1}\left(k\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
-		\ucb_{t}\left(k\right), & \text{otherwise}.
-		\end{cases}
-		\right.$
+		    \begin{cases}
+		    \min{\left\{ 1, \hat{r}_{t+1}\left(k\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
+		    \ucb_{t}\left(k\right), & \text{otherwise}.
+		    \end{cases}
+		    \right.$
 		%\STATE $\ucb_{t+1}\left(A_t\right) \gets \min{\left\{ 1, \hat{r}_{t+1}\left(A_t\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
 		%\STATE $\ucb_{t+1}\left(k\right) \gets \ucb_{t}\left(k\right)$, $\forall k \not= A_t$.
 		\STATE $\lcb_{t+1}\left(k\right) \gets \left. 
-		\begin{cases}
-		\max{\left\{ 0, \hat{r}_{t+1}\left(k\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
-		\lcb_{t}\left(k\right), & \text{otherwise}.
-		\end{cases}
-		\right.$
+		    \begin{cases}
+		    \max{\left\{ 0, \hat{r}_{t+1}\left(k\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
+		    \lcb_{t}\left(k\right), & \text{otherwise}.
+		    \end{cases}
+		    \right.$
 		%\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
 		%\STATE $\lcb_{t+1}\left(k\right) \gets \lcb_{t}\left(k\right)$, $\forall k \not= A_t$.
 		\ENDFOR
