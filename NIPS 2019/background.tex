@@ -95,10 +95,22 @@ Unfortunately, the vanilla policy gradient often suffers the ``lack of explorati
    \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
    \ENDIF
    \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
-   \STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
-   \STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{ A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
-   \STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
-   \STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
+   \STATE $n_{t+1}\left(k\right) \gets \left. 
+		\begin{cases}
+		n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
+		n_{t}\left(k\right), & \text{otherwise}.
+		\end{cases}
+		\right.$
+   %\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
+   %\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
+   \STATE $\hat{r}_{t+1}\left(k\right) \gets \left. 
+		\begin{cases}
+		\frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
+		\hat{r}_{t}\left(k\right), & \text{otherwise}.
+		\end{cases}
+		\right.$
+   %\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{ A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
+   %\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
