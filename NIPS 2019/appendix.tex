@@ -368,7 +368,7 @@ According to \cref{lem:logit_upper_bound_parameter},
 \subsection{One Form}
 
 The policy gradient with respect to $\rvw_r(t)$ is,
-\begin{equation}
+\begin{equation*}
 \label{eq:gradient_form_one}
 \begin{split}
 	\frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rvw_r(t)} &=  \sum\limits_{k=1}^{h}\left[ \hat{r}_k\left(t\right) \cdot \frac{d \pi_k(t)}{d \rvw_r(t)} \right]  \\
@@ -379,7 +379,7 @@ The policy gradient with respect to $\rvw_r(t)$ is,
 	&= \sum\limits_{k=1}^{h}{ \left[ \hat{r}_k\left(t\right) \cdot \pi_k(t) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{k^\prime}(t) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] } \\
 	&= \sum\limits_{k=1}^{h}{ \left[ \hat{r}_k\left(t\right) \cdot \pi_k(t) \cdot \left( \sum\limits_{k^\prime = 1}^{h}{ a_{k^\prime,r}  \cdot v_{k^\prime,k}(t) } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] },
 \end{split}
-\end{equation}
+\end{equation*}
 where $v_{k^\prime,k}(t)$ is defined as,
 \begin{equation*}
 	v_{k^\prime,k}(t) = \begin{cases}
@@ -418,12 +418,13 @@ First note that, $\forall k \in [h]$,
 \end{equation*}
 
 \noindent Thus the gradient with respect to $\rvw_r(t)$ is,
-\begin{equation}
+\begin{equation*}
 \label{eq:gradient_form_two}
 \begin{split}
     \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rvw_r(t)} &=  \sum\limits_{k=1}^{h}{ \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d o_k(t)} \cdot \frac{d o_k(t)}{d \rvw_r(t)} }  \\
     &= \sum\limits_{k=1}^{h}{ \left[ \pi_k(t) \cdot \left( \hat{r}_{k}\left(t\right) - \rvpi(t)^\top \hat{\rvr}\left(t\right) \right) \cdot a_{k,r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs  \right] } \\
     &= \hat{\rvr}^\top \left( \Delta\left( \rvpi(t) \right) - \rvpi(t) \rvpi(t)^\top \right) \rva_{\cdot, r} \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs,
 \end{split}
-\end{equation}
-where $\rva_{\cdot, r} \triangleq \left( a_{1,r}, a_{2,r}, \dots, a_{h,r} \right)^\top \in \sR^h$. It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
+\end{equation*}
+where $\rva_{\cdot, r} \triangleq \left( a_{1,r}, a_{2,r}, \dots, a_{h,r} \right)^\top \in \sR^h$.
+%It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
