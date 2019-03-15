@@ -27,9 +27,7 @@ According to \cref{alg:policy_gradient_uniform_exploration}, the uniform policy 
 \small
 \label{eq:total_regret_decomposition}
 \begin{split}
-    R_T &\triangleq \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{ A_t} \right] } \\
-    &= \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ {\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ r_{A_t} \right] }} \\
-    &\quad + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr }  - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr } \\
+    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{ A_t} \right] } &= \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ {\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ r_{A_t} \right] }} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr }  - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr } \\
     &\le T^{\frac{2}{3} + \beta} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr }.
 \end{split}
 \end{equation}
@@ -38,13 +36,9 @@ Denote $\rvpi^*\left(t\right) \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}
 \small
 \label{eq:playing_learning_phase_regret_decomposition}
 \begin{split}
-    \left( {\rvpi^*} - \rvpi\left( \rmW(t) \right) \right)^\top \rvr &= \left( {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right) \\
-    &\quad - \left( {\rvpi^*\left(t\right)} - {\rvpi^*} \right)^\top \hat{\rvr}\left(t\right) \\
-    &\quad + \left( \rvpi\left( \rmW(t) \right) - {\rvpi^*}\right)^\top \left( \hat{\rvr}\left(t\right) - \rvr \right) \\
-    &\le \left( {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right) \\
-    &\quad + \left\| \rvpi\left( \rmW(t) \right) - \rvpi^* \right\|_1 \cdot \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty  \\
-    &\le \left( {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right) \\
-    &\quad + 4 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 2 T^{\beta - \frac{1}{3}},
+    \left( {\rvpi^*} - \rvpi\left( \rmW(t) \right) \right)^\top \rvr &= \left( {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right) - \left( {\rvpi^*\left(t\right)} - {\rvpi^*} \right)^\top \hat{\rvr}\left(t\right) + \left( \rvpi\left( \rmW(t) \right) - {\rvpi^*}\right)^\top \left( \hat{\rvr}\left(t\right) - \rvr \right) \\
+    &\le \left( {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right)  + \left\| \rvpi\left( \rmW(t) \right) - \rvpi^* \right\|_1 \cdot \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty  \\
+    &\le \left( {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right)  + 4 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 2 T^{\beta - \frac{1}{3}},
 \end{split}
 \end{equation}
 by the definition of $\rvpi^*\left(t\right)$, H{\"o}lder's inequality, and \cref{thm:reward_estimation_hoeffding}. Summing up \cref{eq:playing_learning_phase_regret_decomposition} from $t = T^{\frac{2}{3} + \beta}$ to $T - 1$, and
@@ -75,8 +69,9 @@ The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides u
 \begin{equation}
 \label{eq:loss_estimation_hoeffding}
 \begin{split}
-    &\pr\left\{ \left| \hat{r}_{ k}\left(t\right) - r_{k} \right| > T^{\beta - \frac{1}{3}} \right\} \le 2 \exp\left\{ - 2 n_{ k}\left(t\right) \cdot T^{2\beta - \frac{2}{3}} \right\} \\
-    &\le 2 \exp\left\{ -  \frac{2 T^{\frac{2}{3} + \beta}}{h} \cdot T^{2\beta - \frac{2}{3}} \right\} = 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
+    \pr\left\{ \left| \hat{r}_{ k}\left(t\right) - r_{k} \right| > T^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{ k}\left(t\right) \cdot T^{2\beta - \frac{2}{3}} \right\} \\
+    &\le 2 \exp\left\{ -  \frac{2 T^{\frac{2}{3} + \beta}}{h} \cdot T^{2\beta - \frac{2}{3}} \right\} \\
+    &= 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
 \end{split}
 \end{equation}
 Therefore,
@@ -106,20 +101,16 @@ The good estimation of the true mean loss $\hat{\rvr}\left(t\right)$ obtained at
 \begin{equation}
 \label{eq:dynamic_regret_decomposition}
 \begin{split}
-    \delta_t &= {\rvpi^*\left(t\right)}^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t-1\right)\right) \\
-    &\quad + \left( {\rvpi^*\left(t\right)} - {\rvpi^*\left(t-1\right)} \right)^\top \hat{\rvr} \left(t-1\right) \\
-    &\quad + \left( {\rvpi^*\left(t-1\right)} - \rvpi\left( \rmW(t-1) \right) \right)^\top \hat{\rvr}\left(t-1\right) \\
+    \delta_t &= {\rvpi^*\left(t\right)}^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t-1\right)\right) + \left( {\rvpi^*\left(t\right)} - {\rvpi^*\left(t-1\right)} \right)^\top \hat{\rvr} \left(t-1\right)  + \left( {\rvpi^*\left(t-1\right)} - \rvpi\left( \rmW(t-1) \right) \right)^\top \hat{\rvr}\left(t-1\right) \\
     &\quad + \left(  \rvpi\left( \rmW(t-1) \right) - \rvpi\left( \rmW(t) \right) 
-    \right)^\top \hat{\rvr}\left(t-1\right) \\
-    &\quad + \rvpi\left( \rmW(t) \right)^\top \left( \hat{\rvr}\left(t-1\right) - \hat{\rvr}\left(t\right) \right).
+    \right)^\top \hat{\rvr}\left(t-1\right) + \rvpi\left( \rmW(t) \right)^\top \left( \hat{\rvr}\left(t-1\right) - \hat{\rvr}\left(t\right) \right).
 \end{split}
 \end{equation}
 We upper bound each term in the right hand side. Firstly,
 \begin{equation*}
 \begin{split}
-    &{\rvpi^*\left(t\right)}^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t-1\right)\right) \\
-    &\quad = \frac{{\pi_{ A_{t-1}}^*\left(t\right)}}{n_{ A_{t-1}}\left(t\right)} \left[ R_{ A_{t-1}}\left( n_{ A_{t-1}}\left(t\right) -1 \right) - \hat{r}_{ A_{t-1}}\left(t-1\right) \right] \\
-    &\quad \le \frac{1}{n_{A_{t-1}}\left(t\right)} \le \frac{h}{T^{\frac{2}{3} + \beta}},
+    {\rvpi^*\left(t\right)}^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t-1\right)\right) &= \frac{{\pi_{ A_{t-1}}^*\left(t\right)}}{n_{ A_{t-1}}\left(t\right)} \left[ R_{ A_{t-1}}\left( n_{ A_{t-1}}\left(t\right) -1 \right) - \hat{r}_{ A_{t-1}}\left(t-1\right) \right] \\
+    &\le \frac{1}{n_{A_{t-1}}\left(t\right)} \le \frac{h}{T^{\frac{2}{3} + \beta}},
 \end{split}
 \end{equation*}
 by $n_{A_{t-1}}\left(t\right) = n_{ A_{t-1}}\left(t-1\right) + 1$, and $n_{ A_{t-1}}\left(t\right) \ge \frac{T^{\frac{2}{3} + \beta}}{h}$, $\forall t \ge T^{\frac{2}{3} + \beta}$. By the definition of ${\rvpi^*\left(t-1\right)}$,
@@ -133,11 +124,10 @@ Note that according to the definition of $\delta_t$,
 By \cref{lem:empirically_expected_reward_parameter_smoothness}, $\eta = \frac{1}{2 h m}$, and \cref{lem:gradient_lower_bound},
 \begin{equation*}
 \begin{split}
-    &\left( \rvpi\left( \rmW(t-1) \right) - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t-1\right) \\
-    &\quad \le - \frac{1}{4 h m} \left\| \frac{d \rvpi\left( \rmW(t-1) \right)^\top \hat{\rvr}\left(t-1\right)}{d \rmW(t-1)} \right\|_F^2 \\
-    &\quad = - \frac{1}{4 h m} \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi\left( \rmW(t-1) \right)^\top \hat{\rvr}\left(t-1\right)}{d \rvw_r(t-1)} \right\|_2^2 } \\
-    &\quad \le - \frac{c^2}{4 h} \left[ \left( {\rvpi^*\left(t-1\right)} - \rvpi\left( \rmW(t-1) \right) \right)^\top \hat{\rvr}\left(t-1\right)  \right]^2 \\
-    &\quad = - \frac{c^2}{4 h} \cdot \delta_{t-1}^2.
+    \left( \rvpi\left( \rmW(t-1) \right) - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t-1\right) &\le - \frac{1}{4 h m} \left\| \frac{d \rvpi\left( \rmW(t-1) \right)^\top \hat{\rvr}\left(t-1\right)}{d \rmW(t-1)} \right\|_F^2 \\
+    &= - \frac{1}{4 h m} \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi\left( \rmW(t-1) \right)^\top \hat{\rvr}\left(t-1\right)}{d \rvw_r(t-1)} \right\|_2^2 } \\
+    &\le - \frac{c^2}{4 h} \left[ \left( {\rvpi^*\left(t-1\right)} - \rvpi\left( \rmW(t-1) \right) \right)^\top \hat{\rvr}\left(t-1\right)  \right]^2 \\
+    &= - \frac{c^2}{4 h} \cdot \delta_{t-1}^2.
 \end{split}
 \end{equation*}
 Using similar arguments,
@@ -230,8 +220,7 @@ where $\rvw_r(t)$ is the $r$th row vector of $\rmW(t)$.
 \begin{equation}
 \label{eq:parameter_smoothness}
 \begin{split}
-    &\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) - \rvpi\left( \rmW(t+1) \right)^\top \hat{\rvr}\left(t\right) \\
-    &\quad \le - \left( \eta - h m \eta^2 \right) \cdot \left\| \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)} \right\|_F^2.
+    \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right) - \rvpi\left( \rmW(t+1) \right)^\top \hat{\rvr}\left(t\right) \le - \left( \eta - h m \eta^2 \right) \cdot \left\| \frac{d \rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)}{d \rmW(t)} \right\|_F^2.
 \end{split}
 \end{equation}
 \end{lem}
@@ -327,23 +316,18 @@ With high probability, $\xi_k\left(t\right) \ge \frac{4 \beta \ln{t}}{9 t \Delta
 \end{equation*}
 According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
 \begin{equation*}
+\small
 \begin{split}
-    &\frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2^2 \\
-    &\quad = \frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
-    &\qquad + \left( \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right) \right)^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right) \\
-    &\qquad + \frac{1}{2} \left\| \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right\|_2^2 \\
-    &\quad \le \left( 1 - \frac{1}{2 h m } \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
-    &\qquad + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \\
-    &\qquad + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }
+    \frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2^2 &= \frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 + \left( \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right) \right)^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right) + \frac{1}{2} \left\| \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right\|_2^2 \\
+    &\le \left( 1 - \frac{1}{2 h m } \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }
 \end{split}
 \end{equation*}
 If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \le \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
 \begin{equation*}
 \begin{split}
-    &\left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 \\
-    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\quad \le \frac{\Delta}{5}.
+    \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    &\le \frac{\Delta}{5}.
 \end{split}
 \end{equation*}
 If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 > \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
@@ -356,18 +340,16 @@ If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 > \f
 which implies,
 \begin{equation*}
 \begin{split}
-    &\left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 \\
-    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\quad < \frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2.
+    \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    &< \frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2.
 \end{split}
 \end{equation*}
 Since $\frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \in \left(0, 1\right)$, after constant numbers of iterations, we have $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \le \frac{\Delta}{5}$ always holds. By the triangle inequality,
 \begin{equation*}
 \begin{split}
-    &\left\| \rvo\left( \rmW(t) \right) - \rvr \right\|_\infty \\
-    &\quad \le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_\infty + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
-    &\quad \le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
-    &\quad \le \frac{2 \Delta}{5}. \qedhere
+    \left\| \rvo\left( \rmW(t) \right) - \rvr \right\|_\infty &\le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_\infty + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
+    &\le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
+    &\le \frac{2 \Delta}{5}. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -377,8 +359,7 @@ Since $\frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \in \left(0, 1\right)$, after co
 $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
 \begin{equation*}
 \begin{split}
-    &\frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 \\
-    &\quad \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2.
+    \frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2.
 \end{split}
 \end{equation*}
 \end{lem}

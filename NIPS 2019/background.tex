@@ -81,8 +81,7 @@ Consider at each step $t$, the agent is using $\rvpi\left(\rmW(t)\right)$ as sho
 \begin{equation}
 \label{eq:vanilla_policy_gradient_expected_regret}
 \begin{split}
-    R_T &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi\left(\rmW(t)\right)} \left[ r_{A_t} \right] } \\
-    &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{\rvpi\left(\rmW(t)\right)^\top \rvr},
+    R_T &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi\left(\rmW(t)\right)} \left[ r_{A_t} \right] } = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{\rvpi\left(\rmW(t)\right)^\top \rvr},
 \end{split}
 \end{equation}
 by \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current neural network policy $\rvpi\left(\rmW(t)\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi\left(\rmW(t)\right)^\top \rvr$. Doing policy gradient updates with respect to the neural network weights $\rmW(t)$ will arguably decrease the expected loss, thus reduce the expected regret. 
