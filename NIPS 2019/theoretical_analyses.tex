@@ -1,9 +1,9 @@
-\section{THEORETICAL ANALYSES}
+\section{Theoretical Analyses}
 \label{sec:theoretical_analyses}
 
 In this section, we first prove the $T^{\frac{2}{3}}\ln{T}$ finite time regret of \cref{alg:policy_gradient_uniform_exploration}, and then we prove the optimal finite time regret of \cref{alg:logit_learning_eps_greedy_exploration}.
 
-\subsection{POLICY GRADIENT}
+\subsection{Policy Gradient}
 \label{subsec:theoretical_analyses_policy_gradient}
 
 We first present the main results as shown in \cref{thm:policy_gradient_main_result}, and then discuss the detailed proof ideas and intuitions.
@@ -13,7 +13,7 @@ We first present the main results as shown in \cref{thm:policy_gradient_main_res
 
 \begin{thm}
 \label{thm:policy_gradient_main_result}
-    Given policy neural networks as shown in \cref{fig:nn_policy}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
+    Given policy neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
 \begin{equation*}
 \small
 \begin{split}
@@ -24,16 +24,15 @@ We first present the main results as shown in \cref{thm:policy_gradient_main_res
 \begin{proof}
 According to \cref{alg:policy_gradient_uniform_exploration}, the uniform policy and $\rvpi\left( \rmW(t) \right)$ are used to sample actions in the two phases. Therefore the regret is divided into two parts.
 \begin{equation}
-\small
 \label{eq:total_regret_decomposition}
 \begin{split}
     \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{ A_t} \right] } &= \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ {\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ r_{A_t} \right] }} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr }  - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr } \\
+    &\le \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{1} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr } \\
     &\le T^{\frac{2}{3} + \beta} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW(t) \right)^\top \rvr }.
 \end{split}
 \end{equation}
 Denote $\rvpi^*\left(t\right) \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}\left(t\right)\right\}}$. The last two terms can be decomposed as follows, $\forall t \ge T^{\frac{2}{3} + \beta}$,
 \begin{equation}
-\small
 \label{eq:playing_learning_phase_regret_decomposition}
 \begin{split}
     \left( {\rvpi^*} - \rvpi\left( \rmW(t) \right) \right)^\top \rvr &= \left( {\rvpi^*\left(t\right)} - \rvpi\left( \rmW(t) \right) \right)^\top \hat{\rvr}\left(t\right) - \left( {\rvpi^*\left(t\right)} - {\rvpi^*} \right)^\top \hat{\rvr}\left(t\right) + \left( \rvpi\left( \rmW(t) \right) - {\rvpi^*}\right)^\top \left( \hat{\rvr}\left(t\right) - \rvr \right) \\
@@ -282,7 +281,7 @@ Policy update using \cref{eq:logit_derivative} satisfies, $\forall t \ge 0$,
 \end{lem}
 By \cref{lem:optimal_probability_increse_parameter_space}, we can replace the $c$ in \cref{thm:policy_gradient_main_result} without incurring any additional regret dependent on $T$.
 
-\subsection{LOGIT LEARNING}
+\subsection{Logit Learning}
 \label{subsec:theoretical_analyses_logit_learning}
 
 It seems difficult to improve \cref{thm:policy_gradient_main_result}, as all the three parts of the regret are almost balanced, i.e., uniform exploration ($ T^{\frac{2}{3} + \beta}$, \cref{eq:total_regret_decomposition}), estimation error ($ T^{\frac{2}{3} + \beta} $, \cref{thm:reward_estimation_hoeffding}), and the cumulative expected loss of neural network policies ($ T^{\frac{2}{3} - \frac{\beta}{2}} $, \cref{thm:dynamic_regret_sublinear}). \cref{alg:policy_gradient_uniform_exploration} learns policies in the primal policy space by maximizing $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$. And it is not necessary that $\rvo\left( \rmW(t)\right)$ is close to $\hat{\rvr}\left(t\right)$, due to the homogeneity invariant property of the softmax. To show the convergence of $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$, every action needs to be pulled many times, which leads to the undesirable results.
@@ -291,7 +290,7 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
 
 \begin{thm}
 \label{thm:logit_learning_main_result}
-    Given value neural networks as shown in \cref{fig:nn_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$, $\alpha > 3$, $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
+    Given value neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$, $\alpha > 3$, $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
 \begin{equation*}
 \small
 \begin{split}
