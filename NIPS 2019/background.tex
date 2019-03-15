@@ -13,13 +13,13 @@ The agent then improves its action selection strategies.
 After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation}
 \label{eq:expected_regret}
-R_n = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sE \left[ \sum\limits_{t=0}^{T-1}{  r\left(A_t\right)  } \right] 
+R_T = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sE \left[ \sum\limits_{t=0}^{T-1}{  r\left(A_t\right)  } \right] 
 %= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \sE \left[ r\left(A_t\right) \right] },
 \end{equation}
 where the expectation is over the randomness of action selection, if the agent is using some stochastic strategies.
 Obviously, $\rvpi^*$ is a one-hot vector and by standard calculation, one can show that
 \[
-R_n = \sum_a \sum_{t=1}^T \rvpi_t(a) \Delta(a),
+R_T = \sum_{t=0}^{T-1} \sum_a \pi_t(a) \Delta(a),
 \]
 where $\Delta(a) = \max_b r(b)- r(a)$, $r(a)$ is the expected reward of the action $a$.
 
@@ -38,7 +38,7 @@ where $\Delta(a) = \max_b r(b)- r(a)$, $r(a)$ is the expected reward of the acti
 \label{subsec:nn_value_policy}
 The structure of the value network and the policy network  is a 2-layers fully connected neural network with ReLU activation, as shown in \cref{fig:nn_policy_value}. 
 Each neural network takes the state $\rvs \in \sR^d$ as its input, where without loss of generality we assume that $\left\| \rvs \right\|_2 = 1$.
-The hidden layer of both networks are denoted by $\rvu   \triangleq W\rvs\in\sR^m$, and the logit output $\rvo \triangleq A\sigma\left( \rvu\right) \in \sR^h$, where $\sigma$ is element-wise ReLU activation function. 
+The hidden layer of both networks are denoted by $\rvu \triangleq \rmW\rvs\in\sR^m$, and the logit output $\rvo \triangleq \rmA\sigma\left( \rvu\right) \in \sR^h$, where $\sigma$ is element-wise ReLU activation function. 
 The policy network differs the value network with one additional softmax transform layer in order to output probability distributions, where $\rvpi \triangleq f\left( \rvo \right) = f\left( \rmA \sigma\left( \rmW \rvs \right) \right)$, and $f$ is the softmax function. In the rest of the paper we denote the policy $\rvpi$ by $\rvpi(\rmW)$ to emphasize its parametrization by $\rmW$. 
 
 %Both the value and the policy neural networks take the state feature  $\rvs_i \in \sR^d$ as the input. Then the networks calculate the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is then calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. The value neural network outputs the logit vector $\rvo_i$. While the policy neural network output probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right) = f\left( \rmA \sigma\left( \rmW \rvs_i \right) \right)$. 
