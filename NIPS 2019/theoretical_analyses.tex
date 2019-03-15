@@ -138,15 +138,13 @@ Plugging the above upper bounds into \cref{eq:dynamic_regret_decomposition},
 Rearranging and summing up from $T^{\frac{2}{3} + \beta} + 1$ to $T$,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2} &\le \frac{4 h}{ c^2} \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T} { \left[ \delta_{t-1} - \delta_t + \frac{2h}{T^{\frac{2}{3} + \beta}} \right] } \\
-    &\le \frac{4 h}{ c^2} \cdot T^{\frac{1}{3} - \beta}.
+    \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2} \le \frac{4 h}{ c^2} \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T} { \left[ \delta_{t-1} - \delta_t + \frac{2h}{T^{\frac{2}{3} + \beta}} \right] } \le \frac{4 h}{ c^2} \cdot T^{\frac{1}{3} - \beta}.
 \end{split}
 \end{equation*}
 By the Root-Mean Square-Arithmetic Mean inequality,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{\delta_{t}} &\le \sqrt{\left(T  - T^{\frac{2}{3}+ \beta} \right) \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2}} \\
-    &\le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
+    \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - T^{\frac{2}{3}+ \beta} \right) \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2}} \le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
 \end{split}
 \end{equation*}
 Let $\tau = \sigma$ in \cref{lem:gradient_coupling}. Let $\sigma = \frac{1}{\sqrt{m}}$ and $T \le \frac{\tau}{2 \eta}$ such that \cref{lem:gradient_coupling} can be used during all the playing-learning phase, we have $m \ge \frac{T^2}{h^2}$.
