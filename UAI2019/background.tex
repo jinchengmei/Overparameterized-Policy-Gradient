@@ -135,7 +135,7 @@ Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Explora
 		\STATE $\ucb_k\left(0\right) \gets 1$, $\lcb_k\left(0\right) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
 		\STATE $\hat{\Delta}_{k}\left(t\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{k^\prime}\left(t\right) \right\}  - \lcb_{k}\left(t\right)\right\} $, $\forall k \in [h]$.
-		\STATE $\xi_k\left(t\right) \gets \frac{\beta \log{t}}{t \hat{\Delta}_k^2\left(t\right)}$, $\forall k \in [h]$.
+		\STATE $\xi_k\left(t\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_k^2\left(t\right)}$, $\forall k \in [h]$.
 		\STATE $\varepsilon_k\left(t\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_k\left(t\right) \right\}$, $\forall k \in [h]$.
 		\STATE $\pi_{k}\left(t\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
 		\STATE $\pi_{k}\left(t\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.

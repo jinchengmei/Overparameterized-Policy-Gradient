@@ -1,7 +1,7 @@
 \section{THEORETICAL ANALYSES}
 \label{sec:theoretical_analyses}
 
-In this section, we first prove the $T^{\frac{2}{3}}\log{T}$ finite time regret of \cref{alg:policy_gradient_uniform_exploration}, and then we prove the optimal finite time regret of \cref{alg:logit_learning_eps_greedy_exploration}.
+In this section, we first prove the $T^{\frac{2}{3}}\ln{T}$ finite time regret of \cref{alg:policy_gradient_uniform_exploration}, and then we prove the optimal finite time regret of \cref{alg:logit_learning_eps_greedy_exploration}.
 
 \subsection{POLICY GRADIENT}
 \label{subsec:theoretical_analyses_policy_gradient}
@@ -17,7 +17,7 @@ We first present the main results as shown in \cref{thm:policy_gradient_main_res
 \begin{equation*}
 \small
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \log{h} \cdot T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}.
+    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \ln{h} \cdot T^{\frac{2}{3}} \left(\ln{T}\right)^{\frac{1}{3}}.
 \end{split}
 \end{equation*}
 \end{thm}
@@ -54,7 +54,7 @@ combining \cref{eq:total_regret_decomposition} and \cref{thm:dynamic_regret_subl
     R_T \le  4 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 3 T^{\frac{2}{3} + \beta} + \frac{2 \sqrt{h}}{ c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
 \end{split}
 \end{equation*}
-Taking $\beta = \frac{ \log{\left(\frac{h}{6}\right) + \log{\log{T}} } }{ 3 \log{T}} $ completes the proof.
+Taking $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{T}} } }{ 3 \ln{T}} $ completes the proof.
 \end{proof}
 
 \cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the neural network policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the neural network policy.  While in the second playing-learning phase, since the loss estimation is good, the neural network policy will keep reducing its dynamic expected loss, which is highly related with its true expected loss, i.e., the expected regret of the playing-learning phase.
@@ -306,7 +306,7 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
 \begin{equation*}
 \small
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \log{h} \cdot T^{\frac{2}{3}} \left(\log{T}\right)^{\frac{1}{3}}.
+    \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \ln{h} \cdot T^{\frac{2}{3}} \left(\ln{T}\right)^{\frac{1}{3}}.
 \end{split}
 \end{equation*}
 \end{thm}
@@ -314,11 +314,12 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
     By \citep{seldin2017improved},
     $\forall t \ge t_1 \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta_k^4 \ln{h}} \right\}}$,
 \begin{equation*}
+\small
 \begin{split}
-    \pr{\left\{ \hat{\Delta}_k\left(t\right) \ge \frac{3}{2} \Delta_k \right\}} \le + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}
+    \pr{\left\{ \hat{\Delta}_k\left(t\right) \ge \frac{3}{2} \Delta_k \right\}} \le \left( \frac{\ln{t}}{t \Delta_k^2} \right)^{\alpha - 2} + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
 \end{split}
 \end{equation*}
-So with probability at least $1 - $, $\xi_t \ge \frac{4 \log{t}}{t \Delta^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\log{t}}{\Delta^2}$ times. By Hoeffding's inequality,
+With high probability, $\xi_k\left(t\right) \ge \frac{4 \beta \ln{t}}{9 t \Delta_k^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\ln{t}}{\Delta^2}$ times. By Hoeffding's inequality,
 \begin{equation*}
 \begin{split}
     \pr{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
@@ -332,23 +333,23 @@ According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac
     &\qquad + \left( \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right) \right)^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right) \\
     &\qquad + \frac{1}{2} \left\| \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right\|_2^2 \\
     &\quad \le \left( 1 - \frac{1}{2 h m } \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
-    &\qquad + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\log{t}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \\
-    &\qquad + \frac{\Delta^4 h}{2 \left( \log{t} \right)^2 }
+    &\qquad + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \\
+    &\qquad + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }
 \end{split}
 \end{equation*}
-If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \le \frac{\Delta}{5}$, $\forall \log{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
+If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \le \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
 \begin{equation*}
 \begin{split}
     &\left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 \\
-    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\log{t}} \\
-    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\log{t}} \\
+    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
     &\quad \le \frac{\Delta}{5}.
 \end{split}
 \end{equation*}
-If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 > \frac{\Delta}{5}$, $\forall \log{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
+If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 > \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
 \begin{equation*}
 \begin{split}
-    \frac{\Delta^2 \sqrt{h}}{\log{t}} &\le \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \frac{\Delta}{5} \\
+    \frac{\Delta^2 \sqrt{h}}{\ln{t}} &\le \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \frac{\Delta}{5} \\
     &< \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2,
 \end{split}
 \end{equation*}
@@ -356,7 +357,7 @@ which implies,
 \begin{equation*}
 \begin{split}
     &\left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 \\
-    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\log{t}} \\
+    &\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
     &\quad < \frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2.
 \end{split}
 \end{equation*}
