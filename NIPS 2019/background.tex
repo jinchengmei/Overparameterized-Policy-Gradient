@@ -8,13 +8,13 @@ However, our results can be easily generalized to many other reinforcement learn
 \label{subsec:settings}
 
 One can think of that the standard stochastic bandit setting has only 1 state.  
-At each time step $t$, the agent takes an action $A_t \in [h]$ according to its own strategies $\rvpi_t$, and then it observes a random reward $R_{A_t} \in \sR$, where the mean value of $R_{A_t}$ is $r_{A_t}$. 
+At each time step $t$, the agent takes an action $A_t \in [h]$ according to its own strategies $\rvpi_t$, and then it observes a random reward $r\left(A_t\right) \in \sR$, where the mean value of $r\left(A_t\right)$ is $r\left(A_t\right)$. 
 The agent then improves its action selection strategies. 
 After such $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation}
 \label{eq:expected_regret}
-R_n = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sE \left[ \sum\limits_{t=0}^{T-1}{  r_{ A_t}  } \right] 
-%= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] },
+R_n = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sE \left[ \sum\limits_{t=0}^{T-1}{  r\left(A_t\right)  } \right] 
+%= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \sE \left[ r\left(A_t\right) \right] },
 \end{equation}
 where the expectation is over the randomness of action selection, if the agent is using some stochastic strategies.
 Obviously, $\rvpi^*$ is a one-hot vector and by standard calculation, one can show that
@@ -65,16 +65,16 @@ The policy network differs the value network with one additional softmax transfo
 \label{subsec:policy_gradient}
 
 Our first algorithm follows the widely used policy gradient method. 
-Consider at each step $t$, the agent is using $\rvpi\left(\rmW(t)\right)$ as shown in \cref{fig:nn_policy_value} as its action selection strategy, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi\left(\rmW(t)\right)$, i.e., 
+Consider at each step $t$, the agent is using $\rvpi\left(\rmW_t\right)$ as shown in \cref{fig:nn_policy_value} as its action selection strategy, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi\left(\rmW_t\right)$, i.e., 
 \begin{equation}
 \label{eq:vanilla_policy_gradient_expected_regret}
 \begin{split}
-    R_T &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi\left(\rmW(t)\right)} \left[ r_{A_t} \right] } = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{\rvpi\left(\rmW(t)\right)^\top \rvr},
+    R_T &= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \expectation\limits_{A_t \sim \rvpi\left(\rmW_t\right)} \left[ r\left(A_t\right) \right] } = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{\rvpi\left(\rmW_t\right)^\top \rvr},
 \end{split}
 \end{equation}
-by \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current neural network policy $\rvpi\left(\rmW(t)\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi\left(\rmW(t)\right)^\top \rvr$. Doing policy gradient updates with respect to the neural network weights $\rmW(t)$ will arguably decrease the expected loss, thus reduce the expected regret. 
+by \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current neural network policy $\rvpi\left(\rmW_t\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi\left(\rmW_t\right)^\top \rvr$. Doing policy gradient updates with respect to the neural network weights $\rmW_t$ will arguably decrease the expected loss, thus reduce the expected regret. 
 
-Unfortunately, the vanilla policy gradient often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Therefore, we propose a two stage algorithm combining policy gradient with uniform exploration as shown in \cref{alg:policy_gradient_uniform_exploration}. After the random initialization, at each step $t$, one of the two cases happens. If $t < T^{\frac{2}{3} + \beta}$, then agent gets into a purely ``exploring phase", without learning the policy neural network, while just collecting empirically estimated rewards. If $t \ge T^{\frac{2}{3} + \beta}$, then the agent starts ``playing and learning". The agent samples and takes actions according to the current neural network policy $\rvpi\left(\rmW(t)\right)$. In the meanwhile, the agent learns the policy neural network by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
+Unfortunately, the vanilla policy gradient often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Therefore, we propose a two stage algorithm combining policy gradient with uniform exploration as shown in \cref{alg:policy_gradient_uniform_exploration}. After the random initialization, at each step $t$, one of the two cases happens. If $t < T^{\frac{2}{3} + \beta}$, then agent gets into a purely ``exploring phase", without learning the policy neural network, while just collecting empirically estimated rewards. If $t \ge T^{\frac{2}{3} + \beta}$, then the agent starts ``playing and learning". The agent samples and takes actions according to the current neural network policy $\rvpi\left(\rmW_t\right)$. In the meanwhile, the agent learns the policy neural network by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
 
 \begin{algorithm}[t]
    \caption{Policy Gradient with Uniform Exploration}
@@ -83,22 +83,22 @@ Unfortunately, the vanilla policy gradient often suffers the ``lack of explorati
    \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
    \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$.
    \STATE $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-   \STATE $\hat{r}_{k}\left(0\right) \gets 0$, $n_{k}\left(0\right) \gets 0$, $\forall k \in [h]$.
+   \STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \IF{$t < T^{\frac{2}{3} + \beta}$}
    \STATE (Exploring Phase)
    \STATE Uniformly randomly sample action $A_{t} \in [h]$.
-   \STATE $\rmW(t+1) \leftarrow \rmW(t)$.
+   \STATE $\rmW_{t+1} \leftarrow \rmW_t$.
    \ELSE
    \STATE (Playing-Learning Phase)
-   \STATE Sample action $A_{t} \sim \rvpi\left(\rmW(t)\right)\left(\cdot \middle| \rvs \right)$.
-   \STATE $\rmW(t+1) \leftarrow \rmW(t) + \eta \cdot \frac{d \rvpi\left(\rmW(t)\right)^\top \hat{\rvr} \left(t\right)}{d \rmW(t)}$.
+   \STATE Sample action $A_{t} \sim \rvpi\left(\rmW_t\right)\left(\cdot \middle| \rvs \right)$.
+   \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
    \ENDIF
-   \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{ A_{t}}\left(t\right) \right)$.
-   \STATE $n_{ A_{t}}\left(t+1\right) \gets n_{ A_{t}}\left(t\right) + 1$.
-   \STATE $\hat{r}_{A_{t}}\left(t+1\right) \gets \frac{n_{ A_{t}}\left(t\right) \cdot \hat{r}_{A_{t}}\left(t\right) + R_{ A_{t}}\left(n_{A_{t}}\left(t\right)\right) }{n_{ A_{t}}\left(t+1\right)}$.
-   \STATE $n_{ k}\left(t+1\right) \gets n_{ k}\left(t\right)$, $\forall k \not= A_t$.
-   \STATE $\hat{r}_{k}\left(t+1\right) \gets \hat{r}_{k}\left(t\right)$, $\forall k \not= A_t$.
+   \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
+   \STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
+   \STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{ A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
+   \STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
+   \STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
@@ -108,7 +108,7 @@ Unfortunately, the vanilla policy gradient often suffers the ``lack of explorati
 \subsection{Logit Learning}
 \label{subsec:logit_learning}
 
-Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Exploration, as shown in \cref{alg:logit_learning_eps_greedy_exploration}. After the random initialization, at each time step $t$, the agent selects the action with the largest logit with probability $1 - \varepsilon_t$, and it uniformly randomly select actions with the other probability $\varepsilon_t$. After taking action and observing rewards, the agent improves its strategies by minimizing the value loss objective $\frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2$, where $\hat{\rvr}\left(t\right)$ is the empirical mean reward estimated from sampled rewards up to step $t$. In each iteration, the agent only update its value neural network using one gradient descent, therefore the logit learning is in an online fashion.
+Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Exploration, as shown in \cref{alg:logit_learning_eps_greedy_exploration}. After the random initialization, at each time step $t$, the agent selects the action with the largest logit with probability $1 - \varepsilon_t$, and it uniformly randomly select actions with the other probability $\varepsilon_t$. After taking action and observing rewards, the agent improves its strategies by minimizing the value loss objective $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$, where $\hat{\rvr}_t$ is the empirical mean reward estimated from sampled rewards up to step $t$. In each iteration, the agent only update its value neural network using one gradient descent, therefore the logit learning is in an online fashion.
 
 
 \begin{algorithm}[t]
@@ -118,26 +118,26 @@ Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Explora
 		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
 		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$.
 		\STATE $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-		\STATE $\hat{r}_{k}\left(0\right) \gets 0$, $n_{k}\left(0\right) \gets 0$, $\forall k \in [h]$.
-		\STATE $\ucb_k\left(0\right) \gets 1$, $\lcb_k\left(0\right) \gets 0$, $\forall k \in [h]$.
+		\STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
+		\STATE $\ucb_{0}\left(k\right) \gets 1$, $\lcb_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\hat{\Delta}_{k}\left(t\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{k^\prime}\left(t\right) \right\}  - \lcb_{k}\left(t\right)\right\} $, $\forall k \in [h]$.
-		\STATE $\xi_k\left(t\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_k^2\left(t\right)}$, $\forall k \in [h]$.
-		\STATE $\varepsilon_k\left(t\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_k\left(t\right) \right\}$, $\forall k \in [h]$.
-		\STATE $\pi_{k}\left(t\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
-		\STATE $\pi_{k}\left(t\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
-		\STATE $\tilde{\rvpi}_k\left(t\right) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_k\left(t\right)} \right) \cdot  \rvpi\left(t\right) + \varepsilon_k\left(t\right)$, $\forall k \in [h]$.
-		\STATE Sample action $A_{t} \sim \tilde{\rvpi}\left(t\right)\left(\cdot \middle| \rvs \right)$.
+		\STATE $\hat{\Delta}_{t}\left(k\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}\left(k^\prime\right) \right\}  - \lcb_{t}\left(k\right)\right\} $, $\forall k \in [h]$.
+		\STATE $\xi_t\left(k\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2\left(k\right)}$, $\forall k \in [h]$.
+		\STATE $\varepsilon_t\left(k\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t\left(k\right) \right\}$, $\forall k \in [h]$.
+		\STATE $\pi_{t}\left(k\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
+		\STATE $\pi_{t}\left(k\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
+		\STATE $\tilde{\pi}_t\left(k\right) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_t\left(k\right)} \right) \cdot  \pi_t\left(k\right) + \varepsilon_t\left(k\right)$, $\forall k \in [h]$.
+		\STATE Sample action $A_{t} \sim \tilde{\rvpi}_t\left(\cdot \middle| \rvs \right)$.
 		\STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{ A_{t}}\left(t\right) \right)$.
-		\STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
-		\STATE $n_{A_{t}}\left(t+1\right) \gets n_{ A_{t}}\left(t\right) + 1$.
-		\STATE $\hat{r}_{A_{t}}\left(t+1\right) \gets \frac{n_{ A_{t}}\left(t\right) \cdot \hat{r}_{A_{t}}\left(t\right) + R_{A_{t}}\left(n_{A_{t}}\left(t\right)\right) }{n_{ A_{t}}\left(t+1\right)}$.
-		\STATE $n_{k}\left(t+1\right) \gets n_{ k}\left(t\right)$, $\forall k \not= A_t$.
-		\STATE $\hat{r}_{k}\left(t+1\right) \gets \hat{r}_{k}\left(t\right)$, $\forall k \not= A_t$.
-		\STATE $\ucb_{A_t}\left(t+1\right) \gets \min{\left\{ 1, \hat{r}_{A_{t}}\left(t+1\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{A_t}\left(t+1\right)}}\right\}}$.
-		\STATE $\lcb_{A_t}\left(t+1\right) \gets \max{\left\{ 0, \hat{r}_{A_{t}}\left(t+1\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{A_t}\left(t+1\right)}}\right\}}$.
-		\STATE $\ucb_{k}\left(t+1\right) \gets \ucb_{k}\left(t\right)$, $\forall k \not= A_t$.
-		\STATE $\lcb_{k}\left(t+1\right) \gets \lcb_{k}\left(t\right)$, $\forall k \not= A_t$.
+		\STATE $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$.
+		\STATE $n_{t+1}\left(A_t\right) \gets n_{ A_{t}}\left(t\right) + 1$.
+		\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{ A_{t}}\left(t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
+		\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
+		\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
+		\STATE $\ucb_{t+1}\left(A_t\right) \gets \min{\left\{ 1, \hat{r}_{t+1}\left(A_t\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
+		\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
+		\STATE $\ucb_{t+1}\left(k\right) \gets \ucb_{t}\left(k\right)$, $\forall k \not= A_t$.
+		\STATE $\lcb_{t+1}\left(k\right) \gets \lcb_{t}\left(k\right)$, $\forall k \not= A_t$.
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
