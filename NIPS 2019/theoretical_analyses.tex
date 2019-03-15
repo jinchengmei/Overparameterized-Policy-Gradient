@@ -27,7 +27,7 @@ According to \cref{alg:policy_gradient_uniform_exploration}, the uniform policy 
 \begin{split}
     \sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r\left(A_t\right) \right] } &= \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ {\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ r\left(A_t\right) \right] }} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr }  - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW_t \right)^\top \rvr } \\
     &\le \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{1} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW_t \right)^\top \rvr } \\
-    &\le T^{\frac{2}{3} + \beta} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW_t \right)^\top \rvr }.
+    &= T^{\frac{2}{3} + \beta} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \rvpi\left( \rmW_t \right)^\top \rvr }.
 \end{split}
 \end{equation}
 Denote $\rvpi_t^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}_t\right\}}$. The last two terms can be decomposed as follows, $\forall t \ge T^{\frac{2}{3} + \beta}$,
