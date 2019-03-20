@@ -1,0 +1,129 @@
+\section{Over-Parametrized Logit Learning}
+\label{sec:logitlearning}
+We prove a $O(T^{2/3})$ regret bound for the above policy gradient method.
+However, such rate is not satisfactory especially for the stochastic bandit setting. In this paper we further propose an alternative algorithm based on value learning, called Logit Learning with $\varepsilon$-Greedy Exploration, as shown in \cref{alg:logit_learning_eps_greedy_exploration}. 
+After the random initialization, at each time step $t$, the agent selects the action with the largest logit with probability $1 - \varepsilon_t$, and it uniformly randomly select actions with the other probability $\varepsilon_t$. After taking action and observing rewards, the agent improves its strategies by minimizing the value loss objective $\frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2$, where $\hat{\rvr}\left(t\right)$ is the empirical mean reward estimated from sampled rewards up to step $t$. In each iteration, the agent only update its value neural network using one gradient descent, therefore the logit learning is in an online fashion.
+
+
+\begin{algorithm}[t]
+	\caption{Logit Learning with $\varepsilon$-Greedy Exploration}
+	\label{alg:logit_learning_eps_greedy_exploration}
+	\begin{algorithmic}
+		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
+		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$.
+		\STATE $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+		\STATE $\hat{r}_{k}\left(0\right) \gets 0$, $n_{k}\left(0\right) \gets 0$, $\forall k \in [h]$.
+		\STATE $\ucb_k\left(0\right) \gets 1$, $\lcb_k\left(0\right) \gets 0$, $\forall k \in [h]$.
+		\FOR{$t=0$ {\bfseries to} $T-1$}
+		\STATE $\hat{\Delta}_{k}\left(t\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{k^\prime}\left(t\right) \right\}  - \lcb_{k}\left(t\right)\right\} $, $\forall k \in [h]$.
+		\STATE $\xi_k\left(t\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_k^2\left(t\right)}$, $\forall k \in [h]$.
+		\STATE $\varepsilon_k\left(t\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_k\left(t\right) \right\}$, $\forall k \in [h]$.
+		\STATE $\pi_{k}\left(t\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
+		\STATE $\pi_{k}\left(t\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{ k^\prime}\left(t\right)\right\}$.
+		\STATE $\tilde{\rvpi}_k\left(t\right) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_k\left(t\right)} \right) \cdot  \rvpi\left(t\right) + \varepsilon_k\left(t\right)$, $\forall k \in [h]$.
+		\STATE Sample action $A_{t} \sim \tilde{\rvpi}\left(t\right)\left(\cdot \middle| \rvs \right)$.
+		\STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{ A_{t}}\left(t\right) \right)$.
+		\STATE $\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$.
+		\STATE $n_{A_{t}}\left(t+1\right) \gets n_{ A_{t}}\left(t\right) + 1$.
+		\STATE $\hat{r}_{A_{t}}\left(t+1\right) \gets \frac{n_{ A_{t}}\left(t\right) \cdot \hat{r}_{A_{t}}\left(t\right) + R_{A_{t}}\left(n_{A_{t}}\left(t\right)\right) }{n_{ A_{t}}\left(t+1\right)}$.
+		\STATE $n_{k}\left(t+1\right) \gets n_{ k}\left(t\right)$, $\forall k \not= A_t$.
+		\STATE $\hat{r}_{k}\left(t+1\right) \gets \hat{r}_{k}\left(t\right)$, $\forall k \not= A_t$.
+		\STATE $\ucb_{A_t}\left(t+1\right) \gets \min{\left\{ 1, \hat{r}_{A_{t}}\left(t+1\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{A_t}\left(t+1\right)}}\right\}}$.
+		\STATE $\lcb_{A_t}\left(t+1\right) \gets \max{\left\{ 0, \hat{r}_{A_{t}}\left(t+1\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{A_t}\left(t+1\right)}}\right\}}$.
+		\STATE $\ucb_{k}\left(t+1\right) \gets \ucb_{k}\left(t\right)$, $\forall k \not= A_t$.
+		\STATE $\lcb_{k}\left(t+1\right) \gets \lcb_{k}\left(t\right)$, $\forall k \not= A_t$.
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+\subsection{Theoretical analysis}
+\label{subsec:theoretical_analyses_logit_learning}
+
+It seems difficult to improve \cref{thm:policy_gradient_main_result}, as all the three parts of the regret are almost balanced, i.e., uniform exploration ($ T^{\frac{2}{3} + \beta}$, \cref{eq:total_regret_decomposition}), estimation error ($ T^{\frac{2}{3} + \beta} $, \cref{thm:reward_estimation_hoeffding}), and the cumulative expected loss of neural network policies ($ T^{\frac{2}{3} - \frac{\beta}{2}} $, \cref{thm:dynamic_regret_sublinear}). \cref{alg:policy_gradient_uniform_exploration} learns policies in the primal policy space by maximizing $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$. And it is not necessary that $\rvo\left( \rmW(t)\right)$ is close to $\hat{\rvr}\left(t\right)$, due to the homogeneity invariant property of the softmax. To show the convergence of $\rvpi\left( \rmW(t) \right)^\top \hat{\rvr}\left(t\right)$, every action needs to be pulled many times, which leads to the undesirable results.
+
+We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2$. Although the logit learning is not as practical as the policy gradient, the results are better, as shown in \cref{thm:logit_learning_main_result}.
+
+\begin{thm}
+	\label{thm:logit_learning_main_result}
+	Given value neural networks as shown in \cref{fig:nn_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$, $\alpha > 3$, $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
+	\begin{equation*}
+	\small
+	\begin{split}
+	\sum\limits_{t=0}^{T-1}{ {\rvpi^*}^\top \rvr } - \sum\limits_{t=0}^{T-1}{ \sE \left[ r_{A_t} \right] } \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \ln{h} \cdot T^{\frac{2}{3}} \left(\ln{T}\right)^{\frac{1}{3}}.
+	\end{split}
+	\end{equation*}
+\end{thm}
+\begin{proof}
+	By \citep{seldin2017improved},
+	$\forall t \ge t_1 \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta_k^4 \ln{h}} \right\}}$,
+	\begin{equation*}
+	\small
+	\begin{split}
+	\pr{\left\{ \hat{\Delta}_k\left(t\right) \ge \frac{3}{2} \Delta_k \right\}} \le \left( \frac{\ln{t}}{t \Delta_k^2} \right)^{\alpha - 2} + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
+	\end{split}
+	\end{equation*}
+	With high probability, $\xi_k\left(t\right) \ge \frac{4 \beta \ln{t}}{9 t \Delta_k^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\ln{t}}{\Delta^2}$ times. By Hoeffding's inequality,
+	\begin{equation*}
+	\begin{split}
+	\pr{\left\{ \left\| \hat{\rvr}\left(t\right) - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
+	\end{split}
+	\end{equation*}
+	According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
+	\begin{equation*}
+	\begin{split}
+	&\frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2^2 \\
+	&\quad = \frac{1}{2} \left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
+	&\qquad + \left( \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t\right) \right)^\top \left( \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right) \\
+	&\qquad + \frac{1}{2} \left\| \hat{\rvr}\left(t\right) - \hat{\rvr}\left(t+1\right) \right\|_2^2 \\
+	&\quad \le \left( 1 - \frac{1}{2 h m } \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2^2 \\
+	&\qquad + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \\
+	&\qquad + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }
+	\end{split}
+	\end{equation*}
+	If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \le \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
+	\begin{equation*}
+	\begin{split}
+	&\left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 \\
+	&\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+	&\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+	&\quad \le \frac{\Delta}{5}.
+	\end{split}
+	\end{equation*}
+	If $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 > \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
+	\begin{equation*}
+	\begin{split}
+	\frac{\Delta^2 \sqrt{h}}{\ln{t}} &\le \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \frac{\Delta}{5} \\
+	&< \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2,
+	\end{split}
+	\end{equation*}
+	which implies,
+	\begin{equation*}
+	\begin{split}
+	&\left\| \rvo\left( \rmW(t+1) \right) - \hat{\rvr}\left(t+1\right)\right\|_2 \\
+	&\quad \le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+	&\quad < \frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2.
+	\end{split}
+	\end{equation*}
+	Since $\frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \in \left(0, 1\right)$, after constant numbers of iterations, we have $\left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 \le \frac{\Delta}{5}$ always holds. By the triangle inequality,
+	\begin{equation*}
+	\begin{split}
+	&\left\| \rvo\left( \rmW(t) \right) - \rvr \right\|_\infty \\
+	&\quad \le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_\infty + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
+	&\quad \le \left\| \rvo\left( \rmW(t) \right) - \hat{\rvr}\left(t\right)\right\|_2 + \left\| \hat{\rvr}\left(t\right) - \rvr\right\|_\infty \\
+	&\quad \le \frac{2 \Delta}{5}. \qedhere
+	\end{split}
+	\end{equation*}
+\end{proof}
+
+\begin{lem}
+	\label{lem:logit_l2_loss_parameter_smoothness}
+	$\rmW(t+1) \leftarrow \rmW(t) - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right)\right) - \hat{\rvr}\left(t\right) \right\|_2^2 \right\}}{d \rmW(t)}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
+	\begin{equation*}
+	\begin{split}
+	&\frac{1}{2} \left\| \rvo\left( \rmW\left(t+1\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2 \\
+	&\quad \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW\left(t\right) \right) - \hat{\rvr}\left(t\right) \right\|_2^2.
+	\end{split}
+	\end{equation*}
+\end{lem}
