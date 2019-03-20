@@ -1,6 +1,16 @@
 \section{Background}
 \label{sec:background}
 
+\begin{figure}[t]
+	%\vskip 0.2in
+	\begin{center}
+		\centerline{\includegraphics[width=0.7\columnwidth]{nn_policy_value_vertical.pdf}}
+		\caption{Policy neural network and value neural network.}
+		\label{fig:nn_policy_value}
+	\end{center}
+	\vskip -0.2in
+\end{figure}
+
 We focus on the stochastic bandit setting in this paper where the policy or the values of the actions are represented using a 2-layers neural networks.  
 However, our results can be easily generalized to many other reinforcement learning settings, e.g. state dependent stochastic bandit settings and episodic MDP settings.
 
@@ -33,146 +43,23 @@ where $\Delta(a) = \max_b r(b)- r(a)$, $r(a)$ is the expected reward of the acti
 %\end{equation}
 %where the expectation is over the randomness of action selection, if the agent is using some stochastic strategies.
 
-
 \subsection{Neural Network Value Function Approximation and Policy}
 \label{subsec:nn_value_policy}
 The structure of the value network and the policy network  is a 2-layers fully connected neural network with ReLU activation, as shown in \cref{fig:nn_policy_value}. 
 Each neural network takes the state $\rvs \in \sR^d$ as its input, where without loss of generality we assume that $\left\| \rvs \right\|_2 = 1$.
-The hidden layer of both networks are denoted by $\rvu \triangleq \rmW\rvs\in\sR^m$, and the logit output $\rvo \triangleq \rmA\sigma\left( \rvu\right) \in \sR^h$, where $\sigma$ is element-wise ReLU activation function. 
-The policy network differs the value network with one additional softmax transform layer in order to output probability distributions, where $\rvpi \triangleq f\left( \rvo \right) = f\left( \rmA \sigma\left( \rmW \rvs \right) \right)$, and $f$ is the softmax function. In the rest of the paper we denote the policy $\rvpi$ by $\rvpi(\rmW)$ to emphasize its parametrization by $\rmW$. 
+The hidden layer of both networks are denoted by $\rvu \triangleq \rmW\rvs\in\sR^m$, and the logit output $\rvo \triangleq \rmA\sigma\left( \rvu\right) \in \sR^h$, where $\sigma$ is element-wise ReLU activation function. The policy network differs the value network with one additional softmax transform layer in order to output probability distributions, where $\rvpi \triangleq f\left( \rvo \right) = f\left( \rmA \sigma\left( \rmW \rvs \right) \right)$, and $f$ is the softmax function. 
 
 %Both the value and the policy neural networks take the state feature  $\rvs_i \in \sR^d$ as the input. Then the networks calculate the hidden node value vector by $u_{i,r} \triangleq \rvw_r^\top \rvs_i$, $\forall r \in [m]$. The logit vector is then calculated by $o_{i,k} \triangleq \rva_k^\top \sigma\left( \rvu_i \right)$, $\forall k \in [h]$, where $\sigma$ is element-wise ReLU activation function. The value neural network outputs the logit vector $\rvo_i$. While the policy neural network output probability is the softmax transform of the logit vector, i.e., $\rvpi_i \triangleq f\left( \rvo_i \right) = f\left( \rmA \sigma\left( \rmW \rvs_i \right) \right)$. 
 
-\begin{figure}[t]
-	%\vskip 0.2in
-	\begin{center}
-		\centerline{\includegraphics[width=0.7\columnwidth]{nn_policy_value_vertical.pdf}}
-		\caption{Policy neural network and value neural network.}
-		\label{fig:nn_policy_value}
-	\end{center}
-	\vskip -0.2in
-\end{figure}
-
 %The policy neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{m \times d}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss of the policy neural network can be calculated according to \cref{eq:expected_loss}.
 
-\paragraph{Multi-layered neural networks.} We would like to point that our algorithms and results can be easily extended to general value functions and policies parameterized by multi-layered neural networks \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}. For the sake of simplicity and conciseness, we focus on two-layers neural networks in the paper.
+\paragraph{Initialization of the matrix $\rmA$.} 
+As can be seen later, our algorithm random initializes the weight matrix $\rmA$ and fixes it during learning. 
+This is a common strategy when using over-parametrization neural networks, e.g. see \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and it has been empirically verified that there is no impact on the performance of trained neural networks \citep{hoffer2018fix}.
+In this paper, each element in $\rmA$ is initialized by $a_{k,r} \sim \gU\left\{-1, +1\right\}$, $a_{k,r}$. Some other initializations like $\rva_k \sim \gN(0, \rmI)$ will also work. Thus in the rest of the paper, we denote the policy $\rvpi$ by $\rvpi(\rmW_t)$ to emphasize its parametrization by $\rmW$ at time step $t$. 
+
+\paragraph{Multi-layered neural networks.} We would like to point that our algorithms and results can be easily extended to general value functions and policies parameterized by multi-layered neural networks \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}. For the sake of simplicity and conciseness, we only focus on two-layers neural networks in the paper.
 
 %Although there is only one state, i.e., $n = 1$, and $i$ can be omitted without ambiguity, we choose to keep the subscript $i$ here to make the generalization from the standard bandit setting to the many state dependent setting smoother, and our algorithms work for general $n > 1$. For simplicity, we assume $\left\| \rvs_{i} \right\|_2 = 1$, $\forall i \in [n]$.
 
 %In the case of $n > 1$, for each state $\rvs_i$, there is a state dependent policy $\rvpi_i$. And the agent's goal is to learn totally $n$ policies using only one neural network. We assume $\left\| \rvs_{i} -  \rvs_{j} \right\|_2 \ge \delta > 0 , \ \forall i \not= j$, i.e., no duplicated data, and $\left\| \rvs_{i} \right\|_2 = 1, \ \forall i \in [n]$.
-
-\subsection{Policy Gradient}
-\label{subsec:policy_gradient}
-
-Our first algorithm follows the widely used policy gradient method. 
-Consider at each step $t$, the agent is using $\rvpi\left(\rmW_t\right)$ as shown in \cref{fig:nn_policy_value} as its action selection strategy, then the (expected) regret is equivalent to the cumulative expected loss of $\rvpi\left(\rmW_t\right)$, i.e., 
-\begin{equation}
-\label{eq:vanilla_policy_gradient_expected_regret}
-\begin{split}
-    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \expectation\limits_{A_t \sim \rvpi\left(\rmW_t\right)} \left[ r\left(A_t\right) \right] \right) } = \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \rvpi\left(\rmW_t\right)^\top \rvr \right) },
-\end{split}
-\end{equation}
-by \cref{eq:expected_loss} and \cref{eq:expected_regret}. Using \cref{eq:vanilla_policy_gradient_expected_regret}, at each time step $t$, the agent can use the current neural network policy $\rvpi\left(\rmW_t\right)$ to sample an action, and obtain an estimation of the expected loss $\rvpi\left(\rmW_t\right)^\top \rvr$. Doing policy gradient updates with respect to the neural network weights $\rmW_t$ will arguably decrease the expected loss, thus reduce the expected regret. 
-
-Unfortunately, the vanilla policy gradient often suffers the ``lack of exploration" problem in practice, i.e., some actions can never be explored thus cannot be learned. Therefore, we propose a two stage algorithm combining policy gradient with uniform exploration as shown in \cref{alg:policy_gradient_uniform_exploration}. After the random initialization, at each step $t$, one of the two cases happens. If $t < T^{\frac{2}{3} + \beta}$, then agent gets into a purely ``exploring phase", without learning the policy neural network, while just collecting empirically estimated rewards. If $t \ge T^{\frac{2}{3} + \beta}$, then the agent starts ``playing and learning". The agent samples and takes actions according to the current neural network policy $\rvpi\left(\rmW_t\right)$. In the meanwhile, the agent learns the policy neural network by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
-
-\begin{algorithm}[t]
-   \caption{Policy Gradient with Uniform Exploration}
-\label{alg:policy_gradient_uniform_exploration}
-\begin{algorithmic}
-   \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
-   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-   \STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
-   \FOR{$t=0$ {\bfseries to} $T-1$}
-   \IF{$t < T^{\frac{2}{3} + \beta}$}
-   \STATE (Exploring Phase) Uniformly randomly sample action $A_{t} \in [h]$.
-   \STATE $\rmW_{t+1} \leftarrow \rmW_t$.
-   \ELSE
-   \STATE (Playing-Learning Phase) Sample action $A_{t} \sim \rvpi\left(\rmW_t\right)\left(\cdot \middle| \rvs \right)$.
-   \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
-   \ENDIF
-   \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
-   \STATE $n_{t+1}\left(k\right) \gets \left. 
-		\begin{cases}
-		n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
-		n_{t}\left(k\right), & \text{otherwise}.
-		\end{cases}
-		\right. \qquad$ 
-   %\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
-   %\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
-   $\hat{r}_{t+1}\left(k\right) \gets \left. 
-		\begin{cases}
-		\frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
-		\hat{r}_{t}\left(k\right), & \text{otherwise}.
-		\end{cases}
-		\right.$
-   %\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{ A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
-   %\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
-   \ENDFOR
-\end{algorithmic}
-\end{algorithm}
-
-\subsection{Logit Learning}
-\label{subsec:logit_learning}
-
-Our first proposed algorithm is Logit Learning with $\varepsilon$-Greedy Exploration, as shown in \cref{alg:logit_learning_eps_greedy_exploration}. After the random initialization, at each time step $t$, the agent selects the action with the largest logit with probability $1 - \varepsilon_t$, and it uniformly randomly select actions with the other probability $\varepsilon_t$. After taking action and observing rewards, the agent improves its strategies by minimizing the value loss objective $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$, where $\hat{\rvr}_t$ is the empirical mean reward estimated from sampled rewards up to step $t$. In each iteration, the agent only update its value neural network using one gradient descent, therefore the logit learning is in an online fashion.
-
-
-\begin{algorithm}[t]
-	\caption{Logit Learning with $\varepsilon$-Greedy Exploration}
-	\label{alg:logit_learning_eps_greedy_exploration}
-	\begin{algorithmic}
-		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
-		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-		\STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$. $\ucb_{0}\left(k\right) \gets 1$, $\lcb_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
-		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\hat{\Delta}_{t}\left(k\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}\left(k^\prime\right) \right\}  - \lcb_{t}\left(k\right)\right\} $, $\forall k \in [h]$.
-		\STATE $\xi_t\left(k\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2\left(k\right)}$, $\varepsilon_t\left(k\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t\left(k\right) \right\}$, $\forall k \in [h]$.
-		\STATE $\pi_{t}\left(k\right) \gets \left. 
-		    \begin{cases}
-		    1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}, \\
-		    0, & \text{otherwise}.
-		    \end{cases}
-		    \right.$
-		%\STATE $\pi_{t}\left(k\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
-		%\STATE $\pi_{t}\left(k\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
-		\STATE $\tilde{\pi}_t\left(k\right) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_t\left(k\right)} \right) \cdot  \pi_t\left(k\right) + \varepsilon_t\left(k\right)$, $\forall k \in [h]$.
-		\STATE Sample action $A_{t} \sim \tilde{\rvpi}_t\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
-		\STATE $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$.
-		\STATE $n_{t+1}\left(k\right) \gets \left. 
-		    \begin{cases}
-		    n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
-		    n_{t}\left(k\right), & \text{otherwise}.
-		    \end{cases}
-		    \right. \qquad$
-		%\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
-		%\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
-		$\hat{r}_{t+1}\left(k\right) \gets \left. 
-		    \begin{cases}
-		    \frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
-		    \hat{r}_{t}\left(k\right), & \text{otherwise}.
-		    \end{cases}
-		    \right.$
-		%\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
-		%\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
-		\STATE $\ucb_{t+1}\left(k\right) \gets \left. 
-		    \begin{cases}
-		    \min{\left\{ 1, \hat{r}_{t+1}\left(k\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
-		    \ucb_{t}\left(k\right), & \text{otherwise}.
-		    \end{cases}
-		    \right.$
-		%\STATE $\ucb_{t+1}\left(A_t\right) \gets \min{\left\{ 1, \hat{r}_{t+1}\left(A_t\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
-		%\STATE $\ucb_{t+1}\left(k\right) \gets \ucb_{t}\left(k\right)$, $\forall k \not= A_t$.
-		\STATE $\lcb_{t+1}\left(k\right) \gets \left. 
-		    \begin{cases}
-		    \max{\left\{ 0, \hat{r}_{t+1}\left(k\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
-		    \lcb_{t}\left(k\right), & \text{otherwise}.
-		    \end{cases}
-		    \right.$
-		%\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
-		%\STATE $\lcb_{t+1}\left(k\right) \gets \lcb_{t}\left(k\right)$, $\forall k \not= A_t$.
-		\ENDFOR
-	\end{algorithmic}
-\end{algorithm}
-
-\paragraph{Initialization of the matrix $\mathbf{A}$.} Note that in \cref{alg:policy_gradient_uniform_exploration} and \cref{alg:logit_learning_eps_greedy_exploration}, after the random initialization $a_{k,r} \sim \gU\left\{-1, +1\right\}$, $a_{k,r}$ is fixed during learning, which is a common assumption in literature \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and it has been empirically verified that there is no impact on the performance of trained neural networks \citep{hoffer2018fix}. Other initializations like $\rva_k \sim \gN(0, \rmI)$ also work.

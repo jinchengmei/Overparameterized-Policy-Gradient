@@ -1,15 +1,47 @@
-\section{Theoretical Analyses}
-\label{sec:theoretical_analyses}
+\section{Over-parametrized Policy Gradient}
+\label{sec:policy_gradient}
 
-In this section, we first prove the $T^{\frac{2}{3}}\ln{T}$ finite time regret of \cref{alg:policy_gradient_uniform_exploration}, and then we prove the optimal finite time regret of \cref{alg:logit_learning_eps_greedy_exploration}.
+Our first algorithm follows the widely used policy gradient method, but with an extra sub-linear exploration phase as shown in \cref{alg:policy_gradient_uniform_exploration}. In particular, we set the first $T^{\frac{2}{3} + \beta}$ rounds as the ``exploration phase'', during which the agent purely collects rewards without learning the policy neural networks. 
+After the exploration phase, the agent samples and takes actions according to the current neural network policy $\rvpi\left(\rmW_t\right)$. In the meanwhile, the agent learns the policy neural network by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
 
-\subsection{Policy Gradient}
-\label{subsec:theoretical_analyses_policy_gradient}
+\begin{algorithm}[t]
+   \caption{Policy Gradient with Uniform Exploration}
+\label{alg:policy_gradient_uniform_exploration}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
+   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+   \STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
+   \FOR{$t=0$ {\bfseries to} $T-1$}
+   \IF{$t < T^{\frac{2}{3} + \beta}$}
+   \STATE (Exploring Phase) Uniformly randomly sample action $A_{t} \in [h]$.
+   \STATE $\rmW_{t+1} \leftarrow \rmW_t$.
+   \ELSE
+   \STATE (Playing-Learning Phase) Sample action $A_{t} \sim \rvpi\left(\rmW_t\right)\left(\cdot \middle| \rvs \right)$.
+   \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
+   \ENDIF
+   \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
+   \STATE $n_{t+1}\left(k\right) \gets \left. 
+		\begin{cases}
+		n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
+		n_{t}\left(k\right), & \text{otherwise}.
+		\end{cases}
+		\right. \qquad$ 
+   %\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
+   %\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
+   $\hat{r}_{t+1}\left(k\right) \gets \left. 
+		\begin{cases}
+		\frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
+		\hat{r}_{t}\left(k\right), & \text{otherwise}.
+		\end{cases}
+		\right.$
+   %\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{ A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
+   %\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
+   \ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
-We first present the main results as shown in \cref{thm:policy_gradient_main_result}, and then discuss the detailed proof ideas and intuitions.
 
-\subsubsection{Main Results}
-\label{subsubsec:main_results_policy_gradient}
+Our first main results is a $\tilde{O}(T^{2/3})$ regret for the above policy gradient method, as shown in \cref{thm:policy_gradient_main_result}.
 
 \begin{thm}
 \label{thm:policy_gradient_main_result}
@@ -51,8 +83,8 @@ Taking $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{T}} } }{ 3 \ln{T}}
 
 \cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the neural network policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the neural network policy.  While in the second playing-learning phase, since the loss estimation is good, the neural network policy will keep reducing its dynamic expected loss, which is highly related with its true expected loss, i.e., the expected regret of the playing-learning phase.
 
-\subsubsection{Exploring Phase}
-\label{subsubsec:exploring_phase}
+\subsection{Exploring Phase}
+\label{subsec:exploring_phase}
 
 The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides us good estimations of the true mean loss/reward as follows.
 \begin{thm}
@@ -80,10 +112,10 @@ Therefore,
 since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cref{eq:loss_estimation_hoeffding}, 
 \end{proof}
 
-\subsubsection{Playing-Learning Phase}
-\label{subsubsec:playing_learning_phase}
+\subsection{Playing-Learning Phase}
+\label{subsec:playing_learning_phase}
 
-The good estimation of the true mean loss $\hat{\rvr}_t$ obtained at the end of the exploring phase will be used to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the recently proposed optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsubsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
+The good estimation of the true mean loss $\hat{\rvr}_t$ obtained at the end of the exploring phase will be used to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the recently proposed optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
 \begin{thm}
 \label{thm:dynamic_regret_sublinear}
     Denote $\rvpi_t^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}_t\right\}}$. If $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, then the dynamic regret in the playing-learning phase satisfies,
@@ -220,7 +252,7 @@ where $\rvw_r(t)$ is the $r$th row vector of $\rmW_t$.
 \end{equation}
 \end{lem}
 
-Now by the key insight of the recent progresses of the over-parameterized neural network optimization theory, with constants probability, the pseudo gradient norm is lower bounded by the objective \citep{li2018learning}. However, unlike the supervised learning, RL has exploration issue, as shown in \cref{subsubsec:exploration_in_policy_learning}. Our result contains an exploration related term, which is consistent with \cref{eq:logit_derivative_lower_bound}, making guarantees for exploring the optimal action necessary during learning.
+Now by the key insight of the recent progresses of the over-parameterized neural network optimization theory, with constants probability, the pseudo gradient norm is lower bounded by the objective \citep{li2018learning}. However, unlike the supervised learning, RL has exploration issue, as shown in \cref{subsec:exploration_in_policy_learning}. Our result contains an exploration related term, which is consistent with \cref{eq:logit_derivative_lower_bound}, making guarantees for exploring the optimal action necessary during learning.
 
 \begin{lem}
 \label{lem:gradient_lower_bound}
@@ -234,10 +266,10 @@ Now by the key insight of the recent progresses of the over-parameterized neural
 
 \cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_{t}\left(k\right) \right\}$, with enough exploration of the suggorate optimal action ($\pi_t\left(\hat{k}_t^*\right) > c > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:empirically_expected_reward_parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
 
-\subsubsection{Exploration of the Optimal Action}
-\label{subsubsec:exploration_in_policy_learning}
+\subsection{Exploration of the Optimal Action}
+\label{subsec:exploration_in_policy_learning}
 
-In \cref{subsec:policy_gradient}, it is claimed that the vanilla policy gradient will suffer the lack of exploration issue. Consider the logit derivative of the true mean reward,
+Consider the logit derivative of the true mean reward,
 \begin{equation}
 \label{eq:logit_derivative}
 \begin{split}
@@ -276,83 +308,3 @@ Policy update using \cref{eq:logit_derivative} satisfies, $\forall t \ge 0$,
 \end{equation*}
 \end{lem}
 \cref{lem:optimal_probability_increse_parameter_space} indicates replacing $c$ in \cref{thm:policy_gradient_main_result} will not incur any additional regret dependent on $T$.
-
-\subsection{Logit Learning}
-\label{subsec:theoretical_analyses_logit_learning}
-
-It seems difficult to improve \cref{thm:policy_gradient_main_result}, as all the three parts of the regret are almost balanced, i.e., uniform exploration ($ T^{\frac{2}{3} + \beta}$, \cref{eq:total_regret_decomposition}), estimation error ($ T^{\frac{2}{3} + \beta} $, \cref{thm:reward_estimation_hoeffding}), and the cumulative expected loss of neural network policies ($ T^{\frac{2}{3} - \frac{\beta}{2}} $, \cref{thm:dynamic_regret_sublinear}). \cref{alg:policy_gradient_uniform_exploration} learns policies in the primal policy space by maximizing $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$. And it is not necessary that $\rvo\left( \rmW_t\right)$ is close to $\hat{\rvr}_t$, due to the homogeneity invariant property of the softmax, i.e, $\rvpi\left(\rvo + a \cdot \rvone \right) = \rvpi\left( \rvo \right)$, $\forall a \in \sR$. To show the convergence of $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$, every action needs to be pulled many times, which leads to the undesirable regret results.
-
-We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$. Although the logit learning is not as practical as the policy gradient, the results are better, as shown in \cref{thm:logit_learning_main_result}.
-
-\begin{thm}
-\label{thm:logit_learning_main_result}
-    Given value neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$, $\alpha > 3$, $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
-\begin{equation*}
-\small
-\begin{split}
-    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)}  \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \ln{h} \cdot T^{\frac{2}{3}} \left(\ln{T}\right)^{\frac{1}{3}}.
-\end{split}
-\end{equation*}
-\end{thm}
-\begin{proof}
-    By Proposition 2 of \citep{seldin2017improved},
-    $\forall t \ge t_1 \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta\left(k\right)^4 \ln{h}} \right\}}$,
-\begin{equation*}
-\begin{split}
-    \pr{\left\{ \hat{\Delta}_t\left(k\right) \ge \frac{3}{2} \Delta\left(k\right) \right\}} \le \left( \frac{\ln{t}}{t \Delta\left(k\right)^2} \right)^{\alpha - 2} + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
-\end{split}
-\end{equation*}
-With high probability, $\xi_t\left(k\right) \ge \frac{4 \beta \ln{t}}{9 t \Delta\left(k\right)^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\ln{t}}{\Delta^2}$ times. By Hoeffding's inequality,
-\begin{equation*}
-\begin{split}
-    \pr{\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
-\end{split}
-\end{equation*}
-According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
-\begin{equation*}
-\begin{split}
-    \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2^2 &= \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left( \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right)^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t+1} \right) + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2 \\
-    &\le \left( 1 - \frac{1}{2 h m } \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2^2 + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }.
-\end{split}
-\end{equation*}
-If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
-\begin{equation*}
-\begin{split}
-    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\le \frac{\Delta}{5}.
-\end{split}
-\end{equation*}
-If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
-\begin{equation*}
-\begin{split}
-    \frac{\Delta^2 \sqrt{h}}{\ln{t}} &\le \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \frac{\Delta}{5} \\
-    &< \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2,
-\end{split}
-\end{equation*}
-which implies,
-\begin{equation*}
-\begin{split}
-    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &< \frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2.
-\end{split}
-\end{equation*}
-Since $\frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \in \left(0, 1\right)$, after constant numbers of iterations, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$ always holds. By the triangle inequality,
-\begin{equation*}
-\begin{split}
-    \left\| \rvo\left( \rmW_t \right) - \rvr \right\|_\infty &\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_\infty + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
-    &\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
-    &\le \frac{2 \Delta}{5}. \qedhere
-\end{split}
-\end{equation*}
-\end{proof}
-
-\begin{lem}
-\label{lem:logit_l2_loss_parameter_smoothness}
-$\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
-\begin{equation*}
-\begin{split}
-    \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
-\end{split}
-\end{equation*}
-\end{lem}
