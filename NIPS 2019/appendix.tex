@@ -73,7 +73,7 @@ where $\tilde{\rmD} \in \sR^{h \times h}$ is a diagonal matrix, and $\tilde{\rmD
     \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \triangleq  \rmD(t) \rmA^\top \left[ \Delta\left( \rvpi\left(\rmW_t\right) \right) - \rvpi\left(\rmW_t\right) \rvpi\left(\rmW_t\right)^\top \right] \hat{\rvr}_t \rvs^\top.
 \end{split}
 \end{equation*}
-where $\rmD_{r,r}(t) \triangleq \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\forall \tau > 0$, with probability at least $1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, $\forall t \le \frac{\tau}{ 2 \eta }$, $\forall r \in [m]$,
+where $\rmD_{r,r}(t) \triangleq \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\forall \tau > 0$, $\forall r \in [m]$, with probability at least $1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation*}
 	\frac{d\tilde{\ell}_t}{d \rvw_r(t)} = \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rvw_r(t)},
 \end{equation*}
@@ -125,6 +125,24 @@ which implies if $\left| \rvw_r(0)^\top \rvs \right| > \tau$, then,
 	&= \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}. \qedhere
 \end{split}
 \end{equation*}
+\end{proof}
+
+\begin{lem}[Chernoff]
+\label{lem:chernoff}
+    Let $X_1, X_2, \dots, X_n \sim B(1, p)$ be independent Bernoulli random variables. Define $X = \sum\limits_{i=1}^{n}{ X_i  }$. Denote $\mu \triangleq \sE\left[ X \right]$. $\forall \alpha \in [0,1]$,
+\begin{equation*}
+    \pr\left\{ X \le (1 - \alpha) \mu \right\} \le \exp\left\{ - \frac{\alpha^2 \mu}{2} \right\}.
+\end{equation*}
+\end{lem}
+
+\begin{lem}
+With probability at least $1 - \exp\left\{ - \frac{m}{8} \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right) \right\}$, at least $\frac{m}{2}\left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right) $ of $\rvw_r$ satisfies, $\forall t \le \frac{\tau}{ 2 \eta }$,
+\begin{equation*}
+	\frac{d\tilde{\ell}_t}{d \rvw_r(t)} = \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rvw_r(t)}.
+\end{equation*}
+\end{lem}
+\begin{proof}
+Use \cref{lem:gradient_coupling} and \cref{lem:chernoff} with $\alpha = \frac{1}{2}$, $p = 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, and $\mu = m \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right)$.
 \end{proof}
 
 \subsection{Proof of \cref{lem:empirically_expected_reward_parameter_smoothness}}
