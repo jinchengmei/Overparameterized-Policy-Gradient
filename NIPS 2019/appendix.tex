@@ -37,10 +37,10 @@ where the last inequality is according to \cref{lem:Hr_spectral_norm_upper_bound
 where $\left\| \cdot \right\|_2$ is the spectral norm of a matrix.
 \end{lem}
 \begin{proof}
-    Denote $\rmH \triangleq \frac{d \rmH\left( \rvpi \left(\rvo \right) \right) \rvr}{d \rvo } \in \sR^{h \times h}$. $\forall s, t \in [h]$,
+    Denote $\rmS \triangleq \frac{d \rmH\left( \rvpi \left(\rvo \right) \right) \rvr}{d \rvo } \in \sR^{h \times h}$. $\forall s, t \in [h]$,
 \begin{equation*}
 \begin{split}
-    H_{s, t} &= \frac{d \pi_{s} \left( r_{s} - \rvpi^\top \rvr \right) }{d o_{t}} \\
+    S_{s, t} &= \frac{d \pi_{s} \left( r_{s} - \rvpi^\top \rvr \right) }{d o_{t}} \\
     &= \frac{d \pi_{s} }{d o_{t}} \left( r_{s} - \rvpi^\top \rvr \right) + \pi_{s} \frac{d \left( r_{s} - \rvpi^\top \rvr \right) }{d o_{t}} \\
     &=\left ( \sI\left\{ s = t\right\} \pi_{t} -  \pi_{s } \pi_{t} \right) \left( r_{s} - \rvpi^\top \rvr \right) - \pi_{s} \left( \pi_{t} r_{t} - \pi_{t} \rvpi^\top \rvr \right).
 \end{split}
@@ -48,7 +48,7 @@ where $\left\| \cdot \right\|_2$ is the spectral norm of a matrix.
 For any vector $\rvx \in \sR^h$, 
 \begin{equation*}
 \begin{split}
-    \rvx^\top \rmH \rvx &= \sum\limits_{s=1}^{h}{ \sum\limits_{t=1}^{h}{ H_{s,t} x_s x_t} } \\
+    \rvx^\top \rmS \rvx &= \sum\limits_{s=1}^{h}{ \sum\limits_{t=1}^{h}{ S_{s,t} x_s x_t} } \\
     &= \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] + \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \left( \expectation\limits_{\rvpi}\left[ \rvx \right] \right)^2  - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] + \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \left( \expectation\limits_{\rvpi}\left[ \rvx \right] \right)^2 \\
     &\le \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] + \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \left( \expectation\limits_{\rvpi}\left[ \rvx \right] \right)^2 \\
     &\le \left\| \rvpi \right\|_2 \cdot \left\| \rvr \cdot \rvx \cdot \rvx \right\|_2 + 2 \cdot \left\| \rvpi \right\|_2 \cdot \left\| \rvr \cdot \rvx \right\|_2 \cdot \left\| \rvpi \right\|_2 \cdot \left\| \rvx \right\|_2 + \left\| \rvpi \right\|_2^2 \cdot \left\| \rvr \cdot \rvx \right\|_2^2 \\
