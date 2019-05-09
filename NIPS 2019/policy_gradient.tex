@@ -176,10 +176,10 @@ Rearranging and summing up from $T^{\frac{2}{3} + \beta} + 1$ to $T$,
 By the Root-Mean Square-Arithmetic Mean inequality,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - T^{\frac{2}{3}+ \beta} \right) \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2}} \le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
+    \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - T^{\frac{2}{3}+ \beta} \right) \cdot \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2}} \le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
 \end{split}
 \end{equation*}
-Let $\tau = \sigma$ in \cref{lem:gradient_coupling}. Let $\sigma = \frac{1}{\sqrt{m}}$ and $T \le \frac{\tau}{2 \eta}$ such that \cref{lem:gradient_coupling} can be used during all the playing-learning phase, we have $m \ge \frac{T^2}{h^2}$.
+Let $\sigma = \frac{2 \sqrt{2}}{\sqrt{\pi m}}$ and $\tau = \frac{\sigma \sqrt{\pi}}{2 \sqrt{2}} = \frac{1}{\sqrt{m}}$ in \cref{lem:gradient_coupling}. Since $m \ge \frac{T^2}{h^2}$, we have $T \le \frac{\tau}{2 \eta}$ such that \cref{lem:gradient_coupling} holds during all the playing-learning phase. According to \cref{lem:gradient_coupling_in_total}, with probability at least $1 - \exp\left\{ - \frac{m}{8} \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right) \right\} = 1 - \exp\left\{ - \frac{m}{16} \right\} \ge 1 - \exp\left\{ - \frac{T^2}{16 h} \right\}$,
 \end{proof}
 
 
