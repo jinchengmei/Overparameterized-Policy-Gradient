@@ -188,7 +188,7 @@ Let $\tau = \sigma$ in \cref{lem:gradient_coupling}. Let $\sigma = \frac{1}{\sqr
 
 \begin{lem}
 \label{lem:logit_smoothness}
-Let $\rvpi\left( \rvo^\prime \right)$ and $\rvpi\left( \rvo \right)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ 0, 1\right]^h$,
+Let $\rvpi\left( \rvo^\prime \right)$ and $\rvpi\left( \rvo \right)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ -1, 1\right]^h$,
 \begin{equation*}
     \rvpi\left( \rvo^\prime \right)^\top \rvr \le \rvpi\left( \rvo \right)^\top \rvr + \left\langle \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle + \left\| \rvo^\prime - \rvo \right\|_2^2.
 \end{equation*}

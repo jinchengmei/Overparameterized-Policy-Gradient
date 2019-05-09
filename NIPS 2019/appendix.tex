@@ -2,7 +2,7 @@
 
 \subsection{Proof of \cref{lem:logit_smoothness}}
 
-{\bf \cref{lem:logit_smoothness}.} Let $\rvpi\left( \rvo^\prime \right)$ and $\rvpi\left( \rvo \right)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ 0, 1\right]^h$,
+{\bf \cref{lem:logit_smoothness}.} Let $\rvpi\left( \rvo^\prime \right)$ and $\rvpi\left( \rvo \right)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ -1, 1\right]^h$,
 \begin{equation*}
     \rvpi\left( \rvo^\prime \right)^\top \rvr \le \rvpi\left( \rvo \right)^\top \rvr + \left\langle \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle + \left\| \rvo^\prime - \rvo \right\|_2^2.
 \end{equation*}
@@ -30,7 +30,7 @@ where the last inequality is according to \cref{lem:Hr_spectral_norm_upper_bound
 
 \begin{lem}
 \label{lem:Hr_spectral_norm_upper_bound}
-    Let $\rvo \in \sR^h$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$ at state $\rvs$. Denote $\rmH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{h \times h}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. $\forall \rvr \in \left[ 0, 1\right]^h$,
+    Let $\rvo \in \sR^h$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$ at state $\rvs$. Denote $\rmH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{h \times h}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. $\forall \rvr \in \left[ -1, 1\right]^h$,
 \begin{equation*}
     \left\| \frac{d \rmH\left( \rvpi \left(\rvo \right) \right) \rvr}{d \rvo } \right\|_2 \le 2,
 \end{equation*}
