@@ -205,7 +205,7 @@ Combining the two above results,
 
 \begin{lem}
 \label{lem:logit_upper_bound_parameter}
-Denote $k_* \triangleq \argmax\limits_{k \in [h]}\left\{ \left| o_{k}^\prime - o_{k} \right| \right\}$. Let $\rvo$ and $\rvo^\prime$ be the logit vectors of $\rmW$, respectively, i.e.,
+Let $\rvo$ and $\rvo^\prime$ be the logit vectors of  $\rmW$ and $\rmW^\prime$, respectively, i.e.,
 \begin{equation*}
 \begin{split}
     &o_{k} = \sum\limits_{r=1}^{m}{ a_{k,r} \cdot \sigma\left( u_{r} \right)} = \sum\limits_{r=1}^{m}{ a_{k,r} \cdot \sigma\left(\rvw_r^\top \rvs \right)} \\
@@ -220,7 +220,7 @@ $\forall k \in [h]$. Then,
 \end{equation*}
 \end{lem}
 \begin{proof}
-By the definition of the logit, and the $1$-Lipschitzness of ReLU,
+Denote $k_* \triangleq \argmax\limits_{k \in [h]}\left\{ \left| o_{k}^\prime - o_{k} \right| \right\}$. By the $1$-Lipschitzness of ReLU,
 \begin{equation*}
 \begin{split}
     \left\| \rvo^\prime - \rvo \right\|_2^2 &\le \sum\limits_{k = 1}^{h}{ \left\| \rvo^\prime - \rvo \right\|_\infty^2} \\
