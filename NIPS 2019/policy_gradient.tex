@@ -10,7 +10,7 @@ After the exploration phase, the agent samples and takes actions according to th
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
    \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-   \STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
+   \STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \IF{$t < T^{\frac{2}{3} + \beta}$}
    \STATE (Exploring Phase) Uniformly randomly sample action $A_{t} \in [h]$.
@@ -20,22 +20,22 @@ After the exploration phase, the agent samples and takes actions according to th
    \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
    \ENDIF
    \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
-   \STATE $n_{t+1}\left(k\right) \gets \left. 
+   \STATE $n_{t+1}(k) \gets \left. 
 		\begin{cases}
-		n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
-		n_{t}\left(k\right), & \text{otherwise}.
+		n_{t}(k) + 1, & \text{if } k = A_t, \\
+		n_{t}(k), & \text{otherwise}.
 		\end{cases}
 		\right. \qquad$ 
    %\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
-   %\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
-   $\hat{r}_{t+1}\left(k\right) \gets \left. 
+   %\STATE $n_{t+1}(k) \gets n_{t}(k)$, $\forall k \not= A_t$.
+   $\hat{r}_{t+1}(k) \gets \left. 
 		\begin{cases}
-		\frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
-		\hat{r}_{t}\left(k\right), & \text{otherwise}.
+		\frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{k}\left(n_{t}(k)\right) }{n_{t+1}(k)}, & \text{if } k = A_t, \\
+		\hat{r}_{t}(k), & \text{otherwise}.
 		\end{cases}
 		\right.$
    %\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{ A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
-   %\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
+   %\STATE $\hat{r}_{t+1}(k) \gets \hat{r}_{t}(k)$, $\forall k \not= A_t$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
@@ -95,11 +95,11 @@ The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides u
 \end{equation*}
 \end{thm}
 \begin{proof}
-    At step $t \ge T^{\frac{2}{3} + \beta}$, the $k$th action is sampled $n_{t}\left(k\right) \ge \frac{T^{\frac{2}{3} + \beta} }{h}$ times because of the exploring phase, $\forall k \in [h]$. By Hoeffding's inequality, $\forall k \in [h]$,
+    At step $t \ge T^{\frac{2}{3} + \beta}$, the $k$th action is sampled $n_{t}(k) \ge \frac{T^{\frac{2}{3} + \beta} }{h}$ times because of the exploring phase, $\forall k \in [h]$. By Hoeffding's inequality, $\forall k \in [h]$,
 \begin{equation}
 \label{eq:loss_estimation_hoeffding}
 \begin{split}
-    \pr\left\{ \left| \hat{r}_{t}\left(k\right) - r\left(k\right) \right| > T^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{t}\left(k\right) \cdot T^{2\beta - \frac{2}{3}} \right\} \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
+    \pr\left\{ \left| \hat{r}_{t}(k) - r(k) \right| > T^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{t}(k) \cdot T^{2\beta - \frac{2}{3}} \right\} \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
 \end{split}
 \end{equation}
 Therefore,
@@ -188,26 +188,26 @@ Let $\tau = \sigma$ in \cref{lem:gradient_coupling}. Let $\sigma = \frac{1}{\sqr
 
 \begin{lem}
 \label{lem:logit_smoothness}
-Let $\rvpi\left( \rvo^\prime \right)$ and $\rvpi\left( \rvo \right)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ -1, 1\right]^h$,
+Let $\rvpi(\rvo^\prime)$ and $\rvpi( \rvo)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ -1, 1\right]^h$,
 \begin{equation*}
-    \rvpi\left( \rvo^\prime \right)^\top \rvr \le \rvpi\left( \rvo \right)^\top \rvr + \left\langle \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle + \left\| \rvo^\prime - \rvo \right\|_2^2.
+    \rvpi(\rvo^\prime)^\top \rvr \le \rvpi(\rvo)^\top \rvr + \left\langle \frac{d \rvpi(\rvo)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle + \left\| \rvo^\prime - \rvo \right\|_2^2.
 \end{equation*}
 \end{lem}
-Let $\rvo_{t+1} = \rvo_{t} + \eta \cdot \frac{d \rvpi\left( \rvo_{t} \right)^\top \hat{\rvr}_t}{d \rvo_{t}}$, and let $\rvr = - \hat{\rvr}_t$, $\eta = \frac{1}{2}$ in \cref{lem:logit_smoothness},
+Let $\rvo_{t+1} = \rvo_{t} + \eta \cdot \frac{d \rvpi(\rvo_{t})^\top \hat{\rvr}_t}{d \rvo_{t}}$, and let $\rvr = - \hat{\rvr}_t$, $\eta = \frac{1}{2}$ in \cref{lem:logit_smoothness},
 \begin{equation*}
 \begin{split}
 \small
-    \rvpi\left( \rvo_{t+1} \right)^\top \hat{\rvr}_t - \rvpi\left( \rvo_{t} \right)^\top \hat{\rvr}_t \ge\frac{1}{4} \left\| \frac{d \rvpi\left( \rvo_{t} \right)^\top \hat{\rvr}_t}{d \rvo_{t}} \right\|_2^2.
+    \rvpi\left( \rvo_{t+1} \right)^\top \hat{\rvr}_t - \rvpi(\rvo_{t})^\top \hat{\rvr}_t \ge\frac{1}{4} \left\| \frac{d \rvpi(\rvo_{t})^\top \hat{\rvr}_t}{d \rvo_{t}} \right\|_2^2.
 \end{split}
 \end{equation*}
 Note the logit derivative norm is lower bounded by loss,
 \begin{equation}
 \label{eq:logit_derivative_lower_bound}
 \begin{split}
-    \left\| \frac{d \rvpi\left( \rvo_{t} \right)^\top \hat{\rvr}_t}{d \rvo_{t}} \right\|_2 \ge \pi_t\left(\hat{k}_t^*\right) \cdot \left( \hat{r}_t\left(\hat{k}_t^*\right) - \rvpi\left( \rvo_{t} \right)^\top \hat{\rvr}_t \right),
+    \left\| \frac{d \rvpi(\rvo_{t})^\top \hat{\rvr}_t}{d \rvo_{t}} \right\|_2 \ge \pi_{t}(\hat{k}_t^*) \cdot \left( \hat{r}_{t}(\hat{k}_t^*) - \rvpi(\rvo_{t})^\top \hat{\rvr}_t \right),
 \end{split}
 \end{equation}
-where $\hat{k}_t^* \triangleq \argmax\limits_{ k \in [h]}{\left\{ \hat{r}_t\left(k\right) \right\}}$. Therefore, by \cref{lem:logit_smoothness} and \cref{eq:logit_derivative_lower_bound}, we can derive similar relationship for $\delta_t$ and sublinear regret for update in the logit space. However, in practice, $\rvpi$ is updated in the parameter space. When the parameters are updated from $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$ to ${\rmW^\prime}^\top \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$,
+where $\hat{k}_t^* \triangleq \argmax\limits_{ k \in [h]}{\left\{ \hat{r}_t(k) \right\}}$. Therefore, by \cref{lem:logit_smoothness} and \cref{eq:logit_derivative_lower_bound}, we can derive similar relationship for $\delta_t$ and sublinear regret for update in the logit space. However, in practice, $\rvpi$ is updated in the parameter space. When the parameters are updated from $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$ to ${\rmW^\prime}^\top \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$,
 \begin{equation*}
 \begin{split}
     \rvo^\prime - \rvo = \rmA \left[ \sigma \left( \rmW^\prime \rvs \right) - \sigma \left( \rmW \rvs \right) \right].
@@ -256,15 +256,15 @@ Now by the key insight of the recent progresses of the over-parameterized neural
 
 \begin{lem}
 \label{lem:gradient_lower_bound}
-	Denote $\hat{k}_t^* \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{t}\left(k\right) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}_t$. If $\pi_t\left(\hat{k}_t^*\right) > c > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
+	Denote $\hat{k}_t^* \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{t}(k) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}_t$. If $\pi_{t}(\hat{k}_t^*) > c > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d\tilde{\ell}_t}{d \rvw_r(t)} \right\|_2 \ge c \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_{t}\left(k\right) \right\} - \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t \right) .
+	\left\| \frac{d\tilde{\ell}_t}{d \rvw_r(t)} \right\|_2 \ge c \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_{t}(k) \right\} - \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t \right) .
 \end{split}
 \end{equation*}
 \end{lem}
 
-\cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_{t}\left(k\right) \right\}$, with enough exploration of the suggorate optimal action ($\pi_t\left(\hat{k}_t^*\right) > c > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:empirically_expected_reward_parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
+\cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_{t}(k) \right\}$, with enough exploration of the suggorate optimal action ($\pi_{t}(\hat{k}_t^*) > c > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:empirically_expected_reward_parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
 
 \subsection{Exploration of the Optimal Action}
 \label{subsec:exploration_in_policy_learning}
@@ -273,38 +273,38 @@ Consider the logit derivative of the true mean reward,
 \begin{equation}
 \label{eq:logit_derivative}
 \begin{split}
-    \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo} = \left[ \Delta\left( \rvpi \right) - \rvpi \rvpi^\top \right] \rvr,
+    \frac{d \rvpi( \rvo)^\top \rvr}{d \rvo} = \left[ \Delta(\rvpi) - \rvpi \rvpi^\top \right] \rvr,
 \end{split}
 \end{equation}
-where $\Delta\left( \rvpi \right) \in \sR^{h \times h}$ is a diagonal matrix with $\Delta\left( \rvpi \right)_{k,k} = \pi_{k}$, $\forall k \in [h]$. Suppose the $k$th action is worth learning, i.e, $r\left(k\right) - \rvpi^\top \rvr > 0$ is large, meaning this action has mean reward $r\left(k\right)$ much larger than the expected mean reward of the current policy, so the agent should increase its action logit. But if $\pi_{k}$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi_{k}$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi_{k}$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
+where $\Delta(\rvpi) \in \sR^{h \times h}$ is a diagonal matrix with $\rvpi$ as its diagonal. Suppose the $k$th action is worth learning, i.e, $r(k) - \rvpi^\top \rvr > 0$ is large, meaning this action has mean reward $r(k)$ much larger than the expected mean reward of the current policy, so the agent should increase its action logit. But if $\pi(k)$ is very close to zero, the increase of the $k$th action logit will be small. Since $\pi(k)$ is small, the $k$th action will be sampled rarely, and with other action logits increasing, $\pi(k)$ will be even smaller, which makes eventually the $k$th action cannot be sampled and learned any more.
 
-\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{t}\left(k\right) > c > 0$ should hold for some constant $c$. In particular, to learn an optimal policy, $\pi_{t}\left(k^*\right) > c > 0$ should be guaranteed, $\forall t \ge 0$, where $r\left(k^*\right) = \max\limits_{k \in \left[ h \right]}\left\{ r\left(k\right) \right\}$.
+\cref{eq:logit_derivative} indicates that to learn the $k$th action, $\pi_{t}(k) > c > 0$ should hold for some constant $c$. In particular, to learn an optimal policy, $\pi_{t}(k^*) > c > 0$ should be guaranteed, $\forall t \ge 0$, where $r(k^*) = \max\limits_{k \in \left[ h \right]}\left\{ r(k) \right\}$.
 
 Consider policy update using \cref{eq:logit_derivative}. $\forall \eta > 0$, $\forall k \in [h]$,
 \begin{equation*}
 \label{eq:logit_increment_logit_space}
 \begin{split}
 \small
-    o_{t+1}\left(k\right) - o_{t}\left(k\right) = \eta \cdot \pi_{t}\left(k\right) \cdot \left( r\left(k\right) - \rvpi\left( \rvo_{t} \right)^\top \rvr \right),
+    o_{t+1}(k) - o_{t}(k) = \eta \cdot \pi_{t}(k) \cdot \left( r(k) - \rvpi(\rvo_{t})^\top \rvr \right),
 \end{split}
 \end{equation*}
-which mean as long as $\pi_{t}\left(k\right) > 0$, for any valuable action $k$ with $r\left(k\right) -  \rvpi\left( \rvo_{t} \right)^\top \rvr > 0$, the action logit will increase. While for any bad actions with $r\left(k\right) -  \rvpi\left( \rvo_{t} \right)^\top \rvr < 0$, their logits will decrease.
+which mean as long as $\pi_{t}(k) > 0$, for any valuable action $k$ with $r(k) -  \rvpi(\rvo_{t})^\top \rvr > 0$, the action logit will increase. While for any bad actions with $r(k) -  \rvpi(\rvo_{t})^\top \rvr < 0$, their logits will decrease.
 
-Consider the uniform policy $\rvpi\left( \rvo(0) \right)$, with $\pi_{0}\left(k^*\right) = \frac{1}{h} \in \Omega(1)$. Also note $r\left(k^*\right) - \rvpi\left( \rvo(0) \right)^\top \rvr$ is larger than any other action $k$, because $k^*$ is the the optimal action. Therefore, the optimal action logit will have the largest positive increment than all the other suboptimal actions. After the softmax transform, the optimal action probability will be larger than its previous value. 
+Consider the uniform policy $\rvpi( \rvo_0)$, with $\pi_{0}(k^*) = \frac{1}{h} \in \Omega(1)$. Also note $r(k^*) - \rvpi( \rvo_0)^\top \rvr$ is larger than any other action $k$, because $k^*$ is the the optimal action. Therefore, the optimal action logit will have the largest positive increment than all the other suboptimal actions. After the softmax transform, the optimal action probability will be larger than its previous value. 
 \begin{lem}
 \label{lem:optimal_probability_increse_logit_space}
 Policy update using \cref{eq:logit_derivative} satisfies, $\forall t \ge 0$,
 \begin{equation*}
-    \pi_{t+1}\left(k^*\right) \ge \pi_{t}\left(k^*\right) \in \Omega(1).
+    \pi_{t+1}(k^*) \ge \pi_{t}(k^*) \in \Omega(1).
 \end{equation*}
 \end{lem}
 
-\cref{alg:policy_gradient_uniform_exploration} enjoys similar results with \cref{lem:optimal_probability_increse_logit_space}. First, with enough exploration, $\hat{\rvr}_t$ is close to $\rvr$, thus $\rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t$ is close to $\rvpi\left(\rmW_t\right)^\top \rvr$. Second, $\pi_0\left(\hat{k}_t^*\right) \approx \frac{1}{h} \in \Omega(1)$. Third, since the policy gradient update is around the initialization by \cref{lem:gradient_coupling}, the policy gradient updates behave similarly with the logit derivative updates, which makes the the optimal action logit always large comparing with the suboptimal actions.
+\cref{alg:policy_gradient_uniform_exploration} enjoys similar results with \cref{lem:optimal_probability_increse_logit_space}. First, with enough exploration, $\hat{\rvr}_t$ is close to $\rvr$, thus $\rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t$ is close to $\rvpi\left(\rmW_t\right)^\top \rvr$. Second, $\pi_{0}(\hat{k}_t^*) \approx \frac{1}{h} \in \Omega(1)$. Third, since the policy gradient update is around the initialization by \cref{lem:gradient_coupling}, the policy gradient updates behave similarly with the logit derivative updates, which makes the the optimal action logit always large comparing with the suboptimal actions.
 \begin{lem}
 \label{lem:optimal_probability_increse_parameter_space}
 \cref{alg:policy_gradient_uniform_exploration} satisfies, $\forall t \ge 0$,
 \begin{equation*}
-    \pi_t\left(\hat{k}_t^*\right) \in \Omega(1).
+    \pi_{t}(\hat{k}_t^*) \in \Omega(1).
 \end{equation*}
 \end{lem}
 \cref{lem:optimal_probability_increse_parameter_space} indicates replacing $c$ in \cref{thm:policy_gradient_main_result} will not incur any additional regret dependent on $T$.
