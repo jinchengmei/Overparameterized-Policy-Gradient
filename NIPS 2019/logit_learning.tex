@@ -10,53 +10,53 @@ However, such rate is not satisfactory especially for the stochastic bandit sett
 	\begin{algorithmic}
 		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
 		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-		\STATE $\hat{r}_{0}\left(k\right) \gets 0$, $n_{0}\left(k\right) \gets 0$, $\forall k \in [h]$. $\ucb_{0}\left(k\right) \gets 1$, $\lcb_{0}\left(k\right) \gets 0$, $\forall k \in [h]$.
+		\STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\forall k \in [h]$. $\ucb_{0}(k) \gets 1$, $\lcb_{0}(k) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\hat{\Delta}_{t}\left(k\right) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}\left(k^\prime\right) \right\}  - \lcb_{t}\left(k\right)\right\} $, $\forall k \in [h]$.
-		\STATE $\xi_t\left(k\right) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2\left(k\right)}$, $\varepsilon_t\left(k\right) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t\left(k\right) \right\}$, $\forall k \in [h]$.
-		\STATE $\pi_{t}\left(k\right) \gets \left. 
+		\STATE $\hat{\Delta}_{t}(k) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}(k^\prime) \right\}  - \lcb_{t}(k)\right\} $, $\forall k \in [h]$.
+		\STATE $\xi_t(k) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)}$, $\varepsilon_t(k) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t(k) \right\}$, $\forall k \in [h]$.
+		\STATE $\pi_{t}(k) \gets \left. 
 		    \begin{cases}
-		    1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}, \\
+		    1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}, \\
 		    0, & \text{otherwise}.
 		    \end{cases}
 		    \right.$
-		%\STATE $\pi_{t}\left(k\right) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
-		%\STATE $\pi_{t}\left(k\right) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}\left(k^\prime\right)\right\}$.
-		\STATE $\tilde{\pi}_t\left(k\right) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_t\left(k\right)} \right) \cdot  \pi_t\left(k\right) + \varepsilon_t\left(k\right)$, $\forall k \in [h]$.
+		%\STATE $\pi_{t}(k) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
+		%\STATE $\pi_{t}(k) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
+		\STATE $\tilde{\pi}_t(k) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_t(k)} \right) \cdot  \pi_t(k) + \varepsilon_t(k)$, $\forall k \in [h]$.
 		\STATE Sample action $A_{t} \sim \tilde{\rvpi}_t\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
 		\STATE $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$.
-		\STATE $n_{t+1}\left(k\right) \gets \left. 
+		\STATE $n_{t+1}(k) \gets \left. 
 		    \begin{cases}
-		    n_{t}\left(k\right) + 1, & \text{if } k = A_t, \\
-		    n_{t}\left(k\right), & \text{otherwise}.
+		    n_{t}(k) + 1, & \text{if } k = A_t, \\
+		    n_{t}(k), & \text{otherwise}.
 		    \end{cases}
 		    \right. \qquad$
 		%\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
-		%\STATE $n_{t+1}\left(k\right) \gets n_{t}\left(k\right)$, $\forall k \not= A_t$.
-		$\hat{r}_{t+1}\left(k\right) \gets \left. 
+		%\STATE $n_{t+1}(k) \gets n_{t}(k)$, $\forall k \not= A_t$.
+		$\hat{r}_{t+1}(k) \gets \left. 
 		    \begin{cases}
-		    \frac{n_{t}\left(k\right) \cdot \hat{r}_{t}\left(k\right) + R_{k}\left(n_{t}\left(k\right)\right) }{n_{t+1}\left(k\right)}, & \text{if } k = A_t, \\
-		    \hat{r}_{t}\left(k\right), & \text{otherwise}.
+		    \frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{k}\left(n_{t}(k)\right) }{n_{t+1}(k)}, & \text{if } k = A_t, \\
+		    \hat{r}_{t}(k), & \text{otherwise}.
 		    \end{cases}
 		    \right.$
 		%\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
-		%\STATE $\hat{r}_{t+1}\left(k\right) \gets \hat{r}_{t}\left(k\right)$, $\forall k \not= A_t$.
-		\STATE $\ucb_{t+1}\left(k\right) \gets \left. 
+		%\STATE $\hat{r}_{t+1}(k) \gets \hat{r}_{t}(k)$, $\forall k \not= A_t$.
+		\STATE $\ucb_{t+1}(k) \gets \left. 
 		    \begin{cases}
-		    \min{\left\{ 1, \hat{r}_{t+1}\left(k\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
-		    \ucb_{t}\left(k\right), & \text{otherwise}.
+		    \min{\left\{ 1, \hat{r}_{t+1}(k) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}, & \text{if } k = A_t, \\
+		    \ucb_{t}(k), & \text{otherwise}.
 		    \end{cases}
 		    \right.$
 		%\STATE $\ucb_{t+1}\left(A_t\right) \gets \min{\left\{ 1, \hat{r}_{t+1}\left(A_t\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
-		%\STATE $\ucb_{t+1}\left(k\right) \gets \ucb_{t}\left(k\right)$, $\forall k \not= A_t$.
-		\STATE $\lcb_{t+1}\left(k\right) \gets \left. 
+		%\STATE $\ucb_{t+1}(k) \gets \ucb_{t}(k)$, $\forall k \not= A_t$.
+		\STATE $\lcb_{t+1}(k) \gets \left. 
 		    \begin{cases}
-		    \max{\left\{ 0, \hat{r}_{t+1}\left(k\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(k\right)}}\right\}}, & \text{if } k = A_t, \\
-		    \lcb_{t}\left(k\right), & \text{otherwise}.
+		    \max{\left\{ 0, \hat{r}_{t+1}(k) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}, & \text{if } k = A_t, \\
+		    \lcb_{t}(k), & \text{otherwise}.
 		    \end{cases}
 		    \right.$
 		%\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
-		%\STATE $\lcb_{t+1}\left(k\right) \gets \lcb_{t}\left(k\right)$, $\forall k \not= A_t$.
+		%\STATE $\lcb_{t+1}(k) \gets \lcb_{t}(k)$, $\forall k \not= A_t$.
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
@@ -80,13 +80,13 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
 \end{thm}
 \begin{proof}
     By Proposition 2 of \citep{seldin2017improved},
-    $\forall t \ge t_1 \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta\left(k\right)^4 \ln{h}} \right\}}$,
+    $\forall t \ge t_1 \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta(k)^4 \ln{h}} \right\}}$,
 \begin{equation*}
 \begin{split}
-    \pr{\left\{ \hat{\Delta}_t\left(k\right) \ge \frac{3}{2} \Delta\left(k\right) \right\}} \le \left( \frac{\ln{t}}{t \Delta\left(k\right)^2} \right)^{\alpha - 2} + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
+    \pr{\left\{ \hat{\Delta}_t(k) \ge \frac{3}{2} \Delta(k) \right\}} \le \left( \frac{\ln{t}}{t \Delta(k)^2} \right)^{\alpha - 2} + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
 \end{split}
 \end{equation*}
-With high probability, $\xi_t\left(k\right) \ge \frac{4 \beta \ln{t}}{9 t \Delta\left(k\right)^2}$, which implies that $\forall t > t_3$,  each arm has been pulled at least $\frac{25\ln{t}}{\Delta^2}$ times. By Hoeffding's inequality,
+With high probability, $\xi_t(k) \ge \frac{4 \beta \ln{t}}{9 t \Delta(k)^2}$, which implies that $\forall t > t_2$,  each arm has been pulled at least $\frac{25\ln{t}}{\Delta^2}$ times. By Hoeffding's inequality,
 \begin{equation*}
 \begin{split}
     \pr{\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
@@ -107,21 +107,14 @@ If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}
     &\le \frac{\Delta}{5}.
 \end{split}
 \end{equation*}
-If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}}$,
+If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall t \ge t_3 \triangleq \min\left\{ t: \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
 \begin{equation*}
 \begin{split}
-    \frac{\Delta^2 \sqrt{h}}{\ln{t}} &\le \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \frac{\Delta}{5} \\
-    &< \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2,
-\end{split}
-\end{equation*}
-which implies,
-\begin{equation*}
-\begin{split}
-    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \frac{\Delta}{5} \\
     &< \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2.
 \end{split}
 \end{equation*}
-Since $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, $\forall t \ge t_4 \triangleq \min{\left\{ t : \left( \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \right)^t \sqrt{d} \le \frac{\Delta}{5}  \right\}}$, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$. By the triangle inequality,
+Note $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, therefore $\forall t \ge t_4 \triangleq \min{\left\{ t : \left( \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \right)^t \sqrt{d} \le \frac{\Delta}{5}  \right\}}$, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$. By the triangle inequality,
 \begin{equation*}
 \begin{split}
     \left\| \rvo\left( \rmW_t \right) - \rvr \right\|_\infty &\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_\infty + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
@@ -129,6 +122,7 @@ Since $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, $\forall t
     &\le \frac{2 \Delta}{5}. \qedhere
 \end{split}
 \end{equation*}
+After $t \ge \max\left\{ t_1, t_2, t_3, t_4 \right\}$ constant steps, with high probability, $\tilde{\rvpi}_t$ will coincide with the optimal policy.
 \end{proof}
 
 \begin{lem}
