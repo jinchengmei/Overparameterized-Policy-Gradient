@@ -362,7 +362,7 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 {\bf \cref{lem:logit_l2_loss_parameter_smoothness}.} $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
 \begin{equation*}
 \begin{split}
-    \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
+    \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
 \end{split}
 \end{equation*}
 \begin{proof}
@@ -374,7 +374,8 @@ According to \cref{lem:logit_upper_bound_parameter},
     &\quad \le \left\langle \rvo\left( \rmW_t \right) - \hat{\rvr}_t, - \eta \cdot \rmA \rmD(t) \left[ \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t} \right] \rvs \right\rangle + \frac{h m \eta^2}{2} \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}  \right\|_F^2 \\
     &\quad = - \left( \eta - \frac{h m \eta^2}{2} \right) \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}  \right\|_F^2 \\
     &\quad = - \frac{1}{2 h m} \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}  \right\|_F^2 \\
-    &\quad \le - \frac{1}{2 h m} \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2. \qedhere
+    &\quad = - \frac{1}{2 h m} \sum\limits_{r = 1}^{m}{ \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rvw_r(t)}  \right\|_2^2 } \\
+    &\quad \le - \frac{1}{2 h} \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}

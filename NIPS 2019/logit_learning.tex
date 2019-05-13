@@ -96,32 +96,32 @@ According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac
 \begin{equation*}
 \begin{split}
     \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2^2 &= \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left( \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right)^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t+1} \right) + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2 \\
-    &\le \left( 1 - \frac{1}{2 h m } \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2^2 + \sqrt{1 - \frac{1}{2 h m } } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }.
+    &\le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2^2 + \sqrt{1 - \frac{1}{2 h} } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }.
 \end{split}
 \end{equation*}
-If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
+If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}}$,
 \begin{equation*}
 \begin{split}
-    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    &\le \sqrt{1 - \frac{1}{2 h}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
     &\le \frac{\Delta}{5}.
 \end{split}
 \end{equation*}
-If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h m}}}$,
+If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}}$,
 \begin{equation*}
 \begin{split}
-    \frac{\Delta^2 \sqrt{h}}{\ln{t}} &\le \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \frac{\Delta}{5} \\
-    &< \frac{1 - \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2,
+    \frac{\Delta^2 \sqrt{h}}{\ln{t}} &\le \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \frac{\Delta}{5} \\
+    &< \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2,
 \end{split}
 \end{equation*}
 which implies,
 \begin{equation*}
 \begin{split}
-    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h m}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &< \frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2.
+    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+    &< \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2.
 \end{split}
 \end{equation*}
-Since $\frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \in \left(0, 1\right)$, after constant numbers of iterations, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$ always holds. By the triangle inequality,
+Since $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, $\forall t \ge t_4 \triangleq \min{\left\{ t : \left( \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \right)^t \sqrt{d} \le \frac{\Delta}{5}  \right\}}$, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$. By the triangle inequality,
 \begin{equation*}
 \begin{split}
     \left\| \rvo\left( \rmW_t \right) - \rvr \right\|_\infty &\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_\infty + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
@@ -136,7 +136,7 @@ Since $\frac{1 + \sqrt{1 - \frac{1}{2 h m}}}{2} \in \left(0, 1\right)$, after co
 $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
 \begin{equation*}
 \begin{split}
-    \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h m} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
+    \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
 \end{split}
 \end{equation*}
 \end{lem}
