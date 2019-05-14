@@ -12,7 +12,7 @@ However, such rate is not satisfactory especially for the stochastic bandit sett
 		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
 		\STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\forall k \in [h]$. $\ucb_{0}(k) \gets 1$, $\lcb_{0}(k) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\hat{\Delta}_{t}(k) \gets \min\left\{ 1,  \max\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}(k^\prime) \right\}  - \lcb_{t}(k)\right\} $, $\forall k \in [h]$.
+		\STATE $\hat{\Delta}_{t}(k) \gets \min\left\{ 1,  \min\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}(k^\prime) \right\}  - \lcb_{t}(k)\right\} $, $\forall k \in [h]$.
 		\STATE $\xi_t(k) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)}$, $\varepsilon_t(k) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t(k) \right\}$, $\forall k \in [h]$.
 		\STATE $\pi_{t}(k) \gets \left. 
 		    \begin{cases}
@@ -74,19 +74,20 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
 \begin{equation*}
 \small
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)}  \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \ln{h} \cdot T^{\frac{2}{3}} \left(\ln{T}\right)^{\frac{1}{3}}.
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)}  \le C + \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} + \ln{T},
 \end{split}
 \end{equation*}
+where $C \triangleq 2 \max\limits_{k \in [h]}\left\{ \bar{t}(k) \right\} + \pi^2$ is independent with $T$.
 \end{thm}
 \begin{proof}
     By Proposition 2 of \citep{seldin2017improved},
-    $\forall t \ge t_1 \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta(k)^4 \ln{h}} \right\}}$,
+    $\forall t \ge t_1(k) \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{h}} \right\}}$,
 \begin{equation*}
 \begin{split}
-    \pr{\left\{ \hat{\Delta}_t(k) \ge \frac{3}{2} \Delta(k) \right\}} \le \left( \frac{\ln{t}}{t \Delta(k)^2} \right)^{\alpha - 2} + \frac{2}{h t^{\alpha - 1}} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
+    \pr{\left\{ \left( n_t(k) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \text{or} \left( n_t(k^*) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \right\}} \le \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
 \end{split}
 \end{equation*}
-With high probability, $\xi_t(k) \ge \frac{4 \beta \ln{t}}{9 t \Delta(k)^2}$, which implies that $\forall t > t_2$,  each arm has been pulled at least $\frac{25\ln{t}}{\Delta^2}$ times. By Hoeffding's inequality,
+Assuming that $n_t(k) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)}$ and $n_t(k^*) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)} > \frac{25 \beta \ln{t}}{\Delta^2(k)}$. By Hoeffding's inequality,
 \begin{equation*}
 \begin{split}
     \pr{\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
@@ -99,12 +100,11 @@ According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac
     &\le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2^2 + \sqrt{1 - \frac{1}{2 h} } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }.
 \end{split}
 \end{equation*}
-If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$, $\forall \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}}$,
+If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$, $\forall t \ge t_2 \triangleq \min\left\{ t: \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
 \begin{equation*}
 \begin{split}
     \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\le \sqrt{1 - \frac{1}{2 h}} \cdot \frac{\Delta}{5} + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-    &\le \frac{\Delta}{5}.
+    &\le \sqrt{1 - \frac{1}{2 h}} \cdot \frac{\Delta}{5} + \left(1 - \sqrt{1 - \frac{1}{2 h}}\right) \cdot \frac{\Delta}{5} = \frac{\Delta}{5}.
 \end{split}
 \end{equation*}
 If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall t \ge t_3 \triangleq \min\left\{ t: \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
@@ -122,7 +122,21 @@ Note $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, therefore $
     &\le \frac{2 \Delta}{5}. \qedhere
 \end{split}
 \end{equation*}
-After $t \ge \max\left\{ t_1, t_2, t_3, t_4 \right\}$ constant steps, with high probability, $\tilde{\rvpi}_t$ will coincide with the optimal policy.
+Denote $\bar{t}(k) \triangleq \max\left\{ t_1, t_2, t_3 + t_4 \right\} = \max\left\{ t_1, t_3 + t_4 \right\} $. After $\bar{t}(k)$ steps, with high probability, $\tilde{\rvpi}_t$ will coincide with the optimal policy. Finally, for $\alpha = 3$ and $\beta = 256$, by \cref{lem:delta_estimation_lower_bound},
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } &= \sum\limits_{t=1}^{T}{ \expectation{ \left[ \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right\} \right]} } \\
+    &\le \sum\limits_{t=1}^{T}{ \expectation{ \left[  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right]} } \\
+    &\le t_1(k) + \frac{\beta \left( \left( \ln{T}\right)^2 + \ln{T} \right)}{\Delta^2(k)} + \sum\limits_{t = t_1(k)}^{T}{ \frac{1}{t^{\alpha - 1}} } \\
+    &\le t_1(k) + \frac{\beta \left( \left( \ln{T}\right)^2 + \ln{T} \right)}{\Delta^2(k)} + \ln{T} + 1.
+\end{split}
+\end{equation*}
+Therefore, for each suboptimal arm $k$, the expected sampled number will be upper bounded by,
+\begin{equation*}
+\begin{split}
+     \bar{t}(k) + \sum\limits_{t = \bar{t}(k) }^{T}{ \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}} } + \sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } \le 2 \bar{t}(k) + \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} + \ln{T} + \pi^2.
+\end{split}
+\end{equation*}
 \end{proof}
 
 \begin{lem}
@@ -132,5 +146,13 @@ $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \
 \begin{split}
     \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
 \end{split}
+\end{equation*}
+\end{lem}
+
+\begin{lem}
+\label{lem:delta_estimation_lower_bound}
+For any $k$ and $t \ge h$,
+\begin{equation*}
+    \pr\left\{ \hat{\Delta}_t(k) \le \Delta(k) \right\} \le \frac{1}{t^{\alpha-1}}.
 \end{equation*}
 \end{lem}
