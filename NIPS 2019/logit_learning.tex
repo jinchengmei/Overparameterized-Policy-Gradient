@@ -74,7 +74,7 @@ We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in t
 \begin{equation*}
 \small
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)}  \le C + \sum\limits_{k \in [h] : \Delta(k) > 0}{ \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} }  + \ln{T},
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)}  \le C + \sum\limits_{k \in [h] : \Delta(k) > 0}{ \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} }  + h \ln{T},
 \end{split}
 \end{equation*}
 where $C \triangleq 2 \max\limits_{k \in [h]}\left\{ \bar{t}(k) \right\} + \pi^2$ is independent with $T$.
