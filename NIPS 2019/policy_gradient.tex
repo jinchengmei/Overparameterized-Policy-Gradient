@@ -9,16 +9,13 @@ After the exploration phase, the agent samples and takes actions according to th
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
-   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-   \STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\forall k \in [h]$.
+   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim 
+   \unif\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+   \STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\tilde{\pi}_0(k) \gets \frac{1}{h}$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
-   \IF{$t < T^{\frac{2}{3} + \beta}$}
-   \STATE (Exploring Phase) Uniformly randomly sample action $A_{t} \in [h]$.
-   \STATE $\rmW_{t+1} \leftarrow \rmW_t$.
-   \ELSE
-   \STATE (Playing-Learning Phase) Sample action $A_{t} \sim \rvpi\left(\rmW_t\right)\left(\cdot \middle| \rvs \right)$.
+   \STATE Sample action $A_{t} \sim \tilde{\rvpi}_{t}\left(\cdot \middle| \rvs \right)$.
    \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
-   \ENDIF
+   
    \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
    \STATE $n_{t+1}(k) \gets \left. 
 		\begin{cases}
@@ -26,16 +23,13 @@ After the exploration phase, the agent samples and takes actions according to th
 		n_{t}(k), & \text{otherwise}.
 		\end{cases}
 		\right. \qquad$ 
-   %\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
-   %\STATE $n_{t+1}(k) \gets n_{t}(k)$, $\forall k \not= A_t$.
    $\hat{r}_{t+1}(k) \gets \left. 
 		\begin{cases}
 		\frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{k}\left(n_{t}(k)\right) }{n_{t+1}(k)}, & \text{if } k = A_t, \\
 		\hat{r}_{t}(k), & \text{otherwise}.
 		\end{cases}
 		\right.$
-   %\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{ A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
-   %\STATE $\hat{r}_{t+1}(k) \gets \hat{r}_{t}(k)$, $\forall k \not= A_t$.
+   \STATE $\tilde{\pi}_{t+1}(k) \gets \left( 1 - \left(t+1\right)^{ \beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{t+1}\right)(k) + \left(t+1\right)^{ \beta - \frac{1}{3}} \cdot \frac{1}{h}$, $\forall k \in [h]$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
@@ -53,25 +47,28 @@ Our first main results is a $\tilde{O}(T^{2/3})$ regret for the above policy gra
 \end{equation*}
 \end{thm}
 \begin{proof}
-According to \cref{alg:policy_gradient_uniform_exploration}, the uniform policy and $\rvpi\left( \rmW_t \right)$ are used to sample actions in the two phases. Therefore the regret is divided into two parts.
+According to \cref{alg:policy_gradient_uniform_exploration}, $\tilde{\rvpi}_t$ is used for sampling, which is $\rvpi\left( \rmW_t \right)$ mixed with decaying uniform. Therefore the regret is divided by the linearity of the expectation.
 \begin{equation}
 \label{eq:total_regret_decomposition}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right) } &= \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{ \left( {\rvpi^*}^\top \rvr - \expectation\limits_{A_t \sim \gU\left[h\right]}{ \left[ r\left(A_t\right) \right] } \right) } + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \rvpi\left( \rmW_t \right)^\top \rvr \right) } \\
-    &\le \sum\limits_{t=0}^{T^{\frac{2}{3} + \beta} - 1}{1} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr } \\
-    &= T^{\frac{2}{3} + \beta} + \sum\limits_{t=T^{\frac{2}{3} + \beta}}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr }.
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right) } &\le 1 + \sum\limits_{t=1}^{T-1}{ \left[ \left( 1 - t^{ \beta - \frac{1}{3}} \right) \cdot \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr + t^{ \beta - \frac{1}{3}} \cdot \left( {\rvpi^*}^\top \rvr - \expectation\limits_{A_t \sim \unif[h]}{ \left[ r\left(A_t\right) \right] } \right) \right]} \\
+    &\le 1 + \sum\limits_{t=1}^{T-1}{ \left[ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr + t^{ \beta - \frac{1}{3}} \right]} \\
+    &\le 1 + \frac{1}{\frac{2}{3} + \beta} \cdot T^{\frac{2}{3} + \beta} + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr } \\
+    &\le 2 \cdot T^{\frac{2}{3} + \beta} + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr },
 \end{split}
 \end{equation}
-Denote $\rvpi_t^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}_t\right\}}$. The last two terms can be decomposed as follows, $\forall t \ge T^{\frac{2}{3} + \beta}$,
+where the second inequality comes from $1 - t^{ \beta - \frac{1}{3}} \le 1$, $\forall t \ge 1$, and $\left\| \rvr \right\|_\infty \le 1$.
+
+Denote $\rvpi_t^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}_t\right\}}$. The last term can be decomposed as follows, $\forall t \ge 1$,
 \begin{equation}
 \label{eq:playing_learning_phase_regret_decomposition}
 \begin{split}
-    \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr &= \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t - \left( {\rvpi_t^*} - {\rvpi^*} \right)^\top \hat{\rvr}_t + \left( \rvpi\left( \rmW_t \right) - {\rvpi^*}\right)^\top \left( \hat{\rvr}_t - \rvr \right) \\
-    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t  + \left\| \rvpi\left( \rmW_t \right) - \rvpi^* \right\|_1 \cdot \left\| \hat{\rvr}_t - \rvr \right\|_\infty  \\
-    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t  + 4 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 2 T^{\beta - \frac{1}{3}},
+    \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr &= \left( {\rvpi^*} - {\rvpi_t^*} \right)^\top \hat{\rvr}_t + \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t + \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \left( \rvr - \hat{\rvr}_t \right) \\
+    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t  + \left\| \rvpi^* - \rvpi\left( \rmW_t \right) \right\|_1 \cdot \left\| \rvr - \hat{\rvr}_t \right\|_\infty \\
+    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t + 4 \exp\left\{ - \frac{2}{ \left(\frac{2}{3} + \beta \right) h } \cdot t^{3\beta} \right\} + 2 t^{\beta - \frac{1}{3}},
 \end{split}
 \end{equation}
-by the definition of $\rvpi_t^*$, H{\"o}lder's inequality, and \cref{thm:reward_estimation_hoeffding}. Summing up \cref{eq:playing_learning_phase_regret_decomposition} from $t = T^{\frac{2}{3} + \beta}$ to $T - 1$, and
+where the first inequality is by the definition of $\rvpi_t^*$ and  H{\"o}lder's inequality and the second inequality results from \cref{thm:reward_estimation_hoeffding}. Summing up \cref{eq:playing_learning_phase_regret_decomposition} from and
 combining \cref{eq:total_regret_decomposition} and \cref{thm:dynamic_regret_sublinear},
 \begin{equation*}
 \begin{split}
@@ -89,24 +86,31 @@ Taking $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{T}} } }{ 3 \ln{T}}
 The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides us good estimations of the true mean loss/reward as follows.
 \begin{thm}
 \label{thm:reward_estimation_hoeffding}
-    In \cref{alg:policy_gradient_uniform_exploration}, $\forall t \ge T^{\frac{2}{3} + \beta}$,
+    In \cref{alg:policy_gradient_uniform_exploration}, $\forall t \ge 1$, the following holds in expectation,
 \begin{equation*}
-    \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + T^{\beta - \frac{1}{3}}.
+    \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 2 \exp\left\{ - \frac{2}{ \left(\frac{2}{3} + \beta \right) h } \cdot t^{3\beta} \right\} + t^{\beta - \frac{1}{3}}.
 \end{equation*}
 \end{thm}
 \begin{proof}
-    At step $t \ge T^{\frac{2}{3} + \beta}$, the $k$th action is sampled $n_{t}(k) \ge \frac{T^{\frac{2}{3} + \beta} }{h}$ times because of the exploring phase, $\forall k \in [h]$. By Hoeffding's inequality, $\forall k \in [h]$,
+    Up to step $t \ge 1$, the $k$th action will be sampled for at least,
+\begin{equation*}
+\begin{split}
+    n_t(k) &= \sum\limits_{s=0}^{t}{ \tilde{\pi}_t(k)} \ge \sum\limits_{s=1}^{t}{ \tilde{\pi}_t(k)} = \sum\limits_{s=1}^{t}{ \left[ \left( 1 - s^{\beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{s}\right)(k) + \frac{s^{\beta - \frac{1}{3}}}{h} \right] } \\
+    &\ge \sum\limits_{s=1}^{t}{ \frac{s^{\beta - \frac{1}{3}}}{h} } \ge \frac{t^{\frac{2}{3} + \beta}}{ h  \left(\frac{2}{3} + \beta \right) }.
+\end{split}
+\end{equation*}
+According to the Hoeffding's inequality,
 \begin{equation}
 \label{eq:loss_estimation_hoeffding}
 \begin{split}
-    \pr\left\{ \left| \hat{r}_{t}(k) - r(k) \right| > T^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{t}(k) \cdot T^{2\beta - \frac{2}{3}} \right\} \le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\}.
+    \pr\left\{ \left| \hat{r}_{t}(k) - r(k) \right| > t^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{t}(k) \cdot t^{2\beta - \frac{2}{3}} \right\} \le 2 \exp\left\{ - \frac{2}{ h  \left(\frac{2}{3} + \beta \right) } \cdot t^{3\beta} \right\}.
 \end{split}
 \end{equation}
 Therefore,
 \begin{equation*}
 \begin{split}
-    \left\| \hat{\rvr}_t - \rvr \right\|_\infty &\le \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le T^{\beta - \frac{1}{3}} \right\} \cdot T^{\beta - \frac{1}{3}} + \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty > T^{\beta - \frac{1}{3}} \right\} \cdot 1 \\
-    &\le 2 \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} \cdot 1 + 1 \cdot T^{\beta - \frac{1}{3}},
+    \left\| \hat{\rvr}_t - \rvr \right\|_\infty &\le \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le t^{\beta - \frac{1}{3}} \right\} \cdot t^{\beta - \frac{1}{3}} + \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty > t^{\beta - \frac{1}{3}} \right\} \cdot 1 \\
+    &\le 2 \exp\left\{ - \frac{2}{ h  \left(\frac{2}{3} + \beta \right) } \cdot t^{3\beta} \right\} \cdot 1 + 1 \cdot t^{\beta - \frac{1}{3}},
 \end{split}
 \end{equation*}
 since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cref{eq:loss_estimation_hoeffding}, 
@@ -118,15 +122,15 @@ since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cre
 The good estimation of the true mean loss $\hat{\rvr}_t$ obtained at the end of the exploring phase will be used to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the recently proposed optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
 \begin{thm}
 \label{thm:dynamic_regret_sublinear}
-    Denote $\rvpi_t^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}_t\right\}}$. If $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, then the dynamic regret in the playing-learning phase satisfies,
+    If $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, then the dynamic regret satisfies,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{ \left(  {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t } \le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
+    \sum\limits_{t=1}^{T-1}{ \left(  {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t } \le \frac{2 \sqrt{2} h}{c} \cdot \sqrt{\frac{2 + 3 \beta}{1 - 3 \beta}} \cdot  T^{\frac{2}{3} - \frac{\beta}{2}}.
 \end{split}
 \end{equation*}
 \end{thm}
 \begin{proof}
-    Denote $\delta_t \triangleq \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t$.
+    Denote $\delta_t \triangleq \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t$. Decompose $\delta_t$ as follows,
 \begin{equation}
 \label{eq:dynamic_regret_decomposition}
 \begin{split}
@@ -139,10 +143,10 @@ We upper bound each term in the right hand side. Firstly,
 \begin{equation*}
 \begin{split}
     {\rvpi_t^*}^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t-1}\right) &= \frac{\pi_{t}^*\left(A_{t-1}\right)}{n_{t}\left(A_{t-1}\right)} \left[ R_{ A_{t-1}}\left( n_{t}\left(A_{t-1}\right) -1 \right) - \hat{r}_{t-1}\left(A_{t-1}\right) \right] \\
-    &\le \frac{1}{n_{t}\left(A_{t-1}\right)} \le \frac{h}{T^{\frac{2}{3} + \beta}},
+    &\le \frac{1}{n_{t}\left(A_{t-1}\right)} \le \frac{ h \left(\frac{2}{3} + \beta \right)  }{t^{\frac{2}{3} + \beta}},
 \end{split}
 \end{equation*}
-by $n_{t}\left(A_{t-1}\right) = n_{t-1}\left(A_{t-1}\right) + 1$, and $n_{t}\left(A_{t-1}\right) \ge \frac{T^{\frac{2}{3} + \beta}}{h}$, $\forall t \ge T^{\frac{2}{3} + \beta}$. By the definition of ${\rvpi_{t-1}^*}$,
+by $n_{t}\left(A_{t-1}\right) = n_{t-1}\left(A_{t-1}\right) + 1$, and $n_{t}\left(A_{t-1}\right) \ge \frac{t^{\frac{2}{3} + \beta}}{ h  \left(\frac{2}{3} + \beta \right) }$, $\forall t \ge 1$. By the definition of ${\rvpi_{t-1}^*}$,
 \begin{equation*}
     \left( {\rvpi_t^*} - {\rvpi_{t-1}^*} \right)^\top \hat{\rvr}_{t-1} \le 0.
 \end{equation*}
@@ -153,30 +157,28 @@ Note that according to the definition of $\delta_t$,
 By \cref{lem:empirically_expected_reward_parameter_smoothness}, $\eta = \frac{1}{2 h m}$, and \cref{lem:gradient_lower_bound},
 \begin{equation*}
 \begin{split}
-    \left( \rvpi\left( \rmW_{t-1} \right) - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_{t-1} &\le - \frac{1}{4 h m} \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rmW_{t-1}} \right\|_F^2 \\
-    &= - \frac{1}{4 h m} \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rvw_r(t-1)} \right\|_2^2 } \\
-    &\le - \frac{c^2}{4 h} \left[ \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1}  \right]^2 \\
-    &= - \frac{c^2}{4 h} \cdot \delta_{t-1}^2.
+    &\left( \rvpi\left( \rmW_{t-1} \right) - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_{t-1} \le - \frac{1}{4 h m} \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rmW_{t-1}} \right\|_F^2 \\
+    &\quad = - \frac{1}{4 h m} \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rvw_r(t-1)} \right\|_2^2 } \le - \frac{c^2}{4 h} \left[ \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1}  \right]^2 = - \frac{c^2}{4 h} \cdot \delta_{t-1}^2.
 \end{split}
 \end{equation*}
 Using similar arguments,
 \begin{equation*}
-    \rvpi\left( \rmW_t \right)^\top \left( \hat{\rvr}_{t-1} - \hat{\rvr}_t  \right) \le \frac{h}{T^{\frac{2}{3} + \beta}}.
+    \rvpi\left( \rmW_t \right)^\top \left( \hat{\rvr}_{t-1} - \hat{\rvr}_t  \right) \le \frac{ h  \left(\frac{2}{3} + \beta \right) }{t^{\frac{2}{3} + \beta}}.
 \end{equation*}
 Plugging the above upper bounds into \cref{eq:dynamic_regret_decomposition},
 \begin{equation*}
-    \delta_t \le \delta_{t-1} - \frac{c^2}{4 h} \cdot \delta_{t-1}^2 + \frac{2h}{T^{\frac{2}{3} + \beta}}.
+    \delta_t \le \delta_{t-1} - \frac{c^2}{4 h} \cdot \delta_{t-1}^2 + \frac{ 2 h  \left(\frac{2}{3} + \beta \right) }{t^{\frac{2}{3} + \beta}}.
 \end{equation*}
-Rearranging and summing up from $T^{\frac{2}{3} + \beta} + 1$ to $T$,
+Rearranging and summing up from $1$ to $T-1$,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2} \le \frac{4 h}{ c^2} \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T} { \left[ \delta_{t-1} - \delta_t + \frac{2h}{T^{\frac{2}{3} + \beta}} \right] } \le \frac{4 h}{ c^2} \cdot T^{\frac{1}{3} - \beta}.
+    \sum\limits_{t=1}^{T-1}{\delta_{t}^2} = \sum\limits_{t=2}^{T}{\delta_{t-1}^2} \le \frac{4 h}{ c^2} \cdot  \sum\limits_{t=1}^{T} { \left[ \delta_{t-1} - \delta_t + \frac{ 2 h  \left(\frac{2}{3} + \beta \right) }{t^{\frac{2}{3} + \beta}} \right] } \le \frac{8 h^2}{ c^2} \cdot \frac{  \frac{2}{3} + \beta }{\frac{1}{3} - \beta} \cdot T^{\frac{1}{3} - \beta}.
 \end{split}
 \end{equation*}
 By the Root-Mean Square-Arithmetic Mean inequality,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=T^{\frac{2}{3}+ \beta}}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - T^{\frac{2}{3}+ \beta} \right) \cdot \sum\limits_{t=T^{\frac{2}{3}+ \beta}+1}^{T}{\delta_{t-1}^2}} \le \frac{2 \sqrt{h}}{c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
+    \sum\limits_{t=1}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - 1 \right) \cdot \sum\limits_{t=1}^{T-1}{\delta_{t-1}^2}} \le \frac{2 \sqrt{2} h}{c} \cdot \sqrt{\frac{2 + 3 \beta}{1 - 3 \beta}} \cdot  T^{\frac{2}{3} - \frac{\beta}{2}}.
 \end{split}
 \end{equation*}
 Let $\sigma = \frac{2 \sqrt{2}}{\sqrt{\pi m}}$ and $\tau = \frac{\sigma \sqrt{\pi}}{2 \sqrt{2}} = \frac{1}{\sqrt{m}}$ in \cref{lem:gradient_coupling}. Since $m \ge \frac{T^2}{h^2}$, we have $T \le \frac{\tau}{2 \eta}$ such that \cref{lem:gradient_coupling} holds during all the playing-learning phase. According to \cref{lem:gradient_coupling_in_total}, with probability at least $1 - \exp\left\{ - \frac{m}{8} \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right) \right\} = 1 - \exp\left\{ - \frac{m}{16} \right\} \ge 1 - \exp\left\{ - \frac{T^2}{16 h} \right\}$,
