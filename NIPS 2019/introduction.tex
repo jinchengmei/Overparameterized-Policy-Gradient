@@ -18,7 +18,7 @@ In this paper, we take one step further to theoretically understanding the behav
 	\item We further propose a value based RL method, Value Learning with $\varepsilon$-Greedy Exploration, which is simpler and achieves optimal regret under the stochastic bandit setting. This algorithm learns value based objectives using the gradient descent, with value functions parameterized by neural networks. 
 \end{itemize}
 
-Although our main results are developed on the stochastic bandits setting, they can be easily generalized to state dependent stochastic bandit settings the episodic MDP setting. Our findings can be seen as an initial step toward understanding the globally convergence for the popular RL methods (the value based learning, and the policy gradient here) with non-linear neural network function approximations, such as Deep Q-Network \cite{mnih2015human}, Asynchronous Actor-Critic Agents \citep{mnih2016asynchronous}, Path Consistency Learing \citep{nachum2017bridging}, and Relative Entropy Policy Search \citep{peters2010relative}, combining with more practical function approximations and training procedures, e.g., less over-parameterized neural networks. [Why is less over-parameterized neural networks?]
+Although our main results mainly focus on the stochastic bandits setting, they can be easily generalized to many other reinforcement learning settings, such as state dependent stochastic bandit settings and episodic MDP settings. Our findings can be seen as an initial step toward understanding the globally convergence for the popular RL methods (the value based learning, and the policy gradient here) with non-linear neural network function approximations, such as Deep Q-Network \cite{mnih2015human}, Asynchronous Actor-Critic Agents \citep{mnih2016asynchronous}, Path Consistency Learing \citep{nachum2017bridging}, and Relative Entropy Policy Search \citep{peters2010relative}, combining with more practical function approximations and training procedures, e.g., less over-parameterized neural networks. [Why is less over-parameterized neural networks?]
 
 Finally, let us comment on the technique side of our results. 
 Our results are inspired by the recent progresses on over-parameterized neural networks for supervised learning (regression and classification) settings \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}. 
@@ -51,12 +51,10 @@ The rest of the paper is organized as follows. \cref{subsec:notations} presents 
 
 \subsection{Notations}
 \label{subsec:notations}
+We use bold lowercase letters to refer to vectors, such as $\rvr$, and bold capital letters to refer to matrices, like $\rmW$. non-bold lowercase letters are scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $\rvone$ means an all-one vector, and $\rmI$ refers to an identity matrix, with dimensions depend on the contexts. We also denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. 
 
-We use bold lowercase letters to refer to vectors, such as $\rvr$, and bold capital letters to refer to matrices, like $\rmW$. non-bold lowercase letters are scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $\rvone$ means an all-one vector, and $\rmI$ refers to an identity matrix, with dimensions depend on the contexts.
-
-In the sequel, $n$ is the total number of states, while $m$ is the total number of nodes in each hidden layer. $h$ is the total number of actions can be taken at each state.
-
-Denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. $\rvs_i \in \sR^d$, $i \in [n]$ refers to the feature vector of the $i$th state. $\rvw_r \in \sR^d$, $r \in [m]$ is a weight vector in the first hidden layer. $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right] \in \sR^{d \times m}$ is the weight matrix of the first hidden layer. $u_{i,r} \triangleq \rvw_r^\top \rvs_i$ is the $r$th node value of the first hidden layer. $\rva_k \in \sR^m$, $k \in [h]$ is a weight vector in the second hidden layer. $\rmA^\top \triangleq \left[ \rva_1, \rva_2, \dots, \rva_h \right] \in \sR^{m \times h}$ is the weight matrix of the second hidden layer. $o_{i,k} \triangleq \sum\limits_{r=1}^{m}{a_{k,r} \cdot \sigma\left( u_{i,r} \right)}$ is the logit of the $k$th action for state $\rvs_i$, where $\sigma(\cdot) \triangleq \max\left\{ \cdot, 0 \right\}$ is the ReLU activation function. $\pi_{i,k} \triangleq f\left( o_{i,k} \right) \triangleq \frac{\exp\left\{ o_{i,k} \right\}}{\sum\limits_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}}$ is the probability of choosing action $k$ at state $\rvs_i$, where $f(\cdot)$ is the softmax function. $\rvr_i \in \sR^h$ is the true mean reward vector at state $\rvs_i$. $\rvpi_i^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \rvr_i \right\}}$ is the optimal policy at state $\rvs_i$. Given stochastic policies $\rvpi \triangleq \left[ \rvpi_1, \rvpi_2, \dots, \rvpi_n \right] \in \sR^{h \times n}$, the expected (mean) loss is defined as,
+In the sequel, $n$ is the total number of states, and $h$ is the total number of actions that can be taken at each state.
+Also, for $i\in[n]$ let $\rvr_i \in \sR^h$ is the true mean reward vector at state $\rvs_i$. $\rvpi_i^* = \argmax_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \rvr_i \right\}}$ is the optimal policy at state $\rvs_i$. Given a sequence of  stochastic policies $\bf{\Pi} \triangleq \left[ \rvpi_1, \rvpi_2, \dots, \rvpi_n \right] \in \sR^{h \times n}$, the expected (mean) loss is defined as,
 \begin{equation}
 \label{eq:expected_loss}
 \begin{split}
@@ -64,4 +62,13 @@ Denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. $\rvs_i \in \sR^d$, $i \
 \end{split}
 \end{equation}
 
-Without loss of generality, we assume $\rvr_i \in \left[ 0, 1 \right]^h$, and $\rvr_i$ is the mean vector of some random reward vectors,  $\forall i \in [n]$.
+We use 2-layers fully connected neural networks with ReLU activation as our value function and policy function approximations, as shown in \cref{fig:nn_policy_value}. 
+%The structure of the value network and the policy network  is a 2-layers fully connected neural network with ReLU activation, 
+Each neural network takes the state $\rvs \in \sR^d$ as its input. 
+For the first layer, we use $\rvs_i \in \sR^d$ for $i \in [n]$ refers to the feature vector of the $i$th state, $\rvw_r \in \sR^d$ for $r \in [m]$ to a weight vector in the first hidden layer, and $u_{i,r} \triangleq \rvw_r^\top \rvs_i$ to the $r$th node value of the first hidden layer.
+Let $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right] \in \sR^{d \times m}$ be the weight matrix of the first hidden layer, thus the hidden layer is $\rvu = \rmW\rvs\in\sR^m$.
+
+Similarly let $\rva_k \in \sR^m$ for $k \in [h]$ be a weight vector in the second hidden layer, and $o_{i,k} \triangleq \sum_{r=1}^{m}{a_{k,r} \cdot \sigma\left( u_{i,r} \right)}$ be the logit of the $k$th action for state $\rvs_i$, where $\sigma(\cdot) = \max\left\{ \cdot, 0 \right\}$ is the ReLU activation function. 
+Let $\rmA^\top \triangleq \left[ \rva_1, \rva_2, \dots, \rva_h \right] \in \sR^{m \times h}$ be the weight matrix of the second hidden layer, then the logit output $\rvo = \rmA\sigma\left( \rvu\right) \in \sR^h$.
+
+Lastly, the policy network differs the value network with one additional softmax transform layer in order to output probability distributions, where $\rvpi \triangleq f\left( \rvo \right) = f\left( \rmA \sigma\left( \rmW \rvs \right) \right)$ and $f$ is the softmax function: $f\left( o_{i,k} \right) = \exp\left\{ o_{i,k} \right\} \,/\, \sum_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}$.
