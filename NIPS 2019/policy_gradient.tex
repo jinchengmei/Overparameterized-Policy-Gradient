@@ -46,9 +46,10 @@ Our first main result is a $\tilde{O}(T^{2/3})$ regret for the above policy grad
     Given policy neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)} \le \frac{6 h}{c} \cdot  T^{\frac{2}{3}} + 5 \cdot T^{\frac{2}{3}} \cdot \left( h \ln{T} \right)^{\frac{1}{3}} + \frac{h}{6} \cdot \ln{ \left( \frac{h}{6} \right) }.
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)} \le \frac{6 h}{c} \cdot  T^{\frac{2}{3}} + 5 \cdot T^{\frac{2}{3}} \cdot \left( h \ln{T} \right)^{\frac{1}{3}} + \frac{h}{6} \cdot \ln{ \left( \frac{h}{6} \right) },
 \end{split}
 \end{equation*}
+with probability at least xxxxx. 
 \end{thm}
 \begin{proof}
 According to \cref{alg:policy_gradient_uniform_exploration}, $\tilde{\rvpi}_t$ is used for sampling, which is $\rvpi\left( \rmW_t \right)$ mixed with decaying uniform. Therefore the regret is divided by the linearity of the expectation.
@@ -90,7 +91,7 @@ combining \cref{eq:total_regret_decomposition} and \cref{thm:dynamic_regret_subl
 \begin{equation*}
     \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 2 \cdot t^{- \frac{1}{3}} + t^{\beta - \frac{1}{3}} \le \left( 2 + \left( h \ln{t} \right) ^\frac{1}{3} \right) \cdot t^{- \frac{1}{3}}, \quad \forall t \ge \frac{h}{6} \ln{\left(\frac{h}{6}\right) },
 \end{equation*}
-with probability at least,
+with probability at least xxxxx.
 \end{thm}
 \begin{proof}
     The expected sample number of any action $k$ up to step $t$ can be lower bounded,
@@ -124,9 +125,10 @@ The good estimation of the true mean reward will be helpful to train the neural 
     If $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, then the dynamic regret satisfies,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=1}^{T-1}{ \left(  {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t } \le \frac{5 h}{c} \cdot  T^{\frac{2}{3}}.
+    \sum\limits_{t=1}^{T-1}{ \left(  {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t } \le \frac{5 h}{c} \cdot  T^{\frac{2}{3}},
 \end{split}
 \end{equation*}
+with probability at least $1 - \exp\left\{ - \frac{T^2}{16 h} \right\} \ge 1 - \frac{16 h}{T^2}$.
 \end{thm}
 \begin{proof}
     Denote $\delta_t \triangleq \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t$. Decompose $\delta_t$ as follows,
