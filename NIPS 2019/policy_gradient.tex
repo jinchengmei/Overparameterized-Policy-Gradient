@@ -43,7 +43,7 @@ Our first main result is a $\tilde{O}(T^{2/3})$ regret for the above policy grad
 
 \begin{thm}
 \label{thm:policy_gradient_main_result}
-    Given policy neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
+    Given policy neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)} \le \frac{8 \sqrt{h}}{c} \cdot T^{\frac{2}{3}} + 3 \ln{h} \cdot T^{\frac{2}{3}} \left(\ln{T}\right)^{\frac{1}{3}}.
@@ -57,8 +57,8 @@ According to \cref{alg:policy_gradient_uniform_exploration}, $\tilde{\rvpi}_t$ i
 \begin{split}
     \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right) } &\le 1 + \sum\limits_{t=1}^{T-1}{ \left[ \left( 1 - t^{ \beta - \frac{1}{3}} \right) \cdot \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr + t^{ \beta - \frac{1}{3}} \cdot \left( {\rvpi^*}^\top \rvr - \expectation\limits_{A_t \sim \unif[h]}{ \left[ r\left(A_t\right) \right] } \right) \right]} \\
     &\le 1 + \sum\limits_{t=1}^{T-1}{ \left[ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr + t^{ \beta - \frac{1}{3}} \right]} \\
-    &\le 1 + \frac{1}{\frac{2}{3} + \beta} \cdot T^{\frac{2}{3} + \beta} + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr } \\
-    &\le 2 \cdot T^{\frac{2}{3} + \beta} + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr },
+    &\le 1 + \sum\limits_{t=1}^{T-1}{ \left( \frac{ h \ln{t} }{t} \right)^{\frac{1}{3}} } + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr } \\
+    &\le 2 \cdot T^{\frac{2}{3}} \cdot \left( h \ln{T} \right)^{\frac{1}{3}} + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr },
 \end{split}
 \end{equation}
 where the second inequality comes from $1 - t^{ \beta - \frac{1}{3}} \le 1$, $\forall t \ge 1$, and $\left\| \rvr \right\|_\infty \le 1$.
@@ -69,7 +69,7 @@ Denote $\rvpi_t^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rv
 \begin{split}
     \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr &= \left( {\rvpi^*} - {\rvpi_t^*} \right)^\top \hat{\rvr}_t + \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t + \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \left( \rvr - \hat{\rvr}_t \right) \\
     &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t  + \left\| \rvpi^* - \rvpi\left( \rmW_t \right) \right\|_1 \cdot \left\| \rvr - \hat{\rvr}_t \right\|_\infty \\
-    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t + 4 \exp\left\{ - \frac{2}{ \left(\frac{2}{3} + \beta \right) h } \cdot t^{3\beta} \right\} + 2 t^{\beta - \frac{1}{3}},
+    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t + 2 \left( 2 + \left( h \ln{t} \right) ^\frac{1}{3} \right) \cdot t^{- \frac{1}{3}},
 \end{split}
 \end{equation}
 where the first inequality is by the definition of $\rvpi_t^*$ and  H{\"o}lder's inequality and the second inequality results from \cref{thm:reward_estimation_hoeffding}. Summing up \cref{eq:playing_learning_phase_regret_decomposition} from and
@@ -79,41 +79,41 @@ combining \cref{eq:total_regret_decomposition} and \cref{thm:dynamic_regret_subl
     \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right) } \le  4 T \exp\left\{ - \frac{2}{h} \cdot  T^{3\beta} \right\} + 3 T^{\frac{2}{3} + \beta} + \frac{2 \sqrt{h}}{ c} \cdot T^{\frac{2}{3} - \frac{\beta}{2}}.
 \end{split}
 \end{equation*}
-Taking $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{T}} } }{ 3 \ln{T}} $ completes the proof.
 \end{proof}
 
 \cref{alg:policy_gradient_uniform_exploration} divides the sampling policy $\tilde{\rvpi}_t$ into two parts, i.e., the network policy $\rvpi\left( \rmW_t \right)$ and an uniform policy. Intuitively, when the reward estimation is very inaccurate, updates can probably hurt the neural network policy.  Therefore, an uniform policy is used to guarantee that every action can be sampled for enough many times, which will provide accurate reward estimations for learning. 
 
 \begin{thm}
 \label{thm:reward_estimation_hoeffding}
-    In \cref{alg:policy_gradient_uniform_exploration}, let $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, $\forall t \ge 1$, the following holds in expectation,
+    In \cref{alg:policy_gradient_uniform_exploration}, let $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$. $\forall t \ge \frac{h}{6} \ln{\left(\frac{h}{6}\right) }$, the following holds in expectation,
 \begin{equation*}
-    \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 2 \exp\left\{ - \frac{2}{ \left(\frac{2}{3} + \beta \right) h } \cdot t^{3\beta} \right\} + t^{\beta - \frac{1}{3}}.
+    \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 2 \cdot t^{- \frac{1}{3}} + t^{\beta - \frac{1}{3}} \le \left( 2 + \left( h \ln{t} \right) ^\frac{1}{3} \right) \cdot t^{- \frac{1}{3}}
 \end{equation*}
 \end{thm}
 \begin{proof}
-    Up to step $t \ge 1$, the $k$th action will be sampled for at least,
+    The expected sampled number of any action $k$ up to step $t$ can be lower bounded,
 \begin{equation*}
 \begin{split}
-    n_t(k) &= \sum\limits_{s=0}^{t}{ \tilde{\pi}_t(k)} \ge \sum\limits_{s=1}^{t}{ \tilde{\pi}_t(k)} = \sum\limits_{s=1}^{t}{ \left[ \left( 1 - s^{\beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{s}\right)(k) + \frac{s^{\beta - \frac{1}{3}}}{h} \right] } \\
-    &\ge \sum\limits_{s=1}^{t}{ \frac{s^{\beta - \frac{1}{3}}}{h} } \ge \frac{t^{\frac{2}{3} + \beta}}{ h  \left(\frac{2}{3} + \beta \right) }.
+    \expectation{\left[ n_t(k) \right]} &= \sum\limits_{s=0}^{t}{ \tilde{\pi}_t(k)} \ge \sum\limits_{s=1}^{t}{ \tilde{\pi}_t(k)} = \sum\limits_{s=1}^{t}{ \left[ \left( 1 - s^{\beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{s}\right)(k) + \frac{s^{\beta - \frac{1}{3}}}{h} \right] } \\
+    &\ge \sum\limits_{s=1}^{t}{ \frac{s^{\beta - \frac{1}{3}}}{h} } \ge \frac{t^{\frac{2}{3} + \beta}}{ h  \left(\frac{2}{3} + \beta \right) } \ge \frac{t^{\frac{2}{3} + \beta}}{ h },
 \end{split}
 \end{equation*}
+where the last inequality is by $\beta \le \frac{1}{3}$, $\forall t \ge \frac{h}{6} \ln{\left(\frac{h}{6}\right) }$.
 According to the Hoeffding's inequality,
 \begin{equation}
 \label{eq:loss_estimation_hoeffding}
 \begin{split}
-    \pr\left\{ \left| \hat{r}_{t}(k) - r(k) \right| > t^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{t}(k) \cdot t^{2\beta - \frac{2}{3}} \right\} \le 2 \exp\left\{ - \frac{2}{ h  \left(\frac{2}{3} + \beta \right) } \cdot t^{3\beta} \right\}.
+    \pr\left\{ \left| \hat{r}_{t}(k) - r(k) \right| > t^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{t}(k) \cdot t^{2\beta - \frac{2}{3}} \right\} \le 2 \exp\left\{ - \frac{2}{ h } \cdot t^{3\beta} \right\}.
 \end{split}
 \end{equation}
 Therefore,
 \begin{equation*}
 \begin{split}
     \left\| \hat{\rvr}_t - \rvr \right\|_\infty &\le \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le t^{\beta - \frac{1}{3}} \right\} \cdot t^{\beta - \frac{1}{3}} + \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty > t^{\beta - \frac{1}{3}} \right\} \cdot 1 \\
-    &\le 2 \exp\left\{ - \frac{2}{ h  \left(\frac{2}{3} + \beta \right) } \cdot t^{3\beta} \right\} \cdot 1 + 1 \cdot t^{\beta - \frac{1}{3}},
+    &\le 2 \exp\left\{ - \frac{2}{ h } \cdot t^{3\beta} \right\} \cdot 1 + 1 \cdot t^{\beta - \frac{1}{3}},
 \end{split}
 \end{equation*}
-since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cref{eq:loss_estimation_hoeffding}, 
+since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cref{eq:loss_estimation_hoeffding}. Taking the value of $\beta$ completes the proof.
 \end{proof}
 
 The good estimation of the true mean reward will be helpful to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
