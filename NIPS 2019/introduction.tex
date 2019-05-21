@@ -21,17 +21,15 @@ In this paper, we take one step further to theoretically understanding the behav
 Although our main results mainly focus on the stochastic bandits setting, they can be easily generalized to many other reinforcement learning settings, such as state dependent stochastic bandit settings and episodic MDP settings. Our findings can be seen as an initial step toward understanding the globally convergence for the popular RL methods (the value based learning, and the policy gradient here) with non-linear neural network function approximations, such as Deep Q-Network \cite{mnih2015human}, Asynchronous Actor-Critic Agents \citep{mnih2016asynchronous}, Path Consistency Learing \citep{nachum2017bridging}, and Relative Entropy Policy Search \citep{peters2010relative}, combining with more practical function approximations and training procedures, e.g., less over-parameterized neural networks. [Why is less over-parameterized neural networks?]
 
 Finally, let us comment on the technique side of our results. 
-Our results are inspired by the recent progresses on over-parameterized neural networks for supervised learning (regression and classification) settings \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}. 
-However, because of the different learning settings between supervised learning and reinforcement learning, many technical challenges still persist. 
-One challenge is the balance between exploration and exploitation, which is unique in the RL/bandits problems.
-In this paper, we augment popular DRL methods with a proper $\epsilon$-greedy component for exploration.
-Another challenge is that there is no true label provided by the environment, so the learning objective itself needs to be estimated from the collected data, which makes the problem more difficult.
-In order to have a more informative learning objective, we propose to use the empirical average rewards, as opposite to using a single reward on the current step, for the learning objective. 
-However, even so the learning objective is still not accurate.
-In particular, as we hope that our policy can achieve a sub-linear (or even nearly optimal) regret rate, there is only a limited budget (sub-linear or even only $\log(T)$) for the sub-optimal arms. Thus, as a sharp contrast to supervised learning with i.i.d. samples, we do NOT have accurate estimates on the values of sub-optimal arms in RL settings.  
-
-
-
+Our results are inspired by the recent progresses on over-parameterized neural networks for supervised learning (regression and classification) \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}. 
+However, because of the different learning settings between supervised learning and reinforcement learning, many challenges still persist. 
+One standard challenge is the balance between exploration and exploitation in the RL/bandits problems.
+Such balance in our problem becomes more complex, compared to that in the traditional multi-arm bandit setting, as the update of model is performed by gradient descent on the parameters.
+The information gained from one arm will affect the evaluation of the other arms through the parameters of the network, which may help or hurdle the exploration of other arms.
+Another challenge is that there is no true label provided by the environment, so the learning objective itself needs to be estimated from the collected data.
+We propose to use the empirical average rewards instead of a single reward on the current step for the learning objective. 
+Note that even so we still do NOT have an accurate estimate on the rewards.
+To see that, as we hope that our policy can achieve a sub-linear (or nearly optimal) regret rate, only a limited budget (sub-linear or $O(\log(T))$) is allowed for the sub-optimal arms. Thus, as a sharp contrast to supervised learning with i.i.d. samples, we do NOT have enough samples from the sub-optimal arms for accurate estimates.  
 
 
 %In the DL field, the well known situation is that the theoretical understanding is far behind with the practical applications \citep{goodfellow2016deep,zhang2016understanding}. Fortunately, there are still continuous progresses in several aspects, including expressiveness \citep{cybenko1989approximation,raghu2017expressive}, optimization \citep{kawaguchi2016deep,li2017convergence,li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and generalization \cite{neyshabur2017exploring,allen2018learning} of the DL theory. 
