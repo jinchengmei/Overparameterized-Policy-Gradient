@@ -32,7 +32,7 @@ In each iteration, the agent only update its value neural network using one grad
 		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
 		\STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\forall k \in [h]$. $\ucb_{0}(k) \gets 1$, $\lcb_{0}(k) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\hat{\Delta}_{t}(k) \gets \min\left\{ 1,  \min\limits_{k^\prime \in \left[h\right]}\left\{ \ucb_{t}(k^\prime) \right\}  - \lcb_{t}(k)\right\} $, $\forall k \in [h]$.
+		\STATE $\hat{\Delta}_{t}(k) \gets \min\left\{ 1,  \min\limits_{k^\prime \in \left[h\right]}\left\{ \lcb_{t}(k^\prime) \right\}  - \ucb_{t}(k)\right\} $, $\forall k \in [h]$.
 		\STATE $\xi_t(k) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)}$, $\varepsilon_t(k) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t(k) \right\}$, $\forall k \in [h]$.
 		\STATE $\pi_{t}(k) \gets \left. 
 		    \begin{cases}
