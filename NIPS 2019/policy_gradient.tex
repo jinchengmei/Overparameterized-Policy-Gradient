@@ -80,9 +80,6 @@ Taking $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{T}} } }{ 3 \ln{T}}
 
 \cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the neural network policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the neural network policy.  While in the second playing-learning phase, since the loss estimation is good, the neural network policy will keep reducing its dynamic expected loss, which is highly related with its true expected loss, i.e., the expected regret of the playing-learning phase.
 
-\subsection{Exploring Phase}
-\label{subsec:exploring_phase}
-
 The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides us good estimations of the true mean loss/reward as follows.
 \begin{thm}
 \label{thm:reward_estimation_hoeffding}
@@ -115,9 +112,6 @@ Therefore,
 \end{equation*}
 since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cref{eq:loss_estimation_hoeffding}, 
 \end{proof}
-
-\subsection{Playing-Learning Phase}
-\label{subsec:playing_learning_phase}
 
 The good estimation of the true mean loss $\hat{\rvr}_t$ obtained at the end of the exploring phase will be used to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the recently proposed optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
 \begin{thm}
