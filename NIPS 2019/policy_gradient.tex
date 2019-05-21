@@ -1,8 +1,7 @@
 \section{Over-parametrized Policy Gradient}
 \label{sec:policy_gradient}
 
-Our first algorithm follows the widely used policy gradient method, but with an extra sub-linear exploration phase as shown in \cref{alg:policy_gradient_uniform_exploration}. In particular, we set the first $T^{\frac{2}{3} + \beta}$ rounds as the ``exploration phase'', during which the agent purely collects rewards without learning the policy neural networks. 
-After the exploration phase, the agent samples and takes actions according to the current neural network policy $\rvpi\left(\rmW_t\right)$. In the meanwhile, the agent learns the policy neural network by doing policy gradient updates, with the expected empirically estimated loss calculated from the exploring phase as its objective.
+Our first algorithm follows the widely used policy gradient method, but mixed with an uniform exploration as shown in \cref{alg:policy_gradient_uniform_exploration}. In particular, we set every action with probability at least $t^{ \beta - \frac{1}{3}} \cdot \frac{1}{h}$ to be explored. In the meanwhile, the agent learns the policy neural network by doing policy gradient updates, with the expected empirically estimated reward as its objective.
 
 \begin{algorithm}[t]
    \caption{Policy Gradient with Uniform Exploration}
@@ -35,7 +34,7 @@ After the exploration phase, the agent samples and takes actions according to th
 \end{algorithm}
 
 
-Our first main results is a $\tilde{O}(T^{2/3})$ regret for the above policy gradient method, as shown in \cref{thm:policy_gradient_main_result}.
+Our first main result is a $\tilde{O}(T^{2/3})$ regret for the above policy gradient method, as shown in \cref{thm:policy_gradient_main_result}.
 
 \begin{thm}
 \label{thm:policy_gradient_main_result}
@@ -78,9 +77,8 @@ combining \cref{eq:total_regret_decomposition} and \cref{thm:dynamic_regret_subl
 Taking $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{T}} } }{ 3 \ln{T}} $ completes the proof.
 \end{proof}
 
-\cref{alg:policy_gradient_uniform_exploration} divides $T$ steps into two parts. In the first exploring phase, the agent uniformly samples actions without learning the neural network policy. Intuitively, at the beginning, when the loss estimation is very inaccurate, early updating can probably hurt the neural network policy.  While in the second playing-learning phase, since the loss estimation is good, the neural network policy will keep reducing its dynamic expected loss, which is highly related with its true expected loss, i.e., the expected regret of the playing-learning phase.
+\cref{alg:policy_gradient_uniform_exploration} divides the sampling policy $\tilde{\rvpi}_t$ into two parts, i.e., the network policy $\rvpi\left( \rmW_t \right)$ and an uniform policy. Intuitively, when the reward estimation is very inaccurate, updates can probably hurt the neural network policy.  Therefore, an uniform policy is used to guarantee that every action can be sampled for enough many times, which will provide accurate reward estimations for learning. 
 
-The exploring phase of \cref{alg:policy_gradient_uniform_exploration} provides us good estimations of the true mean loss/reward as follows.
 \begin{thm}
 \label{thm:reward_estimation_hoeffding}
     In \cref{alg:policy_gradient_uniform_exploration}, $\forall t \ge 1$, the following holds in expectation,
@@ -113,7 +111,7 @@ Therefore,
 since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cref{eq:loss_estimation_hoeffding}, 
 \end{proof}
 
-The good estimation of the true mean loss $\hat{\rvr}_t$ obtained at the end of the exploring phase will be used to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the recently proposed optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
+The good estimation of the true mean reward will be helpful to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
 \begin{thm}
 \label{thm:dynamic_regret_sublinear}
     If $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, then the dynamic regret satisfies,
