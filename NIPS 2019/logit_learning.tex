@@ -3,11 +3,13 @@
 
 We have proved a $O(T^{2/3})$ regret bound for the above policy gradient method.
 
-MIRROR DESCENT
+[MIRROR DESCENT]
+We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$. 
+
 
 %Recall that the optimal rate for stochastic multi-armed bandits is $O(\log(T))$
 %such rate is not satisfactory especially for the stochastic bandit setting. 
-In this paper we further propose an alternative algorithm based on value learning, called Logit Learning with $\varepsilon$-Greedy Exploration.
+In this paper we further propose an alternative algorithm based on value learning, called {\bf L}ogit {\bf L}earning with $\varepsilon$-Greedy {\bf E}xploration (LLE).
 
 
 
@@ -79,13 +81,12 @@ In each iteration, the agent only update its value neural network using one grad
 	\end{algorithmic}
 \end{algorithm}
 
-\subsection{Theoretical analysis}
-\label{subsec:theoretical_analyses_logit_learning}
+%\subsection{Theoretical analysis}
+%\label{subsec:theoretical_analyses_logit_learning}
 
 %It seems difficult to improve \cref{thm:policy_gradient_main_result}, as all the three parts of the regret are almost balanced, i.e., uniform exploration ($ T^{\frac{2}{3} + \beta}$, \cref{eq:total_regret_decomposition}), estimation error ($ T^{\frac{2}{3} + \beta} $, \cref{thm:reward_estimation_hoeffding}), and the cumulative expected loss of neural network policies ($ T^{\frac{2}{3} - \frac{\beta}{2}} $, \cref{thm:dynamic_regret_sublinear}). \cref{alg:policy_gradient_uniform_exploration} learns policies in the primal policy space by maximizing $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$. And it is not necessary that $\rvo\left( \rmW_t\right)$ is close to $\hat{\rvr}_t$, due to the homogeneity invariant property of the softmax, i.e, $\rvpi\left(\rvo + a \cdot \rvone \right) = \rvpi(\rvo)$, $\forall a \in \sR$. To show the convergence of $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$, every action needs to be pulled many times, which leads to the undesirable regret results.
 
-We propose \cref{alg:logit_learning_eps_greedy_exploration}, i.e., learning in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$. Although the logit learning is not as practical as the policy gradient, the results are better, as shown in \cref{thm:logit_learning_main_result}.
-
+We show, in the next theorem, that LLE has a nearly optimal regret rate in the stochastic multi-armed bandit setting, when the value network is over-parametrized.
 \begin{thm}
 \label{thm:logit_learning_main_result}
     Given value neural networks as shown in \cref{fig:nn_policy_value}, with number of hidden nodes $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$,  $\alpha > 3$, and $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
