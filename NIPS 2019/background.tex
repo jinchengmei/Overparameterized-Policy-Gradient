@@ -45,9 +45,10 @@ Without loss of generality, in this paper we assume $\rvr \in \left[ 0, 1 \right
 %where the expectation is over the randomness of action selection, if the agent is using some stochastic strategies.
 
 \subsection{Policy Based and Value Based RL Methods}
-Vanilla Policy Gradient
 
-Vanilla Q-learning
+Minimizing the regret \cref{eq:expected_regret} is usually formulated as the policy optimization problem, i.e., $\max\limits_{\rvpi \in \Pi}{ \expectation\limits_{ a \sim \rvpi }{ r(a)} }$, where $\Pi$ is the policy constraint. In practice, when $\Pi$ consists of all the $\rvpi\left(\rmW\right)$ represented by the parameter $\rmW$, one can use iterative gradient updates to solve the above expected reward maximization problem. This is known as the policy gradient method.
+
+On the other hand, value based RL methods directly attempt to learn a function to approximate the value of the optimal policy, i.e., $\min\limits_{Q \in \gQ}{ \expectation\limits_{a \sim \rvb}{ \left\| Q(a) - Q^*(a) \right\|_2^2 }}$, where $\rvb$ is a behavior policy that samples actions for the learning. The learned value function induces a policy which acts greedily with respect to the value of each action.
 
 \subsection{Neural Networks as Policy/Value Function Approximations}
 \label{subsec:nn_value_policy}
