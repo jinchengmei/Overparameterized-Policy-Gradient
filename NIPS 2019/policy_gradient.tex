@@ -17,10 +17,8 @@ In particular, we set every action with probability at least $t^{ \beta - \frac{
    \unif\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
    \STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\tilde{\pi}_0(k) \gets \frac{1}{h}$, $\forall k \in [h]$.
    \FOR{$t=0$ {\bfseries to} $T-1$}
-   \STATE Sample action $A_{t} \sim \tilde{\rvpi}_{t}\left(\cdot \middle| \rvs \right)$.
+   \STATE Sample action $A_{t} \sim \tilde{\rvpi}_{t}\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
    \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
-   
-   \STATE Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
    \STATE $n_{t+1}(k) \gets \left. 
 		\begin{cases}
 		n_{t}(k) + 1, & \text{if } k = A_t, \\

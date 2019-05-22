@@ -30,20 +30,10 @@ Finally, note that In each iteration, the agent only update its value neural net
 	\label{alg:logit_learning_eps_greedy_exploration}
 	\begin{algorithmic}
 		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
-		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \gU\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-		\STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\forall k \in [h]$. $\ucb_{0}(k) \gets 1$, $\lcb_{0}(k) \gets 0$, $\forall k \in [h]$.
+		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \unif\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+		\STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\tilde{\pi}_t(k) \gets \frac{1}{h}$, $\ucb_{0}(k) \gets 1$, $\lcb_{0}(k) \gets 0$, $\forall k \in [h]$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
-		\STATE $\hat{\Delta}_{t}(k) \gets \min\left\{ 1,  \min\limits_{k^\prime \in \left[h\right]}\left\{ \lcb_{t}(k^\prime) \right\}  - \ucb_{t}(k)\right\} $, $\forall k \in [h]$.
-		\STATE $\xi_t(k) \gets \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)}$, $\varepsilon_t(k) \gets \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \xi_t(k) \right\}$, $\forall k \in [h]$.
-		\STATE $\pi_{t}(k) \gets \left. 
-		    \begin{cases}
-		    1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}, \\
-		    0, & \text{otherwise}.
-		    \end{cases}
-		    \right.$
-		%\STATE $\pi_{t}(k) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
-		%\STATE $\pi_{t}(k) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
-		\STATE $\tilde{\pi}_t(k) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_t(k)} \right) \cdot  \pi_t(k) + \varepsilon_t(k)$, $\forall k \in [h]$.
+		
 		\STATE Sample action $A_{t} \sim \tilde{\rvpi}_t\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
 		\STATE $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$.
 		\STATE $n_{t+1}(k) \gets \left. 
@@ -78,6 +68,19 @@ Finally, note that In each iteration, the agent only update its value neural net
 		    \right.$
 		%\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
 		%\STATE $\lcb_{t+1}(k) \gets \lcb_{t}(k)$, $\forall k \not= A_t$.
+		
+		\STATE $\hat{\Delta}_{t+1}(k) \gets \min\left\{ 1,  \min\limits_{k^\prime \in \left[h\right]}\left\{ \lcb_{t+1}(k^\prime) \right\}  - \ucb_{t+1}(k)\right\} $, $\forall k \in [h]$.
+		\STATE $\xi_{t+1}(k) \gets \frac{\beta \ln{(t+1)}}{(t+1) \hat{\Delta}_{t+1}^2(k)}$, $\varepsilon_{t+1}(k) \gets \min\left\{ \frac{1}{2 h}, \frac{1}{2} \sqrt{\frac{\ln{h}}{(t+1) h}},  \xi_{t+1}(k) \right\}$, $\forall k \in [h]$.
+		\STATE $\pi_{t+1}(k) \gets \left. 
+		    \begin{cases}
+		    1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t+1}(k^\prime)\right\}, \\
+		    0, & \text{otherwise}.
+		    \end{cases}
+		    \right.$
+		%\STATE $\pi_{t}(k) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
+		%\STATE $\pi_{t}(k) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
+		\STATE $\tilde{\pi}_{t+1}(k) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_{t+1}(k)} \right) \cdot  \pi_{t+1}(k) + \varepsilon_{t+1}(k)$, $\forall k \in [h]$.
+		
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
