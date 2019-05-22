@@ -360,48 +360,57 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \section{Proofs of \cref{thm:logit_learning_main_result} }
 \begin{proof}
 	By Proposition 2 of \citep{seldin2017improved},
-	$\forall t \ge t_1(k) \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{h}} \right\}}$,
+	$\forall k \in [h]$, $\forall t \ge t_1(k) \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{h}} \right\}}$,
 	\begin{equation*}
 	\begin{split}
 	\pr{\left\{ \left( n_t(k) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \text{or} \left( n_t(k^*) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \right\}} \le \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
 	\end{split}
 	\end{equation*}
-	Assuming that $n_t(k) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)}$ and $n_t(k^*) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)} > \frac{25 \ln{t}}{\Delta^2(k)}$. By Hoeffding's inequality,
+	Suppose that $n_t(k) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)}$ and $n_t(k^*) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)} > \frac{25 \ln{t}}{\Delta^2(k)}$. By Hoeffding's inequality,
+	\begin{equation*}
+	    \pr{\left\{ \left| \hat{r}_t(k) - r(k) \right| \ge \frac{\Delta(k)}{5} \right\}} \le \frac{2}{t^2}, \quad \forall k \in [h].
+	\end{equation*}
+	With abuse of notation, denote $k = A_t$, according to \cref{alg:logit_learning_eps_greedy_exploration},
 	\begin{equation*}
 	\begin{split}
-	\pr{\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
+	    \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2 = \left| \hat{r}_t(k) - \hat{r}_{t+1}(k) \right| = \frac{\left| \hat{r}_t(k) - R_k(n_t(k)) \right|}{n_t(k) + 1} \le \frac{1}{n_t(k)} \le \frac{2 \Delta^2(k)}{\beta \ln{t}} \le \frac{\Delta^2(k)}{\ln{t}}.
 	\end{split}
 	\end{equation*}
 	According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
 	\begin{equation*}
 	\begin{split}
 	\frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2^2 &= \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left( \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right)^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t+1} \right) + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2 \\
-	&\le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2^2 + \sqrt{1 - \frac{1}{2 h} } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }.
+	&\le \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2 \cdot \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2 + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2 \\
+	&\le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2^2 + \sqrt{1 - \frac{1}{2 h} } \cdot \frac{\Delta^2(k)}{\ln{t}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4(k)}{2 \left( \ln{t} \right)^2 } \\
+	&= \frac{1}{2} \left( \sqrt{1 - \frac{1}{2 h} } \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2(k)}{\ln{t}} \right)^2,
 	\end{split}
 	\end{equation*}
-	If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$, $\forall t \ge t_2 \triangleq \min\left\{ t: \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
+	which implies,
+	\begin{equation*}
+	    \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 \le \sqrt{1 - \frac{1}{2 h} } \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2(k)}{\ln{t}}.
+	\end{equation*}
+	If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta(k)}{5}$, $\forall t \ge t_2(k) \triangleq \min\left\{ t: \ln{t} \ge \frac{5 \Delta(k) }{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
 	\begin{equation*}
 	\begin{split}
-	\left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
-	&\le \sqrt{1 - \frac{1}{2 h}} \cdot \frac{\Delta}{5} + \left(1 - \sqrt{1 - \frac{1}{2 h}}\right) \cdot \frac{\Delta}{5} = \frac{\Delta}{5}.
+	\left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \frac{\Delta(k)}{5} + \left(1 - \sqrt{1 - \frac{1}{2 h}}\right) \cdot \frac{\Delta(k)}{5} = \frac{\Delta(k)}{5}.
 	\end{split}
 	\end{equation*}
-	If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall t \ge t_3 \triangleq \min\left\{ t: \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
+	On the other hand, if $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta(k)}{5}$, $\forall t \ge t_3(k) \triangleq \min\left\{ t: \ln{t} \ge \frac{10 \Delta(k)}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
 	\begin{equation*}
 	\begin{split}
-	\left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \frac{\Delta}{5} \\
+	\left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \frac{\Delta(k)}{5} \\
 	&< \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2.
 	\end{split}
 	\end{equation*}
-	Note $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, therefore $\forall t \ge t_4 \triangleq \min{\left\{ t : \left( \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \right)^t \sqrt{d} \le \frac{\Delta}{5}  \right\}}$, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$. By the triangle inequality,
+	Note $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, therefore $\forall t \ge t_4(k) \triangleq \min{\left\{ t : \left( \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \right)^t \sqrt{d} \le \frac{\Delta(k)}{5}  \right\}}$, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta(k)}{5}$. By the triangle inequality,
 	\begin{equation*}
 	\begin{split}
-	\left\| \rvo\left( \rmW_t \right) - \rvr \right\|_\infty &\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_\infty + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
-	&\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
-	&\le \frac{2 \Delta}{5}. \qedhere
+	\left| o\left( \rmW_t \right)(k) - r(k) \right| &\le \left| o\left( \rmW_t \right)(k) - \hat{r}_t(k) \right| + \left| \hat{r}_t(k) - r(k) \right| \\
+	&\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \left| \hat{r}_t(k) - r(k) \right| \\
+	&\le \frac{2 \Delta(k)}{5}, \quad \forall k \in [h].
 	\end{split}
 	\end{equation*}
-	Denote $\bar{t}(k) \triangleq \max\left\{ t_1(k), t_2, t_3 + t_4 \right\} = \max\left\{ t_1, t_3 + t_4 \right\} $. After $\bar{t}(k)$ steps, with high probability, $\tilde{\rvpi}_t$ will coincide with the optimal policy. Finally, for $\alpha = 3$ and $\beta = 256$, by \cref{lem:delta_estimation_lower_bound},
+	Denote $\bar{t}(k) \triangleq \max\left\{ t_1(k), t_2(k), t_3(k) + t_4(k) \right\} = \max\left\{ t_1, t_3(k) + t_4(k) \right\} $. After $\bar{t}(k)$ steps, with probability at least $1 - \frac{2 h}{t^2}$, $\rvpi_t$ will coincide with the optimal policy. Finally, for $\alpha = 3$ and $\beta = 256$, by \cref{lem:delta_estimation_lower_bound},
 	\begin{equation*}
 	\begin{split}
 	\sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } &= \sum\limits_{t=1}^{T}{ \expectation{ \left[ \min\left\{ \frac{1}{2 h}, \frac{1}{2} \sqrt{\frac{\ln{h}}{ t h}},  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right\} \right]} } \\
