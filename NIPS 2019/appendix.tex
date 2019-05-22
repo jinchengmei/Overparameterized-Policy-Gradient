@@ -455,6 +455,229 @@ According to \cref{lem:logit_upper_bound_parameter},
 	\end{equation*}
 \end{lem}
 
+\section{just put proofs of sec 3 here}
+
+========================================\\
+According to \cref{alg:policy_gradient_uniform_exploration}, $\tilde{\rvpi}_t$ is used for sampling, which is $\rvpi\left( \rmW_t \right)$ mixed with decaying uniform. Therefore the regret is divided by the linearity of the expectation.
+\begin{equation}
+\label{eq:total_regret_decomposition}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right) } &\le 1 + \sum\limits_{t=1}^{T-1}{ \left[ \left( 1 - t^{ \beta - \frac{1}{3}} \right) \cdot \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr + t^{ \beta - \frac{1}{3}} \cdot \left( {\rvpi^*}^\top \rvr - \expectation\limits_{A_t \sim \unif[h]}{ \left[ r\left(A_t\right) \right] } \right) \right]} \\
+    &\le 1 + \sum\limits_{t=1}^{T-1}{ \left[ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr + t^{ \beta - \frac{1}{3}} \right]} \\
+    &\le 1 + \sum\limits_{t=1}^{T-1}{ \left( \frac{ h \ln{t} }{t} \right)^{\frac{1}{3}} } + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr } \\
+    &\le 2 \cdot T^{\frac{2}{3}} \cdot \left( h \ln{T} \right)^{\frac{1}{3}} + \sum\limits_{t=1}^{T-1}{ \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr },
+\end{split}
+\end{equation}
+where the second inequality comes from $1 - t^{ \beta - \frac{1}{3}} \le 1$, $\forall t \ge 1$, and $\left\| \rvr \right\|_\infty \le 1$.
+
+Denote $\rvpi_t^* \triangleq \argmax\limits_{\rvpi \in \Delta^{h-1}}{\left\{ \rvpi^\top \hat{\rvr}_t\right\}}$. The last term can be decomposed as follows, $\forall t \ge 1$,
+\begin{equation}
+\label{eq:playing_learning_phase_regret_decomposition}
+\begin{split}
+    \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \rvr &= \left( {\rvpi^*} - {\rvpi_t^*} \right)^\top \hat{\rvr}_t + \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t + \left( {\rvpi^*} - \rvpi\left( \rmW_t \right) \right)^\top \left( \rvr - \hat{\rvr}_t \right) \\
+    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t  + \left\| \rvpi^* - \rvpi\left( \rmW_t \right) \right\|_1 \cdot \left\| \rvr - \hat{\rvr}_t \right\|_\infty \\
+    &\le \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t + \left( h \ln{t} \right)^\frac{1}{3}  \cdot t^{- \frac{1}{3}},
+\end{split}
+\end{equation}
+where the first inequality is by the definition of $\rvpi_t^*$ and  H{\"o}lder's inequality. And the second inequality holds with probability at least 
+\begin{equation*}
+    1 - h \cdot \exp\left\{ - \frac{t^{\frac{1}{3}}}{2 h^2} \cdot \left( \frac{h}{3} \ln{t} \right)^{\frac{2}{3}} \right\} - 2 h \cdot t^{- \frac{1}{3}},
+\end{equation*}
+according to \cref{thm:reward_estimation_hoeffding}. 
+
+Summing up \cref{eq:playing_learning_phase_regret_decomposition} from $1$ to $T-1$, and
+combining \cref{eq:total_regret_decomposition} and \cref{thm:dynamic_regret_sublinear},
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right) } \le 4 \cdot T^{\frac{2}{3}} \cdot \left( h \ln{T} \right)^{\frac{1}{3}} + \frac{5 h}{c} \cdot  T^{\frac{2}{3}}. \qedhere
+\end{split}
+\end{equation*}
+
+\begin{thm}
+\label{thm:reward_estimation_hoeffding}
+    In \cref{alg:policy_gradient_uniform_exploration}, let $\beta = \frac{ \ln{\left(\frac{h}{3}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, we have,
+\begin{equation*}
+    \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le t^{\beta - \frac{1}{3}} \le \left( h \ln{t} \right) ^\frac{1}{3} \cdot t^{- \frac{1}{3}}, \quad \forall t \ge \frac{h}{3} \ln{\left(\frac{h}{3}\right) },
+\end{equation*}
+with probability at least,
+\begin{equation*}
+    1 - h \cdot \exp\left\{ -  \frac{t^{\frac{1}{3} + 2 \beta}}{2 h^2} \right\} - 2 h \cdot \exp\left\{ - \frac{t^{3\beta}}{ h } \right\} = 1 - h \cdot \exp\left\{ - \frac{t^{\frac{1}{3}}}{2 h^2} \cdot \left( \frac{h}{3} \ln{t} \right)^{\frac{2}{3}} \right\} - 2 h \cdot t^{- \frac{1}{3}}.
+\end{equation*}
+\end{thm}
+\begin{proof}
+    Denote $\tilde{n}_t(k) \triangleq \sum\limits_{s=0}^{t}{ \tilde{\pi}_t(k)}$, which can be lower bounded as,
+\begin{equation*}
+\begin{split}
+    \tilde{n}_t(k) &\ge \sum\limits_{s=1}^{t}{ \tilde{\pi}_t(k)} = \sum\limits_{s=1}^{t}{ \left[ \left( 1 - s^{\beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{s}\right)(k) + \frac{s^{\beta - \frac{1}{3}}}{h} \right] } \\
+    &\ge \sum\limits_{s=1}^{t}{ \frac{s^{\beta - \frac{1}{3}}}{h} } \ge \frac{t^{\frac{2}{3} + \beta}}{ h  \left(\frac{2}{3} + \beta \right) } \ge \frac{t^{\frac{2}{3} + \beta}}{ h },
+\end{split}
+\end{equation*}
+where the last inequality is by $\beta \le \frac{1}{3}$, $\forall t \ge \frac{h}{3} \ln{\left(\frac{h}{3}\right) }$. According to \citep{wainwright2019high},
+\begin{equation*}
+\begin{split}
+    \pr\left\{ n_t(k) - \tilde{n}_t(k) < - a \right\} \le \exp\left\{ - \frac{a^2}{2 \sum_{s=1}^{t}{\sigma_s^2} } \right\} \le \exp\left\{ - \frac{2 a^2}{ t } \right\},
+\end{split}
+\end{equation*}
+where $\sigma_s \le \frac{1}{4}$ is the variance of $\text{Bernoulli}\left( \tilde{\pi}_t(k) \right)$
+Therefore, the following event
+\begin{equation*}
+    \gE_1 \triangleq \left\{ n_t(k) \ge \tilde{n}_t(k) - \frac{t^{\frac{2}{3} + \beta}}{ 2 h } \ge \frac{t^{\frac{2}{3} + \beta}}{ 2 h }, \forall k \in [h] \right\},
+\end{equation*}
+holds with probability at least $1 - h \cdot \exp\left\{ -  \frac{t^{\frac{1}{3} + 2 \beta}}{2 h^2} \right\}$. Assume $\gE_1$ happens, according to the Hoeffding's inequality, the following event
+\begin{equation*}
+    \gE_2 \triangleq \left\{ \left| \hat{r}_{t}(k) - r(k) \right| \le t^{\beta - \frac{1}{3}} , \forall k \in [h] \right\}
+\end{equation*}
+holds with probability at least $1 - 2 h \cdot \exp\left\{ - \frac{t^{3\beta}}{ h } \right\}$.
+\end{proof}
+
+The good estimation of the true mean reward will be helpful to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
+\begin{thm}
+\label{thm:dynamic_regret_sublinear}
+    If $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, then the dynamic regret satisfies,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T-1}{ \left(  {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t } \le \frac{5 h}{c} \cdot  T^{\frac{2}{3}},
+\end{split}
+\end{equation*}
+with probability at least $1 - \exp\left\{ - \frac{T^2}{16 h} \right\} \ge 1 - \frac{16 h}{T^2}$.
+\end{thm}
+\begin{proof}
+    Denote $\delta_t \triangleq \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t$. Decompose $\delta_t$ as follows,
+\begin{equation}
+\label{eq:dynamic_regret_decomposition}
+\begin{split}
+    \delta_t &= {\rvpi_t^*}^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t-1}\right) + \left( {\rvpi_t^*} - {\rvpi_{t-1}^*} \right)^\top \hat{\rvr}_{t-1}  + \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1} \\
+    &\quad + \left(  \rvpi\left( \rmW_{t-1} \right) - \rvpi\left( \rmW_t \right) 
+    \right)^\top \hat{\rvr}_{t-1} + \rvpi\left( \rmW_t \right)^\top \left( \hat{\rvr}_{t-1} - \hat{\rvr}_t \right).
+\end{split}
+\end{equation}
+We upper bound each term in the right hand side. Firstly,
+\begin{equation*}
+\begin{split}
+    {\rvpi_t^*}^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t-1}\right) &= \frac{\pi_{t}^*\left(A_{t-1}\right)}{n_{t}\left(A_{t-1}\right)} \left[ R_{ A_{t-1}}\left( n_{t}\left(A_{t-1}\right) -1 \right) - \hat{r}_{t-1}\left(A_{t-1}\right) \right] \\
+    &\le \frac{1}{n_{t}\left(A_{t-1}\right)} \le \frac{ h }{t^{\frac{2}{3} + \beta}},
+\end{split}
+\end{equation*}
+by $n_{t}\left(A_{t-1}\right) = n_{t-1}\left(A_{t-1}\right) + 1$, and $n_{t}\left(A_{t-1}\right) \ge \frac{t^{\frac{2}{3} + \beta}}{ h }$, $\forall t \ge 1$. By the definition of ${\rvpi_{t-1}^*}$,
+\begin{equation*}
+    \left( {\rvpi_t^*} - {\rvpi_{t-1}^*} \right)^\top \hat{\rvr}_{t-1} \le 0.
+\end{equation*}
+Note that according to the definition of $\delta_t$,
+\begin{equation*}
+    \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1} = \delta_{t-1}.
+\end{equation*}
+By \cref{lem:empirically_expected_reward_parameter_smoothness}, $\eta = \frac{1}{2 h m}$, and \cref{lem:gradient_lower_bound},
+\begin{equation*}
+\begin{split}
+    &\left( \rvpi\left( \rmW_{t-1} \right) - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_{t-1} \le - \frac{1}{4 h m} \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rmW_{t-1}} \right\|_F^2 \\
+    &\quad = - \frac{1}{4 h m} \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rvw_r(t-1)} \right\|_2^2 } \le - \frac{c^2}{4 h} \left[ \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1}  \right]^2 = - \frac{c^2}{4 h} \cdot \delta_{t-1}^2.
+\end{split}
+\end{equation*}
+Using similar arguments,
+\begin{equation*}
+    \rvpi\left( \rmW_t \right)^\top \left( \hat{\rvr}_{t-1} - \hat{\rvr}_t  \right) \le \frac{ h }{t^{\frac{2}{3} + \beta}}.
+\end{equation*}
+Plugging the above upper bounds into \cref{eq:dynamic_regret_decomposition},
+\begin{equation*}
+    \delta_t \le \delta_{t-1} - \frac{c^2}{4 h} \cdot \delta_{t-1}^2 + \frac{ 2 h }{t^{\frac{2}{3} + \beta}}.
+\end{equation*}
+Rearranging and summing up from $1$ to $T-1$,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T-1}{\delta_{t}^2} = \sum\limits_{t=2}^{T}{\delta_{t-1}^2} \le \frac{4 h}{ c^2} \cdot  \sum\limits_{t=2}^{T} { \left[ \delta_{t-1} - \delta_t + \frac{ 2 h }{t^{\frac{2}{3} + \beta}} \right] } \le \frac{25 h^2}{ c^2} \cdot T^{\frac{1}{3}}.
+\end{split}
+\end{equation*}
+By the Root-Mean Square-Arithmetic Mean inequality,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - 1 \right) \cdot \sum\limits_{t=1}^{T-1}{\delta_{t}^2}} \le \frac{5 h}{c} \cdot  T^{\frac{2}{3}}.
+\end{split}
+\end{equation*}
+Let $\sigma = \frac{2 \sqrt{2}}{\sqrt{\pi m}}$ and $\tau = \frac{\sigma \sqrt{\pi}}{2 \sqrt{2}} = \frac{1}{\sqrt{m}}$ in \cref{lem:gradient_coupling}. Since $m \ge \frac{T^2}{h^2}$, we have $T \le \frac{\tau}{2 \eta}$ such that \cref{lem:gradient_coupling} holds during all the playing-learning phase. According to \cref{lem:gradient_coupling_in_total}, with probability at least $1 - \exp\left\{ - \frac{m}{8} \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right) \right\} = 1 - \exp\left\{ - \frac{m}{16} \right\} \ge 1 - \exp\left\{ - \frac{T^2}{16 h} \right\}$,
+\end{proof}
+
+\cref{thm:dynamic_regret_sublinear} relies on two arguments. First, the dynamic expected loss is smooth in the logit space, and small policy gradient updates preserve the signs of ReLU outputs, therefore highly correlates the logit derivative and the policy gradient. Second, by the over-parameterization theory, gradient norm is lower bounded by expected loss around initialization, which means there is no bad local minima near the randomly initialized neural network policy $\rvpi\left( \rmW_0 \right)$.
+
+\begin{lem}
+\label{lem:logit_smoothness}
+Let $\rvpi(\rvo^\prime)$ and $\rvpi( \rvo)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ -1, 1\right]^h$,
+\begin{equation*}
+    \rvpi(\rvo^\prime)^\top \rvr \le \rvpi(\rvo)^\top \rvr + \left\langle \frac{d \rvpi(\rvo)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle + \left\| \rvo^\prime - \rvo \right\|_2^2.
+\end{equation*}
+\end{lem}
+Let $\rvo_{t+1} = \rvo_{t} + \eta \cdot \frac{d \rvpi(\rvo_{t})^\top \hat{\rvr}_t}{d \rvo_{t}}$, and let $\rvr = - \hat{\rvr}_t$, $\eta = \frac{1}{2}$ in \cref{lem:logit_smoothness},
+\begin{equation*}
+\begin{split}
+\small
+    \rvpi\left( \rvo_{t+1} \right)^\top \hat{\rvr}_t - \rvpi(\rvo_{t})^\top \hat{\rvr}_t \ge\frac{1}{4} \left\| \frac{d \rvpi(\rvo_{t})^\top \hat{\rvr}_t}{d \rvo_{t}} \right\|_2^2.
+\end{split}
+\end{equation*}
+Note the logit derivative norm is lower bounded by loss,
+\begin{equation}
+\label{eq:logit_derivative_lower_bound}
+\begin{split}
+    \left\| \frac{d \rvpi(\rvo_{t})^\top \hat{\rvr}_t}{d \rvo_{t}} \right\|_2 \ge \pi_{t}(\hat{k}_t^*) \cdot \left( \hat{r}_{t}(\hat{k}_t^*) - \rvpi(\rvo_{t})^\top \hat{\rvr}_t \right),
+\end{split}
+\end{equation}
+where $\hat{k}_t^* \triangleq \argmax\limits_{ k \in [h]}{\left\{ \hat{r}_t(k) \right\}}$. Therefore, by \cref{lem:logit_smoothness} and \cref{eq:logit_derivative_lower_bound}, we can derive similar relationship for $\delta_t$ and sublinear regret for update in the logit space. However, in practice, $\rvpi$ is updated in the parameter space. When the parameters are updated from $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right]$ to ${\rmW^\prime}^\top \triangleq \left[ \rvw_1^\prime, \rvw_2^\prime, \dots, \rvw_m^\prime \right]$,
+\begin{equation*}
+\begin{split}
+    \rvo^\prime - \rvo = \rmA \left[ \sigma \left( \rmW^\prime \rvs \right) - \sigma \left( \rmW \rvs \right) \right].
+\end{split}
+\end{equation*}
+The difficulty is that after updating the parameters, possibly many signs in the ReLU components also change. This can be circumvented by restraining the updates around the initialization \citep{li2018learning}.
+
+\begin{lem}
+\label{lem:gradient_coupling}
+	Define the pseudo policy gradient at step $t$ as,
+\begin{equation*}
+\begin{split}
+	\frac{d \tilde{\ell}_t}{d \rmW_t} \triangleq \tilde{\rmD} \rmA^\top \rmH\left( \rvpi\left(\rmW_t\right) \right) \hat{\rvr}_t \rvs^\top,
+\end{split}
+\end{equation*}
+where $\tilde{\rmD} \in \sR^{h \times h}$ is a diagonal matrix, and  $\tilde{\rmD}_{r,r} \triangleq \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\rmH\left( \rvpi\left(\rmW_t\right) \right)$ is,
+\begin{equation*}
+    \rmH\left( \rvpi\left(\rmW_t\right) \right) \triangleq \Delta\left( \rvpi\left(\rmW_t\right) \right) - \rvpi\left(\rmW_t\right) \rvpi\left(\rmW_t\right)^\top.
+\end{equation*}
+The true policy gradient is,
+\begin{equation*}
+\begin{split}
+    \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \triangleq  \rmD(t) \rmA^\top \rmH\left( \rvpi\left(\rmW_t\right) \right) \hat{\rvr}_t \rvs^\top.
+\end{split}
+\end{equation*}
+where $\rmD_{r,r}(t) \triangleq \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\forall \tau > 0$, $\forall r \in [m]$, with probability at least $1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, $\forall t \le \frac{\tau}{ 2 \eta }$,
+\begin{equation*}
+	\frac{d\tilde{\ell}_t}{d \rvw_r(t)} = \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rvw_r(t)},
+\end{equation*}
+where $\rvw_r(t)$ is the $r$th row vector of $\rmW_t$.
+\end{lem}
+
+\cref{lem:gradient_coupling} implies that for bounded numbers of policy gradient updates, the signs of the ReLUs will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}$. Combine \cref{lem:logit_smoothness} with \cref{lem:gradient_coupling}, we have the smoothness property of the surrogate expected loss in the parameter space.
+\begin{lem}
+\label{lem:empirically_expected_reward_parameter_smoothness}
+    $\rmW_{t+1} = \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$. $\forall t \le \frac{\tau}{ 2 \eta }$,
+\begin{equation}
+\label{eq:parameter_smoothness}
+\begin{split}
+    \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t - \rvpi\left( \rmW_{t+1} \right)^\top \hat{\rvr}_t \le - \left( \eta - h m \eta^2 \right) \cdot \left\| \frac{d \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2.
+\end{split}
+\end{equation}
+\end{lem}
+
+Now by the key insight of the recent progresses of the over-parameterized neural network optimization theory, with constants probability, the pseudo gradient norm is lower bounded by the objective \citep{li2018learning}. However, unlike the supervised learning, RL has exploration issue, as shown in \cref{subsec:exploration_in_policy_learning}. Our result contains an exploration related term, which is consistent with \cref{eq:logit_derivative_lower_bound}, making guarantees for exploring the optimal action necessary during learning.
+
+\begin{lem}
+\label{lem:gradient_lower_bound}
+	Denote $\hat{k}_t^* \triangleq \argmax\limits_{k \in [h]}\left\{ \hat{r}_{t}(k) \right\}$, i.e., the optimal action using the estimated reward $ \hat{\rvr}_t$. If $\pi_{t}(\hat{k}_t^*) > c > 0$, with probability $\frac{3}{64} \in \Omega\left( 1 \right)$,
+\begin{equation*}
+\begin{split}
+	\left\| \frac{d\tilde{\ell}_t}{d \rvw_r(t)} \right\|_2 \ge c \cdot \left( \max\limits_{k \in \left[h\right]}\left\{ \hat{r}_{t}(k) \right\} - \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t \right) .
+\end{split}
+\end{equation*}
+\end{lem}
+
+\cref{lem:gradient_lower_bound} generalizes the over-parameterized neural network optimization theory into the RL settings. By \cref{lem:gradient_lower_bound}, whenever the policy empirically expected reward $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$ small comparing with the largest possible empirical reward $\max\limits_{k \in \left[h\right]}\left\{ \hat{r}_{t}(k) \right\}$, with enough exploration of the suggorate optimal action ($\pi_{t}(\hat{k}_t^*) > c > 0$), with constant probability, the pseudo policy gradient norm will also be large. Therefore, combining \cref{lem:gradient_lower_bound} with \cref{lem:gradient_coupling}, the true policy gradient norm is also large, which is necessary for using \cref{lem:empirically_expected_reward_parameter_smoothness}. Applying all the stated lemmas, the policy surrogate expected loss converges as shown in \cref{thm:dynamic_regret_sublinear}.
+
 
 \iffalse
 
