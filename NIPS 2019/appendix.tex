@@ -1,4 +1,16 @@
-\section{Proofs}
+\section{Proofs of Policy Gradient}
+
+This section contains the detailed proofs of \cref{thm_appendix:policy_gradient_main_result} and the related technical lemmas. For convenience, we restate \cref{thm_appendix:policy_gradient_main_result} here.
+
+\begin{thm}
+	\label{thm_appendix:policy_gradient_main_result}
+	Given policy neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, $\beta = \frac{ \ln{\left(\frac{h}{3}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, the expected regret of \cref{alg:policy_gradient_uniform_exploration} satisfies,
+	\begin{equation*}
+	\begin{split}
+	\sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)} \le O\left(T^{\frac{2}{3}}\left( \ln{T} \right)^{\frac{1}{3}}\right).
+	\end{split}
+	\end{equation*}
+\end{thm}
 
 \subsection{Proof of \cref{lem:logit_smoothness}}
 
