@@ -87,36 +87,39 @@ combining \cref{eq:total_regret_decomposition} and \cref{thm:dynamic_regret_subl
 
 \begin{thm}
 \label{thm:reward_estimation_hoeffding}
-    In \cref{alg:policy_gradient_uniform_exploration}, let $\beta = \frac{ \ln{\left(\frac{h}{6}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, we have,
+    In \cref{alg:policy_gradient_uniform_exploration}, let $\beta = \frac{ \ln{\left(\frac{h}{3}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, we have,
 \begin{equation*}
-    \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 2 \cdot t^{- \frac{1}{3}} + t^{\beta - \frac{1}{3}} \le \left( 2 + \left( h \ln{t} \right) ^\frac{1}{3} \right) \cdot t^{- \frac{1}{3}}, \quad \forall t \ge \frac{h}{6} \ln{\left(\frac{h}{6}\right) },
+    \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le t^{\beta - \frac{1}{3}} \le \left( h \ln{t} \right) ^\frac{1}{3} \cdot t^{- \frac{1}{3}}, \quad \forall t \ge \frac{h}{3} \ln{\left(\frac{h}{3}\right) },
 \end{equation*}
-with probability at least xxxxx.
+with probability at least,
+\begin{equation*}
+    1 - h \cdot \exp\left\{ -  \frac{t^{\frac{1}{3} + 2 \beta}}{2 h^2} \right\} - 2 h \cdot \exp\left\{ - \frac{t^{3\beta}}{ h } \right\} = 1 - \exp\left\{ - \frac{t^{\frac{1}{3}}}{2 h^2} \cdot \left( \frac{h}{3} \ln{t} \right)^{\frac{2}{3}} \right\} - 2 h \cdot t^{- \frac{1}{3}} .
+\end{equation*}
 \end{thm}
 \begin{proof}
-    The expected sample number of any action $k$ up to step $t$ can be lower bounded,
+    Denote $\tilde{n}_t(k) \triangleq \sum\limits_{s=0}^{t}{ \tilde{\pi}_t(k)}$, which can be lower bounded as,
 \begin{equation*}
 \begin{split}
-    \expectation{\left[ n_t(k) \right]} &= \sum\limits_{s=0}^{t}{ \tilde{\pi}_t(k)} \ge \sum\limits_{s=1}^{t}{ \tilde{\pi}_t(k)} = \sum\limits_{s=1}^{t}{ \left[ \left( 1 - s^{\beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{s}\right)(k) + \frac{s^{\beta - \frac{1}{3}}}{h} \right] } \\
+    \tilde{n}_t(k) &\ge \sum\limits_{s=1}^{t}{ \tilde{\pi}_t(k)} = \sum\limits_{s=1}^{t}{ \left[ \left( 1 - s^{\beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{s}\right)(k) + \frac{s^{\beta - \frac{1}{3}}}{h} \right] } \\
     &\ge \sum\limits_{s=1}^{t}{ \frac{s^{\beta - \frac{1}{3}}}{h} } \ge \frac{t^{\frac{2}{3} + \beta}}{ h  \left(\frac{2}{3} + \beta \right) } \ge \frac{t^{\frac{2}{3} + \beta}}{ h },
 \end{split}
 \end{equation*}
-where the last inequality is by $\beta \le \frac{1}{3}$, $\forall t \ge \frac{h}{6} \ln{\left(\frac{h}{6}\right) }$.
-According to the Hoeffding's inequality,
-\begin{equation}
-\label{eq:loss_estimation_hoeffding}
-\begin{split}
-    \pr\left\{ \left| \hat{r}_{t}(k) - r(k) \right| > t^{\beta - \frac{1}{3}} \right\} &\le 2 \exp\left\{ - 2 n_{t}(k) \cdot t^{2\beta - \frac{2}{3}} \right\} \le 2 \exp\left\{ - \frac{2}{ h } \cdot t^{3\beta} \right\}.
-\end{split}
-\end{equation}
-Therefore,
+where the last inequality is by $\beta \le \frac{1}{3}$, $\forall t \ge \frac{h}{3} \ln{\left(\frac{h}{3}\right) }$. According to ,
 \begin{equation*}
 \begin{split}
-    \left\| \hat{\rvr}_t - \rvr \right\|_\infty &\le \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \le t^{\beta - \frac{1}{3}} \right\} \cdot t^{\beta - \frac{1}{3}} + \pr\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty > t^{\beta - \frac{1}{3}} \right\} \cdot 1 \\
-    &\le 2 \exp\left\{ - \frac{2}{ h } \cdot t^{3\beta} \right\} \cdot 1 + 1 \cdot t^{\beta - \frac{1}{3}},
+    \pr\left\{ n_t(k) - \tilde{n}_t(k) < - a \right\} \le \exp\left\{ - \frac{a^2}{2 \sum_{s=1}^{t}{\sigma_s^2} } \right\} \le \exp\left\{ - \frac{2 a^2}{ t } \right\},
 \end{split}
 \end{equation*}
-since $\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le 1$, and according to \cref{eq:loss_estimation_hoeffding}. Taking the value of $\beta$ completes the proof.
+where $\sigma_s \le \frac{1}{4}$ is the variance of $\text{Bernoulli}\left( \tilde{\pi}_t(k) \right)$
+Therefore, the following event
+\begin{equation*}
+    \gE_1 \triangleq \left\{ n_t(k) \ge \tilde{n}_t(k) - \frac{t^{\frac{2}{3} + \beta}}{ 2 h } \ge \frac{t^{\frac{2}{3} + \beta}}{ 2 h }, \forall k \in [h] \right\},
+\end{equation*}
+holds with probability at least $1 - h \cdot \exp\left\{ -  \frac{t^{\frac{1}{3} + 2 \beta}}{2 h^2} \right\}$. Assume $\gE_1$ happens, according to the Hoeffding's inequality, the following event
+\begin{equation*}
+    \gE_2 \triangleq \left\{ \left| \hat{r}_{t}(k) - r(k) \right| \le t^{\beta - \frac{1}{3}} , \forall k \in [h] \right\}
+\end{equation*}
+holds with probability at least $1 - 2 h \cdot \exp\left\{ - \frac{t^{3\beta}}{ h } \right\}$.
 \end{proof}
 
 The good estimation of the true mean reward will be helpful to train the neural network policy $\rvpi\left( \rmW_t \right)$. However, the optimization theory of over-parameterized neural networks is developed for supervized learning settings \citep{li2018learning,allen2018convergenceB}, where the learning objective functions are fixed. There are two main differences between our results and existing work, (a) in \cref{alg:policy_gradient_uniform_exploration}, the objectives are dynamic with respect to step $t$; (b) the optimal action need enough exploration during learning (explained later on in \cref{subsec:exploration_in_policy_learning}). We first prove the cumulative dynamic expected loss of $\rvpi\left( \rmW_t \right)$ is sublinear. Then we show some intuitions with lemmas, the proofs of which can be found in the appendix.
