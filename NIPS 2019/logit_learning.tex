@@ -32,6 +32,7 @@ Finally, note that In each iteration, the agent only update its value neural net
 		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
 		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \unif\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
 		\STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\tilde{\pi}_t(k) \gets \frac{1}{h}$, $\ucb_{0}(k) \gets 1$, $\lcb_{0}(k) \gets 0$, $\forall k \in [h]$.
+		\STATE Take every action $k$ once, update $n_{0}(k)$ and $\hat{r}_{0}(k)$.
 		\FOR{$t=0$ {\bfseries to} $T-1$}
 		
 		\STATE Sample action $A_{t} \sim \tilde{\rvpi}_t\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
@@ -52,20 +53,12 @@ Finally, note that In each iteration, the agent only update its value neural net
 		    \right.$
 		%\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
 		%\STATE $\hat{r}_{t+1}(k) \gets \hat{r}_{t}(k)$, $\forall k \not= A_t$.
-		\STATE $\ucb_{t+1}(k) \gets \left. 
-		    \begin{cases}
-		    \min{\left\{ 1, \hat{r}_{t+1}(k) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}, & \text{if } k = A_t, \\
-		    \ucb_{t}(k), & \text{otherwise}.
-		    \end{cases}
-		    \right.$
+		\STATE $\ucb_{t+1}(k) \gets
+		    \min{\left\{ 1, \hat{r}_{t+1}(k) + \sqrt{\frac{\alpha \ln{\left( (t+1) h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}$, $\forall k \in [h]$.
 		%\STATE $\ucb_{t+1}\left(A_t\right) \gets \min{\left\{ 1, \hat{r}_{t+1}\left(A_t\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
 		%\STATE $\ucb_{t+1}(k) \gets \ucb_{t}(k)$, $\forall k \not= A_t$.
-		\STATE $\lcb_{t+1}(k) \gets \left. 
-		    \begin{cases}
-		    \max{\left\{ 0, \hat{r}_{t+1}(k) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}, & \text{if } k = A_t, \\
-		    \lcb_{t}(k), & \text{otherwise}.
-		    \end{cases}
-		    \right.$
+		\STATE $\lcb_{t+1}(k) \gets 
+		    \max{\left\{ 0, \hat{r}_{t+1}(k) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}$, $\forall k \in [h]$.
 		%\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
 		%\STATE $\lcb_{t+1}(k) \gets \lcb_{t}(k)$, $\forall k \not= A_t$.
 		
@@ -97,7 +90,7 @@ The next theorem shows that LLE has a nearly optimal regret rate in the stochast
 \begin{equation*}
 \small
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)}  \le C + \sum\limits_{k \in [h] : \Delta(k) > 0}{ \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} }  + h \ln{T},
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)}  \le C + \sum\limits_{k \in [h] : \Delta(k) > 0}{ \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} }  + \frac{ 3 \ln{T}}{h},
 \end{split}
 \end{equation*}
 %where $C \triangleq 2 \max\limits_{k \in [h]}\left\{ \bar{t}(k) \right\} + \pi^2$ is independent with $T$.
