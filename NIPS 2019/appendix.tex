@@ -357,8 +357,66 @@ If $x_0 \ge \frac{\tau}{2}$, then $\phi(0) \le - \frac{\rho}{2} \cdot x_0 \le - 
 \end{equation*}
 \end{proof}
 
-\subsection{Proof of \cref{lem:logit_l2_loss_parameter_smoothness}}
-
+\section{Proofs of \cref{thm:logit_learning_main_result} }
+\begin{proof}
+	By Proposition 2 of \citep{seldin2017improved},
+	$\forall t \ge t_1(k) \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{h}} \right\}}$,
+	\begin{equation*}
+	\begin{split}
+	\pr{\left\{ \left( n_t(k) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \text{or} \left( n_t(k^*) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \right\}} \le \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
+	\end{split}
+	\end{equation*}
+	Assuming that $n_t(k) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)}$ and $n_t(k^*) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)} > \frac{25 \ln{t}}{\Delta^2(k)}$. By Hoeffding's inequality,
+	\begin{equation*}
+	\begin{split}
+	\pr{\left\{ \left\| \hat{\rvr}_t - \rvr \right\|_\infty \ge \frac{\Delta}{5} \right\}} \le \frac{2}{t^2}.
+	\end{split}
+	\end{equation*}
+	According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
+	\begin{equation*}
+	\begin{split}
+	\frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2^2 &= \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left( \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right)^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t+1} \right) + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2 \\
+	&\le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2^2 + \sqrt{1 - \frac{1}{2 h} } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 }.
+	\end{split}
+	\end{equation*}
+	If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$, $\forall t \ge t_2 \triangleq \min\left\{ t: \ln{t} \ge \frac{5 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
+	\begin{equation*}
+	\begin{split}
+	\left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^2 \sqrt{h}}{\ln{t}} \\
+	&\le \sqrt{1 - \frac{1}{2 h}} \cdot \frac{\Delta}{5} + \left(1 - \sqrt{1 - \frac{1}{2 h}}\right) \cdot \frac{\Delta}{5} = \frac{\Delta}{5}.
+	\end{split}
+	\end{equation*}
+	If $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 > \frac{\Delta}{5}$, $\forall t \ge t_3 \triangleq \min\left\{ t: \ln{t} \ge \frac{10 \Delta \sqrt{h}}{1 - \sqrt{1 - \frac{1}{2 h}}} \right\}$,
+	\begin{equation*}
+	\begin{split}
+	\left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2 &\le \sqrt{1 - \frac{1}{2 h}} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \frac{1 - \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \frac{\Delta}{5} \\
+	&< \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \cdot \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2.
+	\end{split}
+	\end{equation*}
+	Note $\frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \in \left(0, 1\right)$, therefore $\forall t \ge t_4 \triangleq \min{\left\{ t : \left( \frac{1 + \sqrt{1 - \frac{1}{2 h}}}{2} \right)^t \sqrt{d} \le \frac{\Delta}{5}  \right\}}$, we have $\left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 \le \frac{\Delta}{5}$. By the triangle inequality,
+	\begin{equation*}
+	\begin{split}
+	\left\| \rvo\left( \rmW_t \right) - \rvr \right\|_\infty &\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_\infty + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
+	&\le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \\
+	&\le \frac{2 \Delta}{5}. \qedhere
+	\end{split}
+	\end{equation*}
+	Denote $\bar{t}(k) \triangleq \max\left\{ t_1(k), t_2, t_3 + t_4 \right\} = \max\left\{ t_1, t_3 + t_4 \right\} $. After $\bar{t}(k)$ steps, with high probability, $\tilde{\rvpi}_t$ will coincide with the optimal policy. Finally, for $\alpha = 3$ and $\beta = 256$, by \cref{lem:delta_estimation_lower_bound},
+	\begin{equation*}
+	\begin{split}
+	\sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } &= \sum\limits_{t=1}^{T}{ \expectation{ \left[ \min\left\{ \frac{1}{2 h}, \sqrt{\frac{\ln{h}}{2 t h}},  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right\} \right]} } \\
+	&\le \sum\limits_{t=1}^{T}{ \expectation{ \left[  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right]} } \\
+	&\le t_1(k) + \frac{\beta \left( \left( \ln{T}\right)^2 + \ln{T} \right)}{\Delta^2(k)} + \sum\limits_{t = t_1(k)}^{T}{ \frac{1}{t^{\alpha - 1}} } \\
+	&\le t_1(k) + \frac{\beta \left( \left( \ln{T}\right)^2 + \ln{T} \right)}{\Delta^2(k)} + \ln{T} + 1.
+	\end{split}
+	\end{equation*}
+	Therefore, for each suboptimal arm $k$, the expected sampled number will be upper bounded by,
+	\begin{equation*}
+	\begin{split}
+	\bar{t}(k) + \sum\limits_{t = \bar{t}(k) }^{T}{ \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}} } + \sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } \le 2 \bar{t}(k) + \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} + \ln{T} + \pi^2.
+	\end{split}
+	\end{equation*}
+\end{proof}
 {\bf \cref{lem:logit_l2_loss_parameter_smoothness}.} $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
 \begin{equation*}
 \begin{split}
@@ -379,6 +437,15 @@ According to \cref{lem:logit_upper_bound_parameter},
 \end{split}
 \end{equation*}
 \end{proof}
+
+\begin{lem}
+	\label{lem:delta_estimation_lower_bound}
+	For any $k$ and $t \ge h$,
+	\begin{equation*}
+	\pr\left\{ \hat{\Delta}_t(k) \le \Delta(k) \right\} \le \frac{1}{t^{\alpha-1}}.
+	\end{equation*}
+\end{lem}
+
 
 \iffalse
 
