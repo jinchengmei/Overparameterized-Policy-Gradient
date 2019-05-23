@@ -6,7 +6,7 @@ Note that in contrast a traditional policy gradient method would rather use the 
 To balance between exploration and exploitation, the agent also has a uniform exploration component in its policy. 
 In particular, we set every action with probability at least $t^{ \beta - \frac{1}{3}} \cdot \frac{1}{h}$ to be explored, with $\beta > 0$ to be very small. 
 \begin{algorithm}[t]
-   \caption{Policy Gradient with $\varepsilon$-Greedy Exploration (PGE)}
+   \caption{Policy Gradient with Uniform Exploration (PGE)}
 \label{alg:policy_gradient_uniform_exploration}
 \begin{algorithmic}
    \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
