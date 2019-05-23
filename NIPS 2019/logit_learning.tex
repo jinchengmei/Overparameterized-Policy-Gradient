@@ -20,7 +20,6 @@ Such idea is also used in  \cite{seldin2017improved}.
 %After taking action and observing rewards, the agent improves its strategies by minimizing the value loss objective $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$, where $\hat{\rvr}_t$ is the empirical mean reward estimated from sampled rewards up to step $t$. 
 Finally, note that In each iteration, the agent only update its value neural network using one gradient descent, therefore the logit learning is in an online fashion.
 
-
 \begin{algorithm}[t]
 	\caption{Logit Learning with $\varepsilon$-Greedy Exploration (LLE)}
 	\label{alg:logit_learning_eps_greedy_exploration}

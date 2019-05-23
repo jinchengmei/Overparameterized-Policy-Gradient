@@ -554,7 +554,26 @@ With probability at least $1 - \exp\left\{ - \frac{m}{8} \left( 1 - \frac{\sqrt{
 Use \cref{lem:gradient_coupling} and \cref{lem:chernoff} with $\alpha = \frac{1}{2}$, $p = 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, and $\mu = m \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right)$.
 \end{proof}
 
-\section{Proofs of \cref{thm:logit_learning_main_result} }
+\section{Proofs of Logit Learning}
+
+This section contains the detailed proofs of \cref{thm:logit_learning_main_result} (Theorem 2 in the paper) and the related technical lemmas.
+
+\subsection{Proof of \cref{thm:logit_learning_main_result}}
+
+For convenience, we restate \cref{thm:logit_learning_main_result} here.
+
+\begin{thm}
+\label{thm:logit_learning_main_result}
+    Given value neural networks as shown in \cref{fig:nn_policy_value}, with number of hidden nodes $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{h m}$,  $\alpha > 3$, and $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
+\begin{equation*}
+\small
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)} \le \sum\limits_{k \in [h] : \Delta(k) > 0}{ \left[ \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} \right] }  + 3 \ln{T} + C,
+\end{split}
+\end{equation*}
+%where $C \triangleq 2 \max\limits_{k \in [h]}\left\{ \bar{t}(k) \right\} + \pi^2$ is independent with $T$.
+where $C$ is a constant independent to $T$.
+\end{thm}
 \begin{proof}
 	By Proposition 2 of \citep{seldin2017improved},
 	$\forall k \in [h]$, $\forall t \ge t_1(k) \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{h}} \right\}}$,
@@ -573,7 +592,7 @@ Use \cref{lem:gradient_coupling} and \cref{lem:chernoff} with $\alpha = \frac{1}
 	    \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2 = \left| \hat{r}_t(k) - \hat{r}_{t+1}(k) \right| = \frac{\left| \hat{r}_t(k) - R_k(n_t(k)) \right|}{n_t(k) + 1} \le \frac{1}{n_t(k)} \le \frac{2 \Delta^2(k)}{\beta \ln{t}} \le \frac{\Delta^2(k)}{\ln{t}}.
 	\end{split}
 	\end{equation*}
-	According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
+	According to \cref{lem:logit_l2_loss_parameter_smoothness} (Lemma 1 in the paper), $\forall t \le \frac{\tau}{2 \eta}$,
 	\begin{equation*}
 	\begin{split}
 	\frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2^2 &= \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left( \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right)^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t+1} \right) + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2 \\
@@ -607,7 +626,7 @@ Use \cref{lem:gradient_coupling} and \cref{lem:chernoff} with $\alpha = \frac{1}
 	&\le \frac{2 \Delta(k)}{5}, \quad \forall k \in [h].
 	\end{split}
 	\end{equation*}
-	Denote $\bar{t}(k) \triangleq \max\left\{ t_1(k), t_2(k), t_3(k) + t_4(k) \right\} = \max\left\{ t_1(k), t_3(k) + t_4(k) \right\} $. After $\bar{t}(k)$ steps, with probability at least $1 - \frac{2 h}{t^2}$, $\rvpi_t$ will coincide with the optimal policy. Finally, for $\alpha = 3$ and $\beta = 256$, by \cref{lem:delta_estimation_lower_bound},
+	Denote $\bar{t}(k) \triangleq \max\left\{ t_1(k), t_2(k), t_3(k) + t_4(k) \right\} = \max\left\{ t_1(k), t_3(k) + t_4(k) \right\} $. After $\bar{t}(k)$ steps, with probability at least $1 - \frac{2 h}{t^2}$, $\rvpi_t$ (the greedy policy induced by $\rvo_t$) will coincide with the optimal policy. Finally, for $\alpha = 3$ and $\beta = 256$, by \cref{lem:delta_estimation_lower_bound},
 	\begin{equation*}
 	\begin{split}
 	\sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } &= \sum\limits_{t=1}^{T}{ \expectation{ \left[ \min\left\{ \frac{1}{2 h}, \frac{1}{2} \sqrt{\frac{\ln{h}}{ t h}},  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right\} \right]} } \\
@@ -619,16 +638,20 @@ Use \cref{lem:gradient_coupling} and \cref{lem:chernoff} with $\alpha = \frac{1}
 	Therefore, for each suboptimal arm $k$, the expected sampled number will be upper bounded by,
 	\begin{equation*}
 	\begin{split}
-	\bar{t}(k) + \sum\limits_{t = \bar{t}(k) }^{T}{ \left[ 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}} + \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} \right] } + \sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } \le 2 \bar{t}(k) + \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} + \frac{3 \ln{T}}{h} + 2 \pi^2.
+	\bar{t}(k) + \sum\limits_{t = \bar{t}(k) }^{T}{ \left[ 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}} + \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} \right] } + \sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } \le 2 \bar{t}(k) + \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} + \frac{3 \ln{T}}{h} + 2 \pi^2 + o(1).
 	\end{split}
 	\end{equation*}
+Summing up the expected sampled number of all the actions obtains the results, where $C \triangleq 2 \cdot \sum\limits_{k \in [h]}{ \bar{t}(k)} + 2 \pi^2 h + o(1)$ is independent with $T$.
 \end{proof}
-{\bf \cref{lem:logit_l2_loss_parameter_smoothness}.} $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
-\begin{equation*}
-\begin{split}
-    \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
-\end{split}
-\end{equation*}
+\begin{lem}
+		\label{lem:logit_l2_loss_parameter_smoothness}
+		$\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta} = \frac{1}{2 \eta \sqrt{m}}$,
+		\begin{equation*}
+		\begin{split}
+		\frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
+		\end{split}
+		\end{equation*}
+	\end{lem}
 \begin{proof}
 According to \cref{lem:logit_upper_bound_parameter},
 \begin{equation*}
@@ -646,51 +669,14 @@ According to \cref{lem:logit_upper_bound_parameter},
 
 \begin{lem}
 	\label{lem:delta_estimation_lower_bound}
-	$\forall k \in [h]$, $t \ge \ge t_1(k) \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{h}} \right\}}$, and $\beta \ge 64 (\alpha +1)$,
+	$\forall k \in [h]$, $t \ge t_1(k) \triangleq \min{\left\{ t : t \ge \frac{4 h \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{h}} \right\}}$, and $\beta \ge 64 (\alpha +1)$,
 	\begin{equation*}
 	\pr\left\{ \hat{\Delta}_t(k) \le \frac{\Delta(k)}{2} \right\} \le \frac{2}{ h t^{\alpha-1}} + \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
 	\end{equation*}
 \end{lem}
-
-\begin{figure}[t]
-	%\vskip 0.2in
-	\begin{center}
-		\centerline{\includegraphics[width=0.55\columnwidth]{nn_policy_value_vertical.pdf}}
-		\caption{The structure of the policy neural network and the value neural network.}
-		\label{fig:nn_policy_value}
-	\end{center}
-	\vskip -0.2in
-\end{figure}
-
-
-\begin{algorithm}[t]
-   \caption{Policy Gradient with Uniform Exploration (PGE)}
-\label{alg:policy_gradient_uniform_exploration}
-\begin{algorithmic}
-   \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
-   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim 
-   \unif\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
-   \STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\tilde{\pi}_0(k) \gets \frac{1}{h}$, $\forall k \in [h]$.
-   \FOR{$t=0$ {\bfseries to} $T-1$}
-   \STATE Sample action $A_{t} \sim \tilde{\rvpi}_{t}\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
-   \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
-   \STATE $n_{t+1}(k) \gets \left. 
-		\begin{cases}
-		n_{t}(k) + 1, & \text{if } k = A_t, \\
-		n_{t}(k), & \text{otherwise}.
-		\end{cases}
-		\right. \qquad$ 
-   $\hat{r}_{t+1}(k) \gets \left. 
-		\begin{cases}
-		\frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{k}\left(n_{t}(k)\right) }{n_{t+1}(k)}, & \text{if } k = A_t, \\
-		\hat{r}_{t}(k), & \text{otherwise}.
-		\end{cases}
-		\right.$
-   \STATE $\tilde{\pi}_{t+1}(k) \gets \left( 1 - \left(t+1\right)^{ \beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{t+1}\right)(k) + \left(t+1\right)^{ \beta - \frac{1}{3}} \cdot \frac{1}{h}$, $\forall k \in [h]$.
-   \ENDFOR
-\end{algorithmic}
-\end{algorithm}
-
+\begin{proof}
+    See the proof of Proposition 2 in \citep{seldin2017improved}.
+\end{proof}
 
 \iffalse
 

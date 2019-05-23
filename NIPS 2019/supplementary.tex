@@ -84,4 +84,99 @@
 \bibliography{nips2019}
 }
 
+\newpage
+
+\begin{figure}[h]
+	%\vskip 0.2in
+	\begin{center}
+		\centerline{\includegraphics[width=0.9\columnwidth]{nn_policy_value_vertical.pdf}}
+		\caption{The structure of the policy neural network and the value neural network.}
+		\label{fig:nn_policy_value}
+	\end{center}
+	\vskip -0.2in
+\end{figure}
+
+\newpage
+
+\begin{algorithm}[h]
+   \caption{Policy Gradient with Uniform Exploration (PGE)}
+\label{alg:policy_gradient_uniform_exploration}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, $\beta > 0$.
+   \STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim 
+   \unif\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+   \STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\tilde{\pi}_0(k) \gets \frac{1}{h}$, $\forall k \in [h]$.
+   \FOR{$t=0$ {\bfseries to} $T-1$}
+   \STATE Sample action $A_{t} \sim \tilde{\rvpi}_{t}\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
+   \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$.
+   \STATE $n_{t+1}(k) \gets \left. 
+		\begin{cases}
+		n_{t}(k) + 1, & \text{if } k = A_t, \\
+		n_{t}(k), & \text{otherwise}.
+		\end{cases}
+		\right. \qquad$ 
+   $\hat{r}_{t+1}(k) \gets \left. 
+		\begin{cases}
+		\frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{k}\left(n_{t}(k)\right) }{n_{t+1}(k)}, & \text{if } k = A_t, \\
+		\hat{r}_{t}(k), & \text{otherwise}.
+		\end{cases}
+		\right.$
+   \STATE $\tilde{\pi}_{t+1}(k) \gets \left( 1 - \left(t+1\right)^{ \beta - \frac{1}{3}} \right) \cdot \pi\left(\rmW_{t+1}\right)(k) + \left(t+1\right)^{ \beta - \frac{1}{3}} \cdot \frac{1}{h}$, $\forall k \in [h]$.
+   \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[h]
+	\caption{Logit Learning with $\varepsilon$-Greedy Exploration (LLE)}
+	\label{alg:logit_learning_eps_greedy_exploration}
+	\begin{algorithmic}
+		\STATE {\bfseries Input:} State feature $\rvs$, $\eta > 0$, $\alpha > 0$, $\beta > 0$.
+		\STATE $\rvw_r(0) \sim \gN\left( 0, \sigma^2 \cdot \rmI \right)$, $\forall r \in [m]$. $a_{k, r} \sim \unif\left\{-1, +1\right\}$, $\forall k \in [h]$, $\forall r \in [m]$.
+		\STATE $\hat{r}_{0}(k) \gets 0$, $n_{0}(k) \gets 0$, $\tilde{\pi}_t(k) \gets \frac{1}{h}$, $\ucb_{0}(k) \gets 1$, $\lcb_{0}(k) \gets 0$, $\forall k \in [h]$.
+		\STATE Take every action $k$ once, update $n_{0}(k)$ and $\hat{r}_{0}(k)$.
+		\FOR{$t=0$ {\bfseries to} $T-1$}
+		
+		\STATE Sample action $A_{t} \sim \tilde{\rvpi}_t\left(\cdot \middle| \rvs \right)$. Take action $A_{t}$. Observe reward $R_{ A_{t}}\left(n_{t}\left(A_t\right) \right)$.
+		\STATE $\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$.
+		\STATE $n_{t+1}(k) \gets \left. 
+		    \begin{cases}
+		    n_{t}(k) + 1, & \text{if } k = A_t, \\
+		    n_{t}(k), & \text{otherwise}.
+		    \end{cases}
+		    \right. \qquad$
+		%\STATE $n_{t+1}\left(A_t\right) \gets n_{t}\left(A_t\right) + 1$.
+		%\STATE $n_{t+1}(k) \gets n_{t}(k)$, $\forall k \not= A_t$.
+		$\hat{r}_{t+1}(k) \gets \left. 
+		    \begin{cases}
+		    \frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{k}\left(n_{t}(k)\right) }{n_{t+1}(k)}, & \text{if } k = A_t, \\
+		    \hat{r}_{t}(k), & \text{otherwise}.
+		    \end{cases}
+		    \right.$
+		%\STATE $\hat{r}_{t+1}\left(A_t\right) \gets \frac{n_{t}\left(A_t\right) \cdot \hat{r}_{t}\left(A_t\right) + R_{A_{t}}\left(n_{t}\left(A_t\right)\right) }{n_{t+1}\left(A_t\right)}$.
+		%\STATE $\hat{r}_{t+1}(k) \gets \hat{r}_{t}(k)$, $\forall k \not= A_t$.
+		\STATE $\ucb_{t+1}(k) \gets
+		    \min{\left\{ 1, \hat{r}_{t+1}(k) + \sqrt{\frac{\alpha \ln{\left( (t+1) h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}$, $\forall k \in [h]$.
+		%\STATE $\ucb_{t+1}\left(A_t\right) \gets \min{\left\{ 1, \hat{r}_{t+1}\left(A_t\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
+		%\STATE $\ucb_{t+1}(k) \gets \ucb_{t}(k)$, $\forall k \not= A_t$.
+		\STATE $\lcb_{t+1}(k) \gets 
+		    \max{\left\{ 0, \hat{r}_{t+1}(k) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}$, $\forall k \in [h]$.
+		%\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
+		%\STATE $\lcb_{t+1}(k) \gets \lcb_{t}(k)$, $\forall k \not= A_t$.
+		
+		\STATE $\hat{\Delta}_{t+1}(k) \gets \min\left\{ 1,  \min\limits_{k^\prime \in \left[h\right]}\left\{ \lcb_{t+1}(k^\prime) \right\}  - \ucb_{t+1}(k)\right\} $, $\forall k \in [h]$.
+		\STATE $\xi_{t+1}(k) \gets \frac{\beta \ln{(t+1)}}{(t+1) \hat{\Delta}_{t+1}^2(k)}$, $\varepsilon_{t+1}(k) \gets \min\left\{ \frac{1}{2 h}, \frac{1}{2} \sqrt{\frac{\ln{h}}{(t+1) h}},  \xi_{t+1}(k) \right\}$, $\forall k \in [h]$.
+		\STATE $\pi_{t+1}(k) \gets \left. 
+		    \begin{cases}
+		    1, & \text{if } k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t+1}(k^\prime)\right\}, \\
+		    0, & \text{otherwise}.
+		    \end{cases}
+		    \right.$
+		%\STATE $\pi_{t}(k) \gets 1$, for $k = \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
+		%\STATE $\pi_{t}(k) \gets 0$, $\forall k \not= \argmax\limits_{k^\prime \in \left[h\right]}\left\{ o_{t}(k^\prime)\right\}$.
+		\STATE $\tilde{\pi}_{t+1}(k) \gets \left( 1 - \sum\limits_{k^\prime \in [h]}{\varepsilon_{t+1}(k)} \right) \cdot  \pi_{t+1}(k) + \varepsilon_{t+1}(k)$, $\forall k \in [h]$.
+		
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
 \end{document}
