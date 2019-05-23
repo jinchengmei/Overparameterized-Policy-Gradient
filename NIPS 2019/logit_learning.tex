@@ -1,6 +1,7 @@
 \section{Over-Parametrized Logit Learning}
 \label{sec:logit_learning}
-As discussion in \cref{sec:policy_gradient}, our policy gradient method achieves an unsatisfactory $\tilde{O}(T^{2/3})$ regret.
+
+As discussed in \cref{sec:policy_gradient}, our policy gradient method achieves an unsatisfactory $\tilde{O}(T^{2/3})$ regret.
 In this section, we propose an alternative algorithm, called {\bf L}ogit {\bf L}earning with $\varepsilon$-Greedy {\bf E}xploration (LLE), that is similar to value based reinforcement learning methods.
 The learning of LLE happens in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$.
 Unlike the policy gradient method, LLE does not require to have a accurate estimate of $\rvr$ but rather to use its finite sampling budget to distinguish the best action from other sub-optimal actions.
@@ -8,9 +9,9 @@ Unlike the policy gradient method, LLE does not require to have a accurate estim
 %such rate is not satisfactory especially for the stochastic bandit setting. 
 
 A complete algorithm is shown in \cref{alg:logit_learning_eps_greedy_exploration}. 
-After the random initialization, at each time step $t$, the agent executes an $\varepsilon_t$-greedy policy, where with probability $1 - \varepsilon_t$ the agent selects the action with the largest logit, or otherwise it uniformly samples an action.
-The algorithm tends to match the logits with the rewards, by minimizing a square loss between the logits and the empirical mean reward.
-As discussed in \ref{sec:introduction}, the empirical mean reward $\hat{r}_t$ here is not an accurate estimation of $r$. In fact, it suffers a constant bias as we will see later.
+After the random initialization, at each step $t$, the agent executes an $\varepsilon_t$-greedy policy, where with probability $1 - \varepsilon_t$ the agent selects the action with the largest logit, or otherwise it uniformly samples an action.
+The algorithm tends to match the logits with the empirical mean rewards, by minimizing a square loss between the logits and the empirical mean rewards.
+As discussed in \cref{sec:introduction}, the empirical mean reward $\hat{\rvr}_t$ here is not an accurate estimation of $\rvr$. In fact, it suffers a constant bias as we will see later.
 However, with a small portion of exploration, this bias is small enough not to disturb the selection of the best action.
 In order to maintain the proper amount of exploration during learning, 
 LLE also simultaneously estimates a lower bound, $\hat{\Delta}_t(k)$, on the reward gap between the best action and the $k$th action. 
@@ -94,48 +95,42 @@ where $C$ is a constant independent to $T$.
 
 \begin{remk}
 	The $O((\ln T)^2)$ regret of LLE is slightly worse than the optimal $O(\ln T)$ rate. 
-	This is due to the low efficiency of $\epsilon$-greedy exploration.
-	In particular, to have a proper $\epsilon$, one needs to estimate the reward gaps $\Delta(k)$ which causes the extra $\ln T$ factor.
+	This is due to the low efficiency of $\varepsilon$-greedy exploration.
+	In particular, to have a proper $\varepsilon$, one needs to estimate the reward gaps $\Delta(k)$ which causes the extra $\ln T$ factor.
 	A UCB style of exploration that requires no knowledge about the reward gaps may be able to reduce this extra $\ln T$ factor.
 \end{remk}
 \begin{proof} [\bf Proof sketch]
 		By Proposition 2 of \citep{seldin2017improved}, $\hat{\Delta}_t(k)$ is a valid estimate of the reward gap $\Delta(k)$, in the sense that for large enough $t$ with high probability, 
-		\[
-		\Delta(k)/2 \le \hat{\Delta}_t(k) \le 	\Delta(k).
-		\]
-		Now given a proper estimate of $\Delta(k)$, note that the exploration portion is set to be $\frac{\beta\ln t}{\Delta^2(k)}$.
-		We can further show that with high probability each action has been tried at least $\frac{(\ln t)^2}{\Delta^2(k)}$ times with a large enough $\beta$, and therefore with high probability, 
-		\[
-		\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le \frac{\Delta}{5}.
-		\]
+		\begin{equation*}
+		    \Delta(k)/2 \le \hat{\Delta}_t(k) \le 	\Delta(k).
+		\end{equation*}
+		Now given a proper estimate of $\Delta(k)$, note that the exploration portion is set to be $\frac{\beta\ln t}{t \hat{\Delta}^2(k)}$.
+		We can further show that with high probability each action has been tried at least $\frac{25 \ln t}{\Delta^2(k)}$ times with a large enough $\beta$, and therefore with high probability, 
+		\begin{equation*}
+		    \left| \hat{r}_t(k) - r(k) \right| \le \frac{\Delta(k)}{5}, \quad \forall k \in [h].
+		\end{equation*}
 	
 		The main content of our proof is to show that the estimate error 
-		\[
-		\left\| \rvo\left( \rmW_{t} \right) - \hat{\rvr}_{t}\right\|_2 \le \frac{\Delta}{5}
-		\]
+		\begin{equation*}
+		    \left\| \rvo\left( \rmW_{t} \right) - \hat{\rvr}_{t}\right\|_2 \le \frac{\Delta(k)}{5}, \quad \forall k \in [h].
+		\end{equation*}
 		for large enough $t$. Therefore 
-		\[
-			\left\| \rvo\left( \rmW_t \right) - \rvr \right\|_\infty \le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_\infty + \left\| \hat{\rvr}_t - \rvr\right\|_\infty \le \frac{2\Delta}{5},
-		\] 
-		i.e. the agent will select the optimal action based on the output of the value network.
-		
-		To show that, note that 
+		\begin{equation*}
+		    \left| o\left( \rmW_t \right)(k) - r(k) \right| \le \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t\right\|_2 + \left| \hat{r}_t(k) - r(k) \right| \le \frac{2\Delta(k)}{5}, \quad \forall k \in [h],
+		\end{equation*}
+		i.e., the agent will select the optimal action by greedily acting on the output of the value network. To show that, note that 
 		\begin{equation*}
 		\begin{split}
-		& \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2^2 \\
-		= & \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left( \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right)^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t+1} \right) + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2		\\
-		 \le &  \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2  + \cdot \frac{\Delta^2 \sqrt{h}}{(\ln{t})^2} \cdot \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2 + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^4 },
+		\frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_{t+1}\right\|_2^2 &= \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left( \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right)^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t+1} \right) + \frac{1}{2} \left\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \right\|_2^2 \\
+		&\le \frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2^2 + \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t\right\|_2 \cdot \frac{\Delta^2(k)}{\ln{t}} + \frac{\Delta^4(k)}{2 \left( \ln{t} \right)^2 },
 		\end{split}
 		\end{equation*}
-		where the last inequality is by $\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|_2 \le \frac{\Delta^2 h}{(\ln t)^2}$ because $\hat{\rvr}_t$  and $\hat{\rvr}_{t+1}$ are two consecutive empirical means and each action has been selected at least $\frac{(\ln t)^2}{\Delta^2(k)}$ times. 
+		where the last inequality is by $\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|_2 \le \frac{\Delta^2(k)}{\ln{t}}$ because $\hat{\rvr}_t$  and $\hat{\rvr}_{t+1}$ are two consecutive empirical means and each action has been selected at least $\frac{\ln t}{\Delta^2(k)}$ times. Denote $\delta_t =  \left\| \rvo\left( \rmW_{t} \right) - \hat{\rvr}_{t}\right\|_2$. Combined with \cref{lem:logit_l2_loss_parameter_smoothness}, we have
+		\begin{equation*}
+		    \delta_{t+1} \le \sqrt{1 - \frac{1}{2 h} } \cdot \delta_{t} + \frac{\Delta^2(k)}{\ln{t}},
+		\end{equation*}
 		
-		Denote $\delta_t =  \left\| \rvo\left( \rmW_{t} \right) - \hat{\rvr}_{t}\right\|_2$. Combined with \cref{lem:logit_l2_loss_parameter_smoothness}, we have
-		\[
-		\frac{1}{2}\delta_{t+1}^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \delta_t^2 + \sqrt{1 - \frac{1}{2 h} } \cdot \frac{\Delta^2 \sqrt{h}}{\ln{t}} \cdot \delta_t + \frac{\Delta^4 h}{2 \left( \ln{t} \right)^2 },
-		\]
-		based on which one can further show that $\delta_t \le \frac{\Delta}{5}$ for large enough $t$.
-		
-		Finally, the total probability of selecting a sub-optimal action can be bounded by the sum of the exploration probability and the probability of the rare event when not all the above claims hold, which leads to an upper bound on the expected regret.
+		based on which one can further show that $\delta_t \le \frac{\Delta(k)}{5}$ for large enough $t$. Finally, the total probability of selecting a sub-optimal action can be bounded by the sum of the exploration probability and the probability of the rare event when not all the above claims hold, which leads to an upper bound on the expected regret.
 		\end{proof}
 	\begin{lem}
 		\label{lem:logit_l2_loss_parameter_smoothness}
