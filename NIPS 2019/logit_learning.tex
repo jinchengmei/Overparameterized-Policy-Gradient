@@ -134,7 +134,7 @@ where $C$ is a constant independent to $T$.
 		\end{proof}
 	\begin{lem}
 		\label{lem:logit_l2_loss_parameter_smoothness}
-		$\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta}$,
+		$\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta} = \frac{1}{2 \eta \sqrt{m}}$,
 		\begin{equation*}
 		\begin{split}
 		\frac{1}{2} \left\| \rvo\left( \rmW_{t+1} \right) - \hat{\rvr}_t \right\|_2^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t \right) - \hat{\rvr}_t \right\|_2^2.
