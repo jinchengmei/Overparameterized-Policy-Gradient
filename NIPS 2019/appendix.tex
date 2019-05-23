@@ -680,13 +680,13 @@ According to \cref{lem:logit_upper_bound_parameter},
 
 \section{Experimental Results}
 
-We conduct experimental results to compare the proposed two algorithms. The setting is $h = 50$, $m = 5000$, $d = 10$. We repeatedly run $10$ experiments. In each experiment, the true mean reward and variance are randomly generated. LLE significantly outperforms PGE as shown in the \cref{fig:regret}.
+We conduct experimental results to compare the proposed two algorithms. The setting is $h = 50$, $m = 5000$, $d = 10$, $T = 10000$, $\rvr \in [0.1, 1.0]^h$. We repeatedly run $10$ experiments. In each experiment, the true mean reward and variance are randomly generated. LLE significantly outperforms PGE as shown in \cref{fig:regret}.
 
 \begin{figure}[h]
 	%\vskip 0.2in
 	\begin{center}
-		\centerline{\includegraphics[width=0.6\columnwidth]{CumulativeRegret.pdf}}
-		\caption{The cumulative regret of PGE and LLE.}
+		\centerline{\includegraphics[width=0.8\columnwidth]{comparison_PGE_LLE.pdf}}
+		\caption{The expected regret and loss of PGE and LLE.}
 		\label{fig:regret}
 	\end{center}
 	\vskip -0.2in
