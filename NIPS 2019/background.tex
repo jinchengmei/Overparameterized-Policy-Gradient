@@ -23,15 +23,10 @@ One can think of that the standard stochastic bandit setting has only $1$ state.
 After $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
 \begin{equation}
 \label{eq:expected_regret}
-R_T = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sE \left[ \sum\limits_{t=0}^{T-1}{  r\left(A_t\right)  } \right] 
+R_T = \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sE \left[ \sum\limits_{t=0}^{T-1}{  r\left(A_t\right)  } \right] = \sum_{t=0}^{T-1} \sum_a \pi_t(a) \Delta(a).
 %= \sum\limits_{t=0}^{T-1}{{\rvpi^*}^\top \rvr} - \sum\limits_{t=0}^{T-1}{ \sE \left[ r\left(A_t\right) \right] },
 \end{equation}
-where the expectation is over the randomness of action selection, if the agent is using some stochastic strategies.
-Obviously, $\rvpi^*$ is a one-hot vector and by standard calculation, one can show that
-\[
-R_T = \sum_{t=0}^{T-1} \sum_a \pi_t(a) \Delta(a),
-\]
-where $\Delta(a) = \max_b r(b)- r(a)$, and  $r(a)$ is the expected reward of the action $a$.
+where the expectation is over the randomness of action selection, if the agent is using some stochastic strategies. In the second equality, $\rvpi^*$ is a one-hot vector and $\Delta(a) = \max_b r(b)- r(a)$, and  $r(a)$ is the expected reward of the action $a$.
 Without loss of generality, in this paper we assume $\rvr \in \left[ 0, 1 \right]^h$.
 
 %\subsubsection{Episodic Markov decision process (MDP) (maybe remove this section)}
