@@ -7,7 +7,7 @@ Although the stochastic bandit setting is an oversimplified RL environment, it c
 Each action in the standard bandit setting can be viewed as a special trajectory with length $H = 1$ in the episodic MDPs. In general with $H > 1$, \cref{alg:logit_learning_eps_greedy_exploration} can achieve similar result, with the total trajectory number changing from $h$ to $h^H$.
 \begin{thm}
 \label{thm:episodic_mdp_setting}
-     Suppose $m \in \Theta\left( \frac{T^2}{c^4 h^{2H}} \right)$, $\eta = \frac{ 1 }{16 h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ r\left(A_t\right) \right] } \le C + \sum\limits_{k \in [h^H] : \Delta(k) > 0}{ \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} }  + \frac{ 3 \ln{T}}{h^H}$.
+     Suppose $m \in \Theta\left( \frac{T^2}{c^4 h^{2H}} \right)$, $\eta = \frac{ 1 }{16 h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right) } \le \sum\limits_{k \in [h^H] : \Delta(k) > 0}{ \left[ \frac{ 3 \beta \left( \ln{T} \right)^2}{\Delta^2(k)} \right] } + 3 \ln{T} + C$, where $C$ is constant of $T$.
 \end{thm}
 
 The number of terms in the summation has an undesirable exponential dependence of trajectory length $H$. This seems cannot be eliminated by policy based RL methods, without taking advantage of the intermediate rewards in value based RL methods, such as Q-Learning \citep{jin2018q}. It is open whether value based RL methods enjoy nice theoretical guarantees with neural network function approximations.
@@ -18,7 +18,7 @@ The standard stochastic bandit setting is a special case of the many state depen
 For $n > 1$ and $\delta > 0$, we slightly modify \cref{alg:logit_learning_eps_greedy_exploration}, by setting the objective as the sum of all the $n$ terms. Consider the average expected loss over all the states, the regret results are similar with \cref{thm:logit_learning_main_result}, up to an additional factor $n$, can be easily reproduced.
 \begin{thm}
 \label{thm:many_state_dependent_bandit_setting}
-     Supose $m \in \Theta\left( \frac{n^{10} T^2}{c^4 \delta^4 h^2} \right)$, $\eta = \frac{c^2 \delta^2}{16 n^4 h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies $\sum\limits_{t=0}^{T-1}{ \sE \left[ r_i\left(A_t\right) \right] } \le C + \sum\limits_{k \in [h^H] : \Delta(k) > 0}{ \frac{ 3 \beta n^8 \left( \ln{T} \right)^2}{c^4 \delta^4 \Delta^2(k)} }  + \frac{ 3 n \ln{T}}{h}$.
+     Supose $m \in \Theta\left( \frac{n^{10} T^2}{c^4 \delta^4 h^2} \right)$, $\eta = \frac{c^2 \delta^2}{16 n^4 h m}$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies $\frac{1}{n } \sum\limits_{i=1}^{n}{ \sum\limits_{t=0}^{T-1}{ \left( {\rvpi_i^*}^\top \rvr_i - \sE \left[ r_i\left(A_{i,t}\right) \right] \right) } \le \sum\limits_{k \in [h] : \Delta_i(k) > 0}{ \left[ \frac{ 3 \beta n^8 \left( \ln{T} \right)^2}{c^4 \delta^4 \Delta_i^2(k)} \right] } + 3 n \ln{T} + C }$.
 \end{thm}
 
 
