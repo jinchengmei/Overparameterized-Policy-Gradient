@@ -1,4 +1,7 @@
 \section{Conclusions}
 \label{sec:conclusions}
-
-In this paper, we provide finite time regret analysis of basic policy gradient method under the stochastic bandit setting, where the policy is represented by neural network function approximations. The main result is $O\left( T^{\frac{2}{3} } \left(\log{T}\right)^{\frac{1}{3}}\right)$. The results can be generalized to many state dependent bandit settings, episodic MDPs, and can be combined with multi-layered neural network function approximations. Our findings are at the starting point of understanding more perspectives and providing theoretical supports for deep reinforcement learning.
+We proved a $\tilde{O}(T^{2/3})$ regret for a vanilla policy based reinforcement learning algorithm under the stochastic multi-armed bandit setting. 
+Noticing the main hurdle in our proof as the estimation error $\|\hat{\rvr} - \rvr\|$, we further proposed a value based RL algorithm, Logit Learning with $\varepsilon$-Greedy Exploration (LLE). 
+We proved that LLE achieve a nearly optimal regret $O((\ln T)^2)$.
+Our results can be generalized to many state dependent bandit settings, episodic MDPs, and can be combined with multi-layered neural network function approximations. Our findings are at the starting point of understanding more perspectives and providing theoretical supports for deep reinforcement learning. We also discussed several open problems for future research.
+\newpage

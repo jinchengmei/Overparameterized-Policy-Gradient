@@ -60,7 +60,7 @@ with probability at least,
 \end{equation*}
 \end{thm}
 \fi
-\begin{proof}[\bf proof sketch]
+\begin{proof}[\bf Proof sketch]
 \cref{alg:policy_gradient_uniform_exploration} divides the sampling policy $\tilde{\rvpi}_t$ into two parts, i.e., the network policy $\rvpi\left( \rmW_t \right)$ and an uniform policy. Intuitively, when the reward estimation is very inaccurate, updates can probably hurt the neural network policy.  
 %Therefore, an uniform policy is used to guarantee that every action can be sampled for enough many times, which will provide accurate reward estimations for learning. 
 The first step of our proof is the claim that for large enough $t$, \cref{alg:policy_gradient_uniform_exploration} with large probability has an accurate estimate of $\rvr$, as
@@ -102,6 +102,17 @@ The final expected regret bound follows by combining all the terms above.
 To prove \cref{step:proof1step1}, we borrow some technical ideas from \cite{li2018learning,allen2018convergenceB}. In \citep{li2018learning,allen2018convergenceB}, optimization theory of over-parameterized neural networks is developed for supervized learning settings. To adapt the techniques for reinforcement learning setting, many challenges still remain. One particular challenge is that the learning objective depends on $\hat{\rvr}$ that is dynamic. Another challenge is that all the actions need sufficient exploration, so that the learnig signal from $\hat{\rvr}$ is aligned with the true expected reward. Again, to overcome these two challenge, \cref{alg:policy_gradient_uniform_exploration} needs to assign a large portion of budget for exploration.
 \end{proof}
 
+\begin{remk}
+The regret rate of $\tilde{O}(T^{2/3})$ is unsatisfactory. 
+One may recall that an optimal rate of $O(\log(T))$ can be achieved in stochastic multi-armed bandit \citep{bubeck2012regret}. 
+One key step in our analysis that 
+What prevents us to achieve a better rate is that the current proof requires a small estimation error $\left\| \rvr - \hat{\rvr}_t \right\|_\infty$.
+However, an accurate estimate of $r$ may not be necessary for the agent to achieve a small regret. 
+In fact, identifying the best action without an accurate estimation of $r$ is the essence of the UCB algorithm and many other stochastic bandit algorithms. 
+As shown in \cref{sec:logit_learning}, our next algorithm manages to avoid such requirement, and thus achieves a nearly optimal regret rate of $O((\ln T)^2)$.
+\end{remk}
+
+\iffalse
 \subsection{Exploration of the Optimal Action}
 \label{subsec:exploration_in_policy_learning}
 
@@ -144,3 +155,4 @@ Policy update using \cref{eq:logit_derivative} satisfies, $\forall t \ge 0$,
 \end{equation*}
 \end{lem}
 \cref{lem:optimal_probability_increse_parameter_space} indicates replacing $c$ in \cref{thm:policy_gradient_main_result} will not incur any additional regret dependent on $T$.
+\fi
