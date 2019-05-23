@@ -1,14 +1,9 @@
 \section{Over-Parametrized Logit Learning}
 \label{sec:logit_learning}
-
-We have proved a $O(T^{2/3})$ regret bound for the above policy gradient method.
-This regret rate is in fact unsatisfactory,  as one may recall that an optimal rate of $O(\log(T))$ can be achieved in stochastic multi-armed bandit \citep{bubeck2012regret}. 
-One key step in our analysis that prevents us to achieve a better rate is the estimation error of $\rvr$ with $\hat{\rvr}_t$, $\left\| \rvr - \hat{\rvr}_t \right\|_\infty$.
-However, an accurate estimate of $\rvr$ is not necessary for the agent to achieve a small regret, which is the essence of the UCB algorithm and many other stochastic bandit algorithms. 
-In this section, we adapt a similar strategy for value based reinforcement learning methods.
-In particular, we propose an alternative algorithm based on value learning, called {\bf L}ogit {\bf L}earning with $\varepsilon$-Greedy {\bf E}xploration (LLE).
-The learning of LLE happens in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$. 
-Similar to many stochastic bandit algorithms, LLE does not require to have a accurate estimate of $\rvr$ but rather to use its finite sampling budget to distinguish the best action from other sub-optimal actions.
+As discussion in \cref{sec:policy_gradient}, our policy gradient method achieves an unsatisfactory $\tilde{O}(T^{2/3})$ regret.
+In this section, we propose an alternative algorithm, called {\bf L}ogit {\bf L}earning with $\varepsilon$-Greedy {\bf E}xploration (LLE), that is similar to value based reinforcement learning methods.
+The learning of LLE happens in the dual value space by gradient updates over $\frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2$.
+Unlike the policy gradient method, LLE does not require to have a accurate estimate of $\rvr$ but rather to use its finite sampling budget to distinguish the best action from other sub-optimal actions.
 %Recall that the optimal rate for stochastic multi-armed bandits is $O(\log(T))$
 %such rate is not satisfactory especially for the stochastic bandit setting. 
 
@@ -98,11 +93,12 @@ where $C$ is a constant independent to $T$.
 \end{thm}
 
 \begin{remk}
-	The regret rate in \cref{thm:logit_learning_main_result} is $O((\ln T)^2)$, which is slightly worse than the optimal $O(\ln T)$ rate. 
-	This is due to the low efficiency of $\epsilon$-greedy exploration where one needs to estimate the reward gaps $\Delta(k)$. 
+	The $O((\ln T)^2)$ regret of LLE is slightly worse than the optimal $O(\ln T)$ rate. 
+	This is due to the low efficiency of $\epsilon$-greedy exploration.
+	In particular, to have a proper $\epsilon$, one needs to estimate the reward gaps $\Delta(k)$ which causes the extra $\ln T$ factor.
 	A UCB style of exploration that requires no knowledge about the reward gaps may be able to reduce this extra $\ln T$ factor.
 \end{remk}
-\begin{proof} [Proof sketch]
+\begin{proof} [\bf Proof sketch]
 		By Proposition 2 of \citep{seldin2017improved}, $\hat{\Delta}_t(k)$ is a valid estimate of the reward gap $\Delta(k)$, in the sense that for large enough $t$ with high probability, 
 		\[
 		\Delta(k)/2 \le \hat{\Delta}_t(k) \le 	\Delta(k).
@@ -112,7 +108,6 @@ where $C$ is a constant independent to $T$.
 		\[
 		\left\| \hat{\rvr}_t - \rvr \right\|_\infty \le \frac{\Delta}{5}.
 		\]
-	. 
 	
 		The main content of our proof is to show that the estimate error 
 		\[
