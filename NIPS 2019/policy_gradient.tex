@@ -100,7 +100,8 @@ The final expected regret bound follows by combining all the terms above.
 \end{proof}
 
 \begin{remk}
-	To prove \cref{step:proof1step1}, we borrow some technical ideas from \cite{li2018learning,allen2018convergenceB},  where optimization theory of over-parameterized neural networks is developed for the supervized learning setting. To adapt the techniques for reinforcement learning setting, many challenges still remain. One particular challenge is that the learning objective depends on $\hat{\rvr}$ that is dynamic. Another challenge is that all the actions need sufficient exploration, so that the learnig signal from $\hat{\rvr}$ is aligned with the true expected reward. Again, to overcome these two challenge, \cref{alg:policy_gradient_uniform_exploration} needs to assign a large portion of budget for exploration.
+	The proof of \cref{step:proof1step1} is postponed in appendix, which contributes to the main component of the proof for \cref{thm:policy_gradient_main_result}.
+	To prove \cref{step:proof1step1}, we borrow some technical ideas from \cite{li2018learning,allen2018convergenceB},  where optimization theory of over-parameterized neural networks is developed for the supervized learning setting. To adapt these techniques for the reinforcement learning setting, many challenges still remain. One particular challenge is that the learning objective depends on $\hat{\rvr}$ that is dynamic. Another challenge is that all the actions need sufficient exploration, so that the learnig signal from $\hat{\rvr}$ is aligned with the true expected reward. Again, to overcome these two challenge, \cref{alg:policy_gradient_uniform_exploration} needs to assign a large portion of budget for exploration.
 \end{remk}
 
 \begin{remk}
