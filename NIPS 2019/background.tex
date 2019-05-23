@@ -12,12 +12,12 @@
 \end{figure}
 
 We mainly focus on the stochastic bandit setting in this paper where the policy or the values of the actions are represented using a 2-layers neural networks.  
-However, our results can be easily generalized to many other reinforcement learning settings, e.g. state dependent stochastic bandit settings and episodic MDP settings.
+However, our results can be easily generalized to many other reinforcement learning settings, e.g. state dependent stochastic bandit settings and episodic MDPs, which will be discussed in \cref{sec:general_settings}.
 
 \subsection{Stochastic Bandit Settings}
 \label{subsec:settings}
 
-One can think of that the standard stochastic bandit setting has only 1 state.  
+One can think of that the standard stochastic bandit setting has only $1$ state.  
 %At each time step $t$, the agent takes an action $A_t \in [h]$ according to its own strategies $\rvpi_t$, and then it observes a random reward $R\left(A_t\right) \in \sR$, where the mean value of $R\left(A_t\right)$ is $r\left(A_t\right)$. 
 %The agent then improves its action selection strategies. 
 After $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
@@ -59,13 +59,13 @@ On the other hand, value based RL methods directly attempt to learn a function t
 %The policy neural network defines a family of policies $\rvpi_i \left( \rmW \right)$ parameterized by $\rmW \in \sR^{m \times d}$ given any state $\rvs_i$. Let $\rvpi_i = \rvpi_i \left( \rmW \right)$, the expected loss of the policy neural network can be calculated according to \cref{eq:expected_loss}.
 
 %\paragraph{Initialization of the matrix $\rmA$.} 
-Without loss of generality we assume that the networks have the state $s$ as their inputs satisfying $\left\| \rvs \right\|_2 = 1$.
+Without loss of generality we assume that the networks have the state $\rvs$ as their inputs satisfying $\left\| \rvs \right\|_2 = 1$.
 As can be seen later, our algorithm random initializes the weight matrix $\rmA$ and fixes it during learning. 
-This is a common strategy when using over-parametrization neural networks, e.g. see \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and it has been empirically verified that there is no impact on the performance of trained neural networks \citep{hoffer2018fix}.
-In this paper, each element in $\rmA$ is initialized by $a_{k,r} \sim \gU\left\{-1, +1\right\}$, $a_{k,r}$. Some other initializations like $\rva_k \sim \gN(0, \rmI)$ will also work. Thus in the rest of the paper, we denote the policy $\rvpi$ by $\rvpi(\rmW_t)$ to emphasize its parametrization by $\rmW$ at time step $t$. 
+This is a common strategy when using over-parametrized neural networks, e.g. see \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and it has been empirically verified that there is no impact on the performance of trained neural networks \citep{hoffer2018fix}.
+In this paper, each element in $\rmA$ is initialized by $a_{k,r} \sim \unif\left\{-1, +1\right\}$. Some other initializations like $\rva_k \sim \gN(0, \rmI)$ will also work. In the rest of the paper, we denote the policy $\rvpi$ by $\rvpi(\rmW_t)$ to emphasize its parametrization by $\rmW$ at time step $t$. 
 
 %\paragraph{Multi-layered neural networks.} 
-We would like to point that our algorithms and results can be easily extended to general value functions and policies parameterized by multi-layered neural networks \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}. For the sake of simplicity and conciseness, we only focus on two-layers neural networks in the paper.
+We would like to point that our algorithms and results can be extended to general value functions and policies parameterized by multi-layered neural networks resorting to related techniques \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}. For the sake of simplicity and conciseness, we only focus on two-layers neural networks in the paper.
 
 %Although there is only one state, i.e., $n = 1$, and $i$ can be omitted without ambiguity, we choose to keep the subscript $i$ here to make the generalization from the standard bandit setting to the many state dependent setting smoother, and our algorithms work for general $n > 1$. For simplicity, we assume $\left\| \rvs_{i} \right\|_2 = 1$, $\forall i \in [n]$.
 
