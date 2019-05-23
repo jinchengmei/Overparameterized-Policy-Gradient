@@ -678,7 +678,22 @@ According to \cref{lem:logit_upper_bound_parameter},
     See the proof of Proposition 2 in \citep{seldin2017improved}.
 \end{proof}
 
-%\iffalse
+\section{Experimental Results}
+
+We conduct experimental results to compare the proposed two algorithms. The setting is $h = 50$, $m = 5000$, $d = 10$. We repeatedly run $10$ experiments. In each experiment, the true mean reward and variance are randomly generated. LLE significantly outperforms PGE as shown in the \cref{fig:regret}.
+
+\begin{figure}[h]
+	%\vskip 0.2in
+	\begin{center}
+		\centerline{\includegraphics[width=0.6\columnwidth]{CumulativeRegret.pdf}}
+		\caption{The cumulative regret of PGE and LLE.}
+		\label{fig:regret}
+	\end{center}
+	\vskip -0.2in
+\end{figure}
+
+
+\iffalse
 
 \section{Policy Gradient}
 
@@ -746,3 +761,4 @@ First note that, $\forall k \in [h]$,
 where $\rva_{\cdot, r} \triangleq \left( a_{1,r}, a_{2,r}, \dots, a_{h,r} \right)^\top \in \sR^h$.
 %It is easy to check that \cref{eq:gradient_form_one} and \cref{eq:gradient_form_two} are equivalent.
 
+\fi
