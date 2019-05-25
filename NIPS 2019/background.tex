@@ -11,13 +11,13 @@
 	\vskip -0.2in
 \end{figure}
 
-We mainly focus on the stochastic bandit setting in this paper where the policy or the values of the actions are represented using a 2-layers neural networks.  
+We mainly focus on the stochastic bandit setting in this paper where the policy or the values of the actions are represented using a two-layer neural networks.  
 However, our results can be easily generalized to many other reinforcement learning settings, e.g. state dependent stochastic bandit settings and episodic MDPs, which will be discussed in \cref{sec:general_settings}.
 
 \subsection{Stochastic Bandit Settings}
 \label{subsec:settings}
 
-One can think of that the standard stochastic bandit setting has only $1$ state.  
+One can think of that the standard stochastic bandit setting has only one state, i.e., $n=1$.  
 %At each time step $t$, the agent takes an action $A_t \in [h]$ according to its own strategies $\rvpi_t$, and then it observes a random reward $R\left(A_t\right) \in \sR$, where the mean value of $R\left(A_t\right)$ is $r\left(A_t\right)$. 
 %The agent then improves its action selection strategies. 
 After $T$ time steps, the performance of the agent's strategy is measured by the (expected) regret,
@@ -60,7 +60,7 @@ This is a common strategy when using over-parametrized neural networks, e.g. see
 In this paper, each element in $\rmA$ is initialized by $a_{k,r} \sim \unif\left\{-1, +1\right\}$. Some other initializations like $\rva_k \sim \gN(0, \rmI)$ will also work. In the rest of the paper, we denote the policy $\rvpi$ by $\rvpi(\rmW_t)$ to emphasize its parametrization by $\rmW$ at time step $t$. 
 
 %\paragraph{Multi-layered neural networks.} 
-We would like to point that our algorithms and results can be extended to general value functions and policies parameterized by multi-layered neural networks resorting to related techniques \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}. For the sake of simplicity and conciseness, we only focus on two-layers neural networks in the paper.
+We would like to point that our algorithms and results can be extended to general value functions and policies parametrized by multi-layered neural networks resorting to related techniques \citep{allen2018convergenceA,allen2018convergenceB,du2018gradientA}. For the sake of simplicity and conciseness, we only focus on two-layers neural networks in the paper.
 
 %Although there is only one state, i.e., $n = 1$, and $i$ can be omitted without ambiguity, we choose to keep the subscript $i$ here to make the generalization from the standard bandit setting to the many state dependent setting smoother, and our algorithms work for general $n > 1$. For simplicity, we assume $\left\| \rvs_{i} \right\|_2 = 1$, $\forall i \in [n]$.
 

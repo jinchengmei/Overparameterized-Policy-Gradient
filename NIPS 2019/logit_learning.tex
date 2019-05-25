@@ -53,7 +53,7 @@ Finally, note that In each iteration, the agent only update its value neural net
 		%\STATE $\ucb_{t+1}\left(A_t\right) \gets \min{\left\{ 1, \hat{r}_{t+1}\left(A_t\right) + \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
 		%\STATE $\ucb_{t+1}(k) \gets \ucb_{t}(k)$, $\forall k \not= A_t$.
 		\STATE $\lcb_{t+1}(k) \gets 
-		    \max{\left\{ 0, \hat{r}_{t+1}(k) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}$, $\forall k \in [h]$.
+		    \max{\left\{ 0, \hat{r}_{t+1}(k) - \sqrt{\frac{\alpha \ln{\left( (t+1) h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}(k)}}\right\}}$, $\forall k \in [h]$.
 		%\STATE $\lcb_{t+1}\left(A_t\right) \gets \max{\left\{ 0, \hat{r}_{t+1}\left(A_t\right) - \sqrt{\frac{\alpha \ln{\left( t h^{\frac{1}{\alpha}}\right)}}{2 n_{t+1}\left(A_t\right)}}\right\}}$.
 		%\STATE $\lcb_{t+1}(k) \gets \lcb_{t}(k)$, $\forall k \not= A_t$.
 		
@@ -89,7 +89,7 @@ The next theorem shows that LLE has a nearly optimal regret rate in the stochast
 \end{split}
 \end{equation*}
 %where $C \triangleq 2 \max\limits_{k \in [h]}\left\{ \bar{t}(k) \right\} + \pi^2$ is independent with $T$.
-where $C$ is a constant independent to $T$.
+where $C$ is a constant independent with $T$.
 \end{thm}
 
 \begin{remk}

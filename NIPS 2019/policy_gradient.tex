@@ -36,7 +36,7 @@ In particular, we set every action with probability at least $t^{ \beta - \frac{
 Our first main result is a $\tilde{O}(T^{2/3})$ regret for the above policy gradient method, as shown in \cref{thm:policy_gradient_main_result}.
 \begin{thm}
 	\label{thm:policy_gradient_main_result}
-	Given policy neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, $\beta = \frac{ \ln{\left(\frac{h}{3}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, the expected regret of PGE satisfies,
+	Given policy neural networks as shown in \cref{fig:nn_policy_value}, with number of parameters $m \ge \frac{T^2}{h^2}$, $\eta = \frac{1}{2 h m}$, $\beta = \frac{ \ln{\left(\frac{h}{3}\right) + \ln{\ln{t}} } }{ 3 \ln{t}}$, $(\forall t \ge 2)$ the expected regret of PGE satisfies,
 	\begin{equation*}
 	\begin{split}
 	\sum\limits_{t=0}^{T-1}{ \left( {\rvpi^*}^\top \rvr - \sE \left[ r\left(A_t\right) \right] \right)} \le O\left(T^{\frac{2}{3}}\left( \ln{T} \right)^{\frac{1}{3}}\right).
@@ -99,7 +99,7 @@ The final expected regret bound follows by combining all the terms above.
 
 \begin{remk}
 	The proof of \cref{step:proof1step1} contributes to the main component of the proof for \cref{thm:policy_gradient_main_result}.
-	Our proof borrows some technical ideas from \cite{li2018learning,allen2018convergenceB},  where optimization theory of over-parameterized neural networks is developed for the supervized learning. To adapt these techniques for the reinforcement learning setting, many challenges still remain. One particular challenge is that the learning objective depends on $\hat{\rvr}_t$ that is dynamic. Another challenge is that all the actions need sufficient exploration, so that the learning signal from $\hat{\rvr}_t$ is aligned with the true expected reward. Again, to overcome these two challenge, \cref{alg:policy_gradient_uniform_exploration} needs to assign a large portion of budget for exploration.
+	Our proof borrows some technical ideas from \cite{li2018learning,allen2018convergenceB},  where optimization theory of over-parametrized neural networks is developed for the supervised learning. To adapt these techniques for the reinforcement learning setting, many challenges still remain. One particular challenge is that the learning objective depends on $\hat{\rvr}_t$ that is dynamic. Another challenge is that all the actions need sufficient exploration, so that the learning signal from $\hat{\rvr}_t$ is aligned with the true expected reward. Again, to overcome these two challenge, \cref{alg:policy_gradient_uniform_exploration} needs to assign a large portion of budget for exploration.
 \end{remk}
 
 \begin{remk}
