@@ -558,7 +558,7 @@ Use \cref{lem:gradient_coupling} and \cref{lem:chernoff} with $\alpha = \frac{1}
 
 This section contains the detailed proofs of \cref{thm:logit_learning_main_result} (Theorem 2 in the paper) and the related technical lemmas.
 
-\subsection{Proof of \cref{thm:logit_learning_main_result}}
+\subsection{Proof of \cref{thm:logit_learning_main_result} (Theorem 2 in the paper)}
 
 For convenience, we restate \cref{thm:logit_learning_main_result} here.
 
@@ -643,7 +643,7 @@ where $C$ is a constant independent to $T$.
 	\end{equation*}
 Summing up the expected sampled number of all the actions obtains the results, where $C \triangleq 2 \cdot \sum\limits_{k \in [h]}{ \bar{t}(k)} + 2 \pi^2 h + o(1)$ is independent with $T$.
 \end{proof}
-\begin{lem}
+\begin{lem}[Lemma 1 in the paper]
 		\label{lem:logit_l2_loss_parameter_smoothness}
 		$\rmW_{t+1} \leftarrow \rmW_t - \eta \cdot \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}$, where $\eta = \frac{1}{h m}$. $\forall t \le \frac{\tau}{2 \eta} = \frac{1}{2 \eta \sqrt{m}}$,
 		\begin{equation*}
@@ -662,7 +662,7 @@ According to \cref{lem:logit_upper_bound_parameter},
     &\quad = - \left( \eta - \frac{h m \eta^2}{2} \right) \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}  \right\|_F^2 \\
     &\quad = - \frac{1}{2 h m} \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rmW_t}  \right\|_F^2 \\
     &\quad = - \frac{1}{2 h m} \sum\limits_{r = 1}^{m}{ \left\| \frac{d \left\{ \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2 \right\}}{d \rvw_r(t)}  \right\|_2^2 } \\
-    &\quad \le - \frac{1}{2 h} \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2. \qedhere
+    &\quad \le - \frac{1}{2 h} \cdot \frac{1}{2} \left\| \rvo\left( \rmW_t\right) - \hat{\rvr}_t \right\|_2^2. \quad (\text{using similar proof idea as \cref{lem:gradient_lower_bound}} ) \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -678,23 +678,22 @@ According to \cref{lem:logit_upper_bound_parameter},
     See the proof of Proposition 2 in \citep{seldin2017improved}.
 \end{proof}
 
-\iffalse
-
 \section{Experimental Results}
 
-We conduct experimental results to compare the proposed two algorithms. The setting is $h = 50$, $m = 5000$, $d = 10$, $T = 10000$, $\rvr \in [0.1, 1.0]^h$. We repeatedly run $10$ experiments. In each experiment, the true mean reward and variance are randomly generated. LLE significantly outperforms PGE as shown in \cref{fig:regret}.
+We conduct experiments on the proposed algorithms. The setting is $h = 50$, $m = 5000$, $d = 20$, $T = 100000$. The true mean reward vector $\rvr \in [0.0, 1.0]^h$. We repeatedly run $10$ experiments. In each experiment, the true mean reward and variance are randomly generated. For PGE, $\frac{1}{3} - \beta$ is set to be $0.33$, $\sigma = 0.002$, and $\eta = 0.001$. For LLE, $\varepsilon_t = \frac{\ln{t}}{t}$, $\sigma = 0.002$, and $\eta = 0.001$. At each step $t$, we record the expected regret $\sum\limits_{s = 0}^{t - 1}{ \left( {\rvpi^*} ^\top \rvr - \expectation{\left[ r(A_s) \right]} \right) } $ and the latest expected loss $ {\rvpi^*} ^\top \rvr - \expectation{\left[ r(A_t) \right]} $, where the expectation is taken over the mixed sampling policy in PGE/LLE.
+
+As shown in \cref{fig:regret}, both PGE and LLE have expected regrets sublinear in $T$. On the other hand, the expected regret of PGE decays much slower than that of LLE, since PGE has a large budget $t^{\beta - \frac{1}{3}}$ for uniform exploration.
 
 \begin{figure}[h]
 	%\vskip 0.2in
 	\begin{center}
-		\centerline{\includegraphics[width=0.8\columnwidth]{comparison_PGE_LLE.pdf}}
+		\centerline{\includegraphics[width=1.0\columnwidth]{comparison_PGE_LLE.pdf}}
 		\caption{The expected regret and loss of PGE and LLE.}
 		\label{fig:regret}
 	\end{center}
 	\vskip -0.2in
 \end{figure}
 
-\fi
 
 \iffalse
 
