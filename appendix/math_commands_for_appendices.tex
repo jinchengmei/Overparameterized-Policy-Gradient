@@ -1,0 +1,99 @@
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{wrapfig}
+\usepackage{picins}
+
+\usepackage[backgroundcolor = White,textwidth=2cm]{todonotes}
+%\usepackage[disable,backgroundcolor = White,textwidth=\marginparwidth]{todonotes}
+\newcommand{\todom}[2][]{\todo[color=orange!25,size=\small,#1]{G: #2}}
+\newcommand{\todox}[2][]{\todo[color=purple!25,size=\small,#1]{K: #2}}
+\newcommand{\todor}[2][]{\todo[color=blue!25,size=\small,#1]{R: #2}}
+\setlength{\marginparwidth}{0.8in}
+
+% Set the typeface to Times Roman
+\usepackage{times}
+
+\usepackage{algorithm,algorithmic}
+%\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{natbib}
+
+\usepackage{amssymb,amsmath,amsthm} %maths
+\usepackage[utf8]{inputenc} %useful to type directly diacritic characters
+\usepackage[capitalize]{cleveref}
+
+\crefname{prop}{Proposition}{Propositions}
+\crefname{thm}{Theorem}{Theorems}
+\crefname{lem}{Lemma}{Lemmas}
+\crefname{algorithm}{Algorithm}{Algorithms}
+
+\def\rva{{\mathbf{a}}}
+\def\rvb{{\mathbf{b}}}
+\def\rvo{{\mathbf{o}}}
+\def\rvr{{\mathbf{r}}}
+\def\rvs{{\mathbf{s}}}
+\def\rvu{{\mathbf{u}}}
+\def\rvw{{\mathbf{w}}}
+\def\rvx{{\mathbf{x}}}
+\def\rvg{{\mathbf{g}}}
+\def\rvo{{\mathbf{o}}}
+\def\rvone{{\mathbf{1}}}
+\def\rvzero{{\mathbf{0}}}
+\def\rvtilder{{\tilde{\mathbf{r}}}}
+\def\rvhat{{\hat{\mathbf{r}}}}
+
+\def\rvp{{\mathbf{p}}}
+
+\def\pr{{\text{Pr}}}
+\def\r{{\text{R}}}
+
+\def\ucb{{\text{U}}}
+\def\lcb{{\text{L}}}
+
+\def\unif{{\text{unif}}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{defi}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{remk}{Remark}
+
+\def\rvpi{{\boldsymbol{\pi}}}
+\def\rvdelta{{\boldsymbol{\delta}}}
+
+\def\rmA{{\mathbf{A}}}
+\def\rmD{{\mathbf{D}}}
+\def\rmH{{\mathbf{H}}}
+\def\rmI{{\mathbf{I}}}
+\def\rmS{{\mathbf{S}}}
+\def\rmW{{\mathbf{W}}}
+\def\rmX{{\mathbf{X}}}
+
+\def\sE{{\mathbb{E}}}
+\def\sR{{\mathbb{R}}}
+\def\sI{{\mathbb{I}}}
+\def\sP{{\mathbb{P}}}
+
+\def\gH{{\mathcal{H}}}
+\def\gN{{\mathcal{N}}}
+\def\gE{{\mathcal{E}}}
+\def\gQ{{\mathcal{Q}}}
+\def\gU{{\mathcal{U}}}
+\def\gV{{\mathcal{V}}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\probability}{Pr}
+\DeclareMathOperator*{\expectation}{\sE}
+\DeclareMathOperator*{\trace}{Tr}
+
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}

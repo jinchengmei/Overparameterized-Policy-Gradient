@@ -1,0 +1,56 @@
+\documentclass{article}
+
+\usepackage{neurips_2019_author_response}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\usepackage{lipsum}
+
+\begin{document}
+
+We thank all the reviewers for their careful reading and valuable comments. We will improve the paper according to the comments. We answer the questions as follows.
+
+To R1: 
+
+missing union bound. No. This failure probability has already be calculated. See supp Eq. (3), the summation "E\_1 does not happen" is the mentioned union bound.
+
+$(\pi_t^* - \pi_{t-1}^*)^\top \hat{r}_{t-1}$ and $\hat{r}$. Do you mean $\hat{r}_t$. Yes you are right. But this seems have no impact on the proof.
+
+empirical estimation: Yes, one can collect accurate estimations first and then use NN to fit the estimation (supervised learning as you described). However, we prove that when the signal is changing ($\hat{r}_t$), learning NN by gradient still works, and this is new to our knowledge (Theorem 3 \& 4), which is also more closed to the practical than the method you described. We admit the importance of eliminating using empirical estimation and that should be investigated.
+
+MDPs: What policy gradient does in practice is collecting trajectories and using their rewards to do gradient updates (if rewards are available after the trajectory ends). Viewing each trajectory as a long arm here is arguably reasonable. 
+
+n terms: It is defined in Eq. (1).
+
+generalization: This is important, but it is beyond our paper.
+
+separate NN policies: No. There is one network to learn over many states. And the initial state would come from another random distribution. We will add this.
+
+Thanks for the references. We checked the papers, and found both papers do no consider exploration (but combination with Bellman error is important), by assuming there is another stationary/uniform distribution that provides samples for learning.
+
+To R2:
+
+Thanks for the advice. We will make the definitions and presentation more consistent.
+
+contextual bandit setting: Yes it is.
+
+state features are normalized: Firstly re-scale each state to make the l\_2 norm $<= 0.5$. Then we can add an additional component to make the norm $= 0.5$. Finally we can add another component (corresponding to bias term in NN) to make the norm $= 1$.
+
+momentum on the rewards: That means the empirical reward (as combination of old empirical reward and the current sampled reward), like a momentum.
+
+empirical averages: As responded in to R1, we acknowledge an fully tabular free algorithm is important. However, we take forward to that goal in the following two points: (1) NN function approximation replaces with the tabular output (2) combining NN learning with exploration, and learning using a moving target ($\hat{r}_t$) can lead to sub-linear regret is new.
+
+MDPs: Yes, MDPs are much harder than bandit also because of Bellman update / bootstrap. However bandit algorithms at least should balance between exploration and exploitation. And that is what we want to express.
+
+To R3:
+
+Yes we agree with the point that designing algorithms that generalize to complicated environments is crucial. But we would like to point out that just using NN to replace the tabular output itself (and make it work with exploration) is a contribution that make the theory more closed to the practice. And we are not aware of other more efficient explorations that can be used to make the NN learning work.
+
+\end{document}
