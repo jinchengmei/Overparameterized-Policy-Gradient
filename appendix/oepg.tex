@@ -12,6 +12,8 @@
 
 \maketitle
 
+\if0
+
 \begin{lem}
 Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Let $\rvo \in \sR^K$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$. Denote $\rmH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{K \times K}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. Define the policy gradient with respect to logit at step $t$,
 \begin{equation*}
@@ -74,6 +76,11 @@ We use induction on $t$. For $t = 0$, $\rvdelta_{1} = \rvzero$, and $\left\| \rv
 \end{equation*}
 \end{proof}
 
+\fi
+
+
+\if0
+
 \begin{lem}
 Given any $\rvpi \in \Delta$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$. Sorting $\rvpi$ in ascending order,
 \begin{equation*}
@@ -119,5 +126,106 @@ It is easy to check that $\rvv = \rvone$ is the eigenvector of $\lambda_0 = 0$. 
 \end{equation*}
 Note if $\rvpi^\top \rvv = 0$, we have $\rvpi(i) \rvv(i) = \lambda \rvv(i)$, $\forall i \in [K]$. Since $\rvv \not= \rvzero$, assume 
 \end{proof}
+
+\fi
+
+\begin{lem}
+Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Let $\rvo \in \sR^K$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$. Denote $\rmH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{K \times K}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. Define the policy gradient with respect to logit at step $t$,
+\begin{equation*}
+\begin{split}
+    \nabla(\rvo_t) &\triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
+    &= \left[ \Delta \left( \rvpi(\rvo_t) \right) - \rvpi(\rvo_t) \rvpi(\rvo_t)^\top \right] \left( \rvr_t - \rvo_t \right) \\
+    &\triangleq \rmH_t \left( \rvr_t - \rvo_t \right).
+\end{split}
+\end{equation*}
+Consider the following (entropy regularized) policy gradient update,
+\begin{equation*}
+\begin{split}
+    \rvo_{t+1} &= \rvo_t + \eta \cdot \nabla(\rvo_t) \\
+    &= \rvo_t + \eta \cdot \rmH_t \left( \rvr_t - \rvo_t \right).
+\end{split}
+\end{equation*}
+If the learning rate $\eta$ at iteration $t$ is
+\begin{equation*}
+\begin{split}
+    \eta = \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t+1} \right)  } = eK \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{1}{t+1-2C\sqrt{K}} = O\left( \frac{1}{t} \right).
+\end{split}
+\end{equation*}
+then we have,
+\begin{equation*}
+    \left\| \rvo_{t+1} - \hat{\rvr}_{t} \right\| \le \frac{C \sqrt{K}}{t+1}, \quad \forall t \ge 0.
+\end{equation*}
+\end{lem}
+\begin{proof}
+We use induction on $t$. For $t=0$,
+\begin{equation*}
+\begin{split}
+    \left\| \rvo_{1} - \hat{\rvr}_0 \right\| = \left\| \rvzero \right\| = 0 \le C \sqrt{K}.
+\end{split}
+\end{equation*}
+Assume $\left\| \rvo_{t} - \hat{\rvr}_{t-1} \right\| \le \frac{C \sqrt{K}}{t}$, which implies
+\begin{equation*}
+\begin{split}
+    \left| \rvo_{t}(i) - \hat{\rvr}_{t-1}(i) \right| \le \left\| \rvo_{t} - \hat{\rvr}_{t-1} \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall i \in [K].
+\end{split}
+\end{equation*}
+Denote $i_{\min} \triangleq \argmin\limits_{i \in [K]}{\rvo_t(i)} $, $i_{\max} \triangleq \argmax\limits_{i \in [K]}{\rvo_t(i)} $, and $\gF(\rvo_t) \triangleq \log{\sum\limits_{i = 1}^K{\exp\left\{ \rvo_t(i) \right\}} } \le \rvo_t(i_{\max}) + \log{K}$. The smallest probability of $\rvpi_t$ can be lower bounded as
+\begin{equation*}
+\begin{split}
+    \min\limits_{i \in [K]}{\rvpi_t(i)} &= \min\limits_{i \in [K]}{ \exp\left\{ \rvo_t(i) - \gF(\rvo_t) \right\} } \\
+    &= \exp\left\{ \min\limits_{i \in [K]}{\rvo_t(i)} - \gF(\rvo_t) \right\} \\
+    &\ge \exp\left\{ \rvo_t(i_{\min}) - \rvo_t(i_{\max}) - \log{K} \right\} \\
+    &\ge \exp\left\{ \hat{\rvr}_{t-1}(i_{\min}) - \frac{C \sqrt{K}}{t} - \hat{\rvr}_{t-1}(i_{\max}) - \frac{C \sqrt{K}}{t} - \log{K} \right\} \\
+    &\ge \exp\left\{ -1 - \log{K} - \frac{2 C \sqrt{K}}{t} \right\} \\
+    &= \frac{1}{e K} \cdot \exp\left\{ - \frac{2 C \sqrt{K}}{t} \right\} \\
+    &\ge \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t} \right).
+\end{split}
+\end{equation*}
+Using the choice of learning rate $\eta$,
+\begin{equation*}
+\begin{split}
+    \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} &\ge \eta \cdot \min\limits_{i \in [K]}{\rvpi_t(i)} \\
+    &\ge \eta \cdot \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t} \right) \\
+    &= \frac{1}{t+1} + \frac{1}{(t+1)(t+C)}.
+\end{split}
+\end{equation*}
+According to the update,
+\begin{equation*}
+\begin{split}
+    \rvo_{t+1} - \hat{\rvr}_t &= \rvo_{t} - \hat{\rvr}_{t-1} + \hat{\rvr}_{t-1} - \hat{\rvr}_t - \eta \cdot \rmH_t \left( \rvo_{t} - \hat{\rvr}_{t-1} \right) - \eta \cdot \rmH_t \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+\end{split}
+\end{equation*}
+Denote $\rvdelta_{t} \triangleq \rvo_{t} - \hat{\rvr}_{t-1}$. Note that
+\begin{equation*}
+\begin{split}
+    \hat{\rvr}_{t-1} - \hat{\rvr}_t &= \frac{\rvr_{1:t-1}}{t-1} - \frac{\rvr_{1:t-1} + \rvr_t}{t} = \frac{\rvr_{1:t-1} - (t-1) \cdot \rvr_t }{t(t-1)} = \frac{1}{t} \cdot \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+\end{split}
+\end{equation*}
+We have the following iterative relation,
+\begin{equation*}
+\begin{split}
+    \rvdelta_{t+1} = \left[ \rmI - \eta \cdot \rmH_t \right] \rvdelta_t + \left[ \frac{1}{t} \cdot \rmI - \eta \cdot \rmH_t \right] \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+\end{split}
+\end{equation*}
+By the triangle and H{\" o}lder's inequality,
+\begin{equation*}
+\begin{split}
+    \left\| \rvdelta_{t+1} \right\| &\le \lambda_{\max}\left\{ \rmI - \eta \cdot \rmH_t \right\} \cdot \left\| \rvdelta_{t} \right\| + \lambda_{\max}\left\{ \frac{1}{t} \cdot \rmI - \eta \cdot \rmH_t \right\} \cdot \left\| \hat{\rvr}_{t-1} - \rvr_t \right\| \\
+    &\le \left( 1 - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \left\| \rvdelta_{t} \right\| + \left( \frac{1}{t} - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \sqrt{K} \\
+    &\le \left( 1 - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \frac{C \sqrt{K}}{t} + \left( \frac{1}{t} - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \sqrt{K} \\
+    &= \frac{C \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \cdot \left( \frac{C \sqrt{K}}{t} + \sqrt{K} \right) \\
+    &\le \frac{C \cdot \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \left[ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} \right] \cdot \left( \frac{C \sqrt{K}}{t} + \sqrt{K} \right) \\
+    &= \frac{C \sqrt{K}}{t+1}. \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
+
+\if0
+\begin{equation*}
+\begin{split}
+    
+\end{split}
+\end{equation*}
+\fi
 
 \end{document}
