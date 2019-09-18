@@ -12,56 +12,6 @@
 
 \maketitle
 
-\if0
-
-\begin{lem}
-Given any $\rvpi \in \Delta$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$. Sorting $\rvpi$ in ascending order,
-\begin{equation*}
-\begin{split}
-    &\quad \rvpi(1) = \rvpi(2) = \cdots = \rvpi(|\gS_1|) \\
-    &< \rvpi(|\gS_1|+1) = \rvpi(|\gS_1|+2) = \cdots = \rvpi(|\gS_1| + |\gS_2|) \\
-    &\ \ \vdots \\
-    &< \rvpi(K - |\gS_k| + 1) = \rvpi(K - |\gS_k| + 2) = \cdots = \rvpi(K),
-\end{split}
-\end{equation*}
-where $\gS_i \triangleq \left\{ \rvpi(|\gS_{<i}| + 1), \rvpi(|\gS_{<i}| + 2), \dots,  \rvpi(|\gS_{<i}| + |\gS_i|) \right\}$, $\forall 1 \le i \le k$, and $|\gS_{<i}| \triangleq \sum\limits_{j < i}{|\gS_j|}$ satisfy \begin{equation*}
-\begin{split}
-    \bigcup_{i=1}^{k}{\gS_i} &= \left\{ \rvpi(1), \rvpi(2), \dots, \rvpi(K) \right\} \\
-    \gS_i \cap \gS_j &= \emptyset, \quad \forall i \not= j.
-\end{split}    
-\end{equation*}
-Then the eigenvalues of $\rmH\left( \rvpi \right)$ are
-\begin{equation*}
-\begin{split}
-    \lambda_{1} &= 0 \\
-    \lambda_{2} = \lambda_{3} = \cdots = \lambda_{|\gS_1|} &= \rvpi(|\gS_1|) \\
-    \lambda_{|\gS_1| + 1 } &\in \left( \rvpi(|\gS_1|), \rvpi(|\gS_2|) \right) \\
-    \lambda_{|\gS_1| + 2} = \lambda_{|\gS_1| + 3} = \cdots = \lambda_{|\gS_1| + |\gS_2|} &= \rvpi(|\gS_2|) \\
-    \lambda_{|\gS_1| + |\gS_2| + 1 } &\in \left( \rvpi(|\gS_2|), \rvpi(|\gS_3|) \right) \\
-    &\ \ \vdots \\
-    \lambda_{K - |\gS_k| +1} &\in \left( \rvpi(K-1), \rvpi(K) \right) \\
-    \lambda_{K - |\gS_k| + 2} = \lambda_{K - |\gS_k| + 3} = \cdots = \lambda_{K} &= \rvpi(K).
-\end{split}
-\end{equation*}
-And for any eigenvalue $\lambda$ of $\rmH(\rvpi)$ such that $\lambda \not= \rvpi(i)$, $\forall i \in [K]$, we have
-\begin{equation*}
-    \sum\limits_{i=1}^{K}{\frac{\rvpi(i)^2}{\rvpi(i) - \lambda}} = 1.
-\end{equation*}
-\end{lem}
-\begin{proof}
-Suppose $\lambda$ is an eigenvalue of $\rmH(\rvpi)$ and $\rvv$ is the corresponding eigenvector, i.e.,
-\begin{equation*}
-    \rmH(\rvpi) \rvv = \left[ \Delta(\rvpi) - \rvpi\rvpi^\top \right] \rvv = \lambda \rvv.
-\end{equation*}
-It is easy to check that $\rvv = \rvone$ is the eigenvector of $\lambda_0 = 0$. Next, assuming $\lambda \not= 0$, we have
-\begin{equation*}
-    \rvpi(i) \left( \rvv(i) - \rvpi^\top \rvv \right) = \lambda \rvv(i), \quad \forall i \in [K].
-\end{equation*}
-Note if $\rvpi^\top \rvv = 0$, we have $\rvpi(i) \rvv(i) = \lambda \rvv(i)$, $\forall i \in [K]$. Since $\rvv \not= \rvzero$, assume 
-\end{proof}
-
-\fi
-
 \begin{lem}
 Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Let $\rvo \in \sR^K$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$. Denote $\rmH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{K \times K}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. Define the policy gradient with respect to logit at step $t$,
 \begin{equation*}
@@ -164,6 +114,53 @@ By the triangle and H{\" o}lder's inequality,
 \end{split}
 \end{equation*}
 \end{proof}
+
+\begin{lem}
+Given any $\rvpi \in \Delta$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$. Sorting $\rvpi$ in ascending order,
+\begin{equation*}
+\begin{split}
+    &\quad \rvpi(1) = \rvpi(2) = \cdots = \rvpi(|\gS_1|) \\
+    &< \rvpi(|\gS_1|+1) = \rvpi(|\gS_1|+2) = \cdots = \rvpi(|\gS_1| + |\gS_2|) \\
+    &\ \ \vdots \\
+    &< \rvpi(K - |\gS_k| + 1) = \rvpi(K - |\gS_k| + 2) = \cdots = \rvpi(K),
+\end{split}
+\end{equation*}
+where $\gS_i \triangleq \left\{ \rvpi(|\gS_{<i}| + 1), \rvpi(|\gS_{<i}| + 2), \dots,  \rvpi(|\gS_{<i}| + |\gS_i|) \right\}$, $\forall 1 \le i \le k$, and $|\gS_{<i}| \triangleq \sum\limits_{j < i}{|\gS_j|}$ satisfy \begin{equation*}
+\begin{split}
+    \bigcup_{i=1}^{k}{\gS_i} &= \left\{ \rvpi(1), \rvpi(2), \dots, \rvpi(K) \right\} \\
+    \gS_i \cap \gS_j &= \emptyset, \quad \forall i \not= j.
+\end{split}    
+\end{equation*}
+Then the eigenvalues of $\rmH\left( \rvpi \right)$ are
+\begin{equation*}
+\begin{split}
+    \lambda_{1} &= 0 \\
+    \lambda_{2} = \lambda_{3} = \cdots = \lambda_{|\gS_1|} &= \rvpi(|\gS_1|) \\
+    \lambda_{|\gS_1| + 1 } &\in \left( \rvpi(|\gS_1|), \rvpi(|\gS_2|) \right) \\
+    \lambda_{|\gS_1| + 2} = \lambda_{|\gS_1| + 3} = \cdots = \lambda_{|\gS_1| + |\gS_2|} &= \rvpi(|\gS_2|) \\
+    \lambda_{|\gS_1| + |\gS_2| + 1 } &\in \left( \rvpi(|\gS_2|), \rvpi(|\gS_3|) \right) \\
+    &\ \ \vdots \\
+    \lambda_{K - |\gS_k| +1} &\in \left( \rvpi(K-1), \rvpi(K) \right) \\
+    \lambda_{K - |\gS_k| + 2} = \lambda_{K - |\gS_k| + 3} = \cdots = \lambda_{K} &= \rvpi(K).
+\end{split}
+\end{equation*}
+And for any eigenvalue $\lambda$ of $\rmH(\rvpi)$ such that $\lambda \not= \rvpi(i)$, $\forall i \in [K]$, we have
+\begin{equation*}
+    \sum\limits_{i=1}^{K}{\frac{\rvpi(i)^2}{\rvpi(i) - \lambda}} = 1.
+\end{equation*}
+\end{lem}
+\begin{proof}
+Suppose $\lambda$ is an eigenvalue of $\rmH(\rvpi)$ and $\rvv$ is the corresponding eigenvector, i.e.,
+\begin{equation*}
+    \rmH(\rvpi) \rvv = \left[ \Delta(\rvpi) - \rvpi\rvpi^\top \right] \rvv = \lambda \rvv.
+\end{equation*}
+It is easy to check that $\rvv = \rvone$ is the eigenvector of $\lambda_0 = 0$. Next, assuming $\lambda \not= 0$, we have
+\begin{equation*}
+    \rvpi(i) \left( \rvv(i) - \rvpi^\top \rvv \right) = \lambda \rvv(i), \quad \forall i \in [K].
+\end{equation*}
+Note if $\rvpi^\top \rvv = 0$, we have $\rvpi(i) \rvv(i) = \lambda \rvv(i)$, $\forall i \in [K]$. Since $\rvv \not= \rvzero$, assume $\rvv(j) \not= 0$, then we have $\rvpi(j) = \lambda$. Suppose $\rvpi(j) \in \gS$
+\end{proof}
+
 
 
 \if0
