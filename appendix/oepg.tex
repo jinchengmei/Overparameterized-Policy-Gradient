@@ -15,73 +15,6 @@
 \if0
 
 \begin{lem}
-Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Let $\rvo \in \sR^K$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$. Denote $\rmH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{K \times K}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. Define the policy gradient with respect to logit at step $t$,
-\begin{equation*}
-\begin{split}
-    \nabla(\rvo_t) &\triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
-    &= \left[ \Delta \left( \rvpi(\rvo_t) \right) - \rvpi(\rvo_t) \rvpi(\rvo_t)^\top \right] \left( \rvr_t - \rvo_t \right) \\
-    &\triangleq \rmH_t \left( \rvr_t - \rvo_t \right).
-\end{split}
-\end{equation*}
-Consider the following (entropy regularized) policy gradient update,
-\begin{equation*}
-\begin{split}
-    \rvo_{t+1} &= \rvo_t + \eta \cdot \nabla(\rvo_t) \\
-    &= \rvo_t + \eta \cdot \rmH_t \left( \rvr_t - \rvo_t \right).
-\end{split}
-\end{equation*}
-If the learning rate $\eta$ satisfies
-\begin{equation*}
-    \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} \le \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \le 1,
-\end{equation*}
-then we have,
-\begin{equation*}
-    \left\| \rvo_{t+1} - \hat{\rvr}_{t} - c \cdot \rvone \right\| \le \frac{C \cdot \sqrt{K}}{t+1}.
-\end{equation*}
-\end{lem}
-\begin{proof}
-According to the update,
-\begin{equation*}
-\begin{split}
-    \rvo_{t+1} - \hat{\rvr}_t - c \cdot \rvone &= \rvo_{t} - \hat{\rvr}_{t-1} - c \cdot \rvone + \hat{\rvr}_{t-1} - \hat{\rvr}_t - \eta \cdot \rmH_t \left( \rvo_{t} - \hat{\rvr}_{t-1} - c \cdot \rvone \right) - \eta \cdot \rmH_t \left( \hat{\rvr}_{t-1} - \rvr_t \right),
-\end{split}
-\end{equation*}
-where $c \in \sR$ is a constant. Denote $\rvdelta_{t} \triangleq \rvo_{t} - \hat{\rvr}_{t-1} - c \cdot \rvone$, and note,
-\begin{equation*}
-\begin{split}
-    \hat{\rvr}_{t-1} - \hat{\rvr}_t &= \frac{\rvr_{1:t-1}}{t-1} - \frac{\rvr_{1:t-1} + \rvr_t}{t} = \frac{\rvr_{1:t-1} - (t-1) \cdot \rvr_t }{t(t-1)} = \frac{1}{t} \cdot \left( \hat{\rvr}_{t-1} - \rvr_t \right).
-\end{split}
-\end{equation*}
-We have the following result,
-\begin{equation*}
-\begin{split}
-    \rvdelta_{t+1} = \left[ \rmI - \eta \cdot \rmH_t \right] \rvdelta_t + \left[ \frac{1}{t} \cdot \rmI - \eta \cdot \rmH_t \right] \left( \hat{\rvr}_{t-1} - \rvr_t \right).
-\end{split}
-\end{equation*}
-By the triangle and H{\" o}lder's inequality,
-\begin{equation*}
-\begin{split}
-    \left\| \rvdelta_{t+1} \right\| &\le \lambda_{\max}\left\{ \rmI - \eta \cdot \rmH_t \right\} \cdot \left\| \rvdelta_{t} \right\| + \lambda_{\max}\left\{ \frac{1}{t} \cdot \rmI - \eta \cdot \rmH_t \right\} \cdot \left\| \hat{\rvr}_{t-1} - \rvr_t \right\| \\
-    &\le \left( 1 - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \left\| \rvdelta_{t} \right\| + \left( \frac{1}{t} - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \sqrt{K}.
-\end{split}
-\end{equation*}
-We use induction on $t$. For $t = 0$, $\rvdelta_{1} = \rvzero$, and $\left\| \rvdelta_{1} \right\| \le C \cdot \sqrt{K}$. Assume the result holds for $t$, then for $t+1$,
-\begin{equation*}
-\begin{split}
-    \left\| \rvdelta_{t+1} \right\| &\le \left( 1 - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \frac{C \cdot \sqrt{K}}{t} + \left( \frac{1}{t} - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \right) \cdot \sqrt{K} \\
-    &= \frac{C \cdot \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \eta \cdot \lambda_{\min}\left\{ \rmH_t \right\} \cdot \left( \frac{C \cdot \sqrt{K}}{t} + \sqrt{K} \right) \\
-    &\le \frac{C \cdot \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \left[ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} \right] \cdot \left( \frac{C \cdot \sqrt{K}}{t} + \sqrt{K} \right) \\
-    &= \frac{C \cdot \sqrt{K}}{t+1}. \qedhere
-\end{split}
-\end{equation*}
-\end{proof}
-
-\fi
-
-
-\if0
-
-\begin{lem}
 Given any $\rvpi \in \Delta$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$. Sorting $\rvpi$ in ascending order,
 \begin{equation*}
 \begin{split}
@@ -157,7 +90,19 @@ then we have,
 \end{equation*}
 \end{lem}
 \begin{proof}
-We use induction on $t$. For $t=0$,
+First, we show that the update using $\nabla(\rvo_t)$ is actually policy gradient,
+\begin{equation*}
+\begin{split}
+    \nabla(\rvo_t) &= \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
+    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \rvone - \log{\rvpi_t} \right) \\
+    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \log{\rvpi_t} \right) \\
+    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left[ \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } } \right]  \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } \right] } \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \cdot \frac{d \rvpi_t(i)}{d \rvo_t}  \right] } \\
+    &= \expectation\limits_{i \sim \rvpi_t}{ \left( \rvr_t(i) - \log{\rvpi_t(i)} \right) \cdot \frac{d \log{\rvpi_t(i)} }{d \rvo_t} }.
+\end{split}
+\end{equation*}
+Next, we use induction on $t$. For $t=0$,
 \begin{equation*}
 \begin{split}
     \left\| \rvo_{1} - \hat{\rvr}_0 \right\| = \left\| \rvzero \right\| = 0 \le C \sqrt{K}.
@@ -219,6 +164,7 @@ By the triangle and H{\" o}lder's inequality,
 \end{split}
 \end{equation*}
 \end{proof}
+
 
 \if0
 \begin{equation*}
